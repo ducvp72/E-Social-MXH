@@ -1,0 +1,3 @@
+.bt-pd{
+    @apply animate-bounce group relative bg-gray-400 rounded-lg shadow-md p-4 hover:bg-blue-400 hover:text-white mt-60
+}

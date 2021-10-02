@@ -1,0 +1,12 @@
+*{
+    margin: 0;
+    font-family: 'Roboto', 'sans-serifs'
+}
+
+.container{
+    height: 550px;
+}
+
+.css-heg063-MuiTabs-flexContainer{
+    justify-content: center;
+}
