@@ -6,10 +6,6 @@ const swaggerDef = {
     info: {
         title: 'Mang xa hoi  API documentation',
         version,
-        license: {
-            name: 'MIT',
-            url: 'https://github.com/hagopj13/node-express-boilerplate/blob/master/LICENSE',
-        },
     },
     servers: [{
         url: `http://localhost:${config.port}/v1`,

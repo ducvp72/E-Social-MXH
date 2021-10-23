@@ -13,7 +13,7 @@ router.post('/refresh-tokens', validate(authValidation.refreshTokens), authContr
 router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);
 router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
 router.post('/send-verification-email', auth(''), authController.sendVerificationEmail);
-router.get('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
+router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
 
 module.exports = router;
 
@@ -37,24 +37,37 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - fullname
  *               - email
+ *               - birthday
+ *               - gender
  *               - password
  *             properties:
- *               name:
+ *               fullname:
  *                 type: string
+ *                 description: must be >5 and <30
  *               email:
  *                 type: string
  *                 format: email
  *                 description: must be unique
+ *               birthday:
+ *                 type: date
+ *                 formate: date
+ *                 description: age must be >5 and <30
+ *               gender:
+ *                 type: string
+ *                 formate: string
+ *                 description: must be male,female,other
  *               password:
  *                 type: string
  *                 format: password
  *                 minLength: 8
  *                 description: At least one number and one letter
  *             example:
- *               name: fake name
+ *               fullname: fake name
  *               email: fake@example.com
+ *               birthday: 1-12-2000
+ *               gender: male
  *               password: password1
  *     responses:
  *       "201":
