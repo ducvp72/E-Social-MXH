@@ -1,0 +1,55 @@
+    //Sign up
+     // console.log("values before", values);
+    // Delete attr in obj
+    // delete values.confirm;
+    // Add attr in obj
+    // values['dob'] = dob;
+    // console.log("values after",values)
+
+    // axios({
+    //   url: `localhost:5000`,
+    //   method: "POST",
+    //   // Send data to backend
+    //   data: values,
+    // })
+    //   .then((result) => {
+    //     // If sucess
+    //     console.log("result", result.data);
+    //   })
+    //   .catch((error) => {
+    //     // If failed
+    //     console.log("error", error.repsonse);
+    //   });
+
+    //sign in     {/* <i className="fa fa-user absolute text-primarycolor text-xl " /> */}
+              {/* <Field
+                as={TextField}
+                name="username"
+                type="text"
+                error={errors.username}
+                placeholder="username"
+                // className="pl-8 border-b-2 font-display focus: outline-none focus:border-primarycolor transition-all duration-500 capitalize text-left"
+                helperText={
+                  <ErrorMessage name="fullname">
+                    {(msg) => <span style={{ color: "red" }}>{msg}</span>}
+                  </ErrorMessage>
+                }
+              /> */}
+
+                            {/* <i className="fa fa-lock absolute text-primarycolor text-xl " />
+              <Field
+                name="password"
+                type="password"
+                error={errors.password}
+                placeholder="password"
+                className="pl-8 border-b-2 font-display focus: outline-none focus:border-primarycolor transition-all duration-500 capitalize text-left"
+              /> */}
+
+
+
+//signup
+//#region  Luu dang Local Storage
+      //Luu dang local storage
+      // localStorage.setItem("accessToken", resData.tokens.access.token);
+      // localStorage.setItem("refreshToken", resData.tokens.refresh.token);
+      //#endregion

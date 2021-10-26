@@ -1,17 +1,54 @@
 import * as React from "react";
 import { lazy, Suspense } from "react";
 import "./css/style.css";
-import Home from "./pages/home/Home";
-import Login from "./pages/home/Login";
-import Error from "./Error";
-import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
-import * as ROUTES from "./constants/routes";
-import {Helmet} from "react-helmet";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+  Link,
+} from "react-router-dom";
+import * as ROUTES from "./routes/routes";
 
-const Homes = lazy(() => import("./pages/home/Home"));
-const Logins = lazy(() => import("./pages/home/Login"));
-const Not_Founds = lazy(() => import("./Error"));
-const Inbox = lazy(() => import("./pages/inbox/Inbox"));
+import HomePage from "./pages/HomePage/index";
+import AuthPage from "./pages/AuthPage/index";
+import { routeHomePage, routeAuthPage } from "./routes";
+import { routeManage } from './routes/index';
+
+
+const showLayoutHomePage = (routes) => {
+  console.log(routes)
+  if (routes && routes.length > 0) {
+    return routes.map((item, index) => {
+      return (
+        <HomePage
+          key={index}
+          exact={item.exact}
+          path={item.path}
+          component={item.component}
+        />
+      );
+    });
+  }
+};
+
+const showLayoutAuthPage = (routes) => {
+  console.log(routes)
+  if (routes && routes.length > 0) {
+    return routes.map((item, index) => {
+      return (
+        <AuthPage
+          key={index}
+          exact={item.exact}
+          path={item.path}
+          component={item.component}
+        />
+      );
+    });
+  }
+};
+
+
 
 const App = () => {
   return (
@@ -19,10 +56,11 @@ const App = () => {
       <Router>
         <Suspense fallback={<p>Loading ...</p>}>
           <Switch>
-            <Route path={ROUTES.HOME} component={Homes} />
-            <Route path={ROUTES.SIGNIN}  component={Logins} />
-            <Route path={ROUTES.NOT_FOUND} component={Not_Founds} />
-            <Route path={ROUTES.INBOX} component={Inbox} />
+            <Route exact path="/">
+              <Redirect to="/home" />
+            </Route>
+            {showLayoutHomePage(routeHomePage)}
+            {showLayoutAuthPage(routeAuthPage)}
           </Switch>
         </Suspense>
       </Router>

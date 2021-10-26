@@ -6,6 +6,12 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      fontSize: {
+        sm1: "10px",
+      },
+      fontFamily: {
+        'avatar': ["Finger Paint", "cursive"],
+      },
       colors: {
         primarycolor: "#0099ff",
         blue: {
@@ -18,6 +24,8 @@ module.exports = {
         },
         red: {
           primary: "#ed4956",
+          light: "#262626",
+          faded: "#00000059",
         },
         // black: {
         //   light: "#262626",
@@ -25,7 +33,7 @@ module.exports = {
         // },
       },
       height: {
-        cus: "45rem",
+        cus: "38rem",
       },
       width: {
         cus: "38rem",
@@ -54,9 +62,14 @@ module.exports = {
   variants: {
     extend: {
       backgroundColor: ["checked"],
+      textColor: ["focus"],
       borderColor: ["checked"],
       borderWidth: ["hover", "focus", "checked"],
-      display: ["group-hover"],
+      display: ["group-hover", "hover"],
+      transitionDuration: ["group-hover", "hover", "focus"],
+      transitionDelay: ["group-hover", "hover", "focus"],
+      transitionTimingFunction: ["group-hover", "hover", "focus"],
+      transitionProperty: ["group-hover", "hover", "focus"],
     },
   },
   plugins: [],
