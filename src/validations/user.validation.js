@@ -1,13 +1,19 @@
 const Joi = require('joi').extend(require('@joi/date'));
 const { password, objectId } = require('./custom.validation');
-
+const { dateFunction } = require('../function');
 
 const createUser = {
     body: Joi.object().keys({
         email: Joi.string().required().email(),
         password: Joi.string().required().custom(password),
         fullname: Joi.string().required().min(5).max(30),
-        birthday: Joi.date().format("DD/MM/YYYY").raw().required(),
+        birthday: Joi.date().format("DD/MM/YYYY").raw().required().custom((value, helper) => {
+            if (dateFunction.getAge(value) < 13) {
+                return helper.message("Age must be greater than  or equal to 13")
+            } else {
+                return true;
+            }
+        }),
         gender: Joi.string().required().valid('male', 'female', 'other'),
         role: Joi.string().required().valid('user', 'admin'),
     }),

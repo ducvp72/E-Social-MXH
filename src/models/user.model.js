@@ -58,6 +58,23 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    avatar: {
+        type: String,
+        default: '6178c1b9c0a87d41ce93efd1',
+    },
+    previousAvatar: {
+        type: [String],
+    },
+    story: {
+        type: String,
+    },
+    phone: {
+        type: String
+    },
+    facebook: {
+        type: String,
+    }
+
 }, {
     timestamps: true,
 });
@@ -100,5 +117,6 @@ userSchema.pre('save', async function(next) {
  * @typedef User
  */
 const User = mongoose.model('User', userSchema);
+
 
 module.exports = User;

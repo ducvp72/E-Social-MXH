@@ -1,13 +1,14 @@
 const Joi = require('joi').extend(require('@joi/date'));
 const { password } = require('./custom.validation');
 const { parse } = require('date-format-parse');
+const { dateFunction } = require('../function');
 const register = {
     body: Joi.object().keys({
         email: Joi.string().required().email(),
         password: Joi.string().required().custom(password),
         fullname: Joi.string().required().min(5).max(30),
         birthday: Joi.date().format("DD/MM/YYYY").raw().required().custom((value, helper) => {
-            if (getAge(value) < 13) {
+            if (dateFunction.getAge(value) < 13) {
                 return helper.message("Age must be greater than  or equal to 13")
             } else {
                 return true;
@@ -57,17 +58,7 @@ const verifyEmail = {
         token: Joi.string().required(),
     }),
 };
-const getAge = (dateString) => {
-    var today = new Date();
-    var birthDate = new Date(dateString);
-    var age = today.getFullYear() - birthDate.getFullYear();
-    var m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    console.log(age);
-    return age;
-}
+
 module.exports = {
     register,
     login,

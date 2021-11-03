@@ -1,4 +1,4 @@
-const genderTypes = {
+ genderTypes = {
     MALE: 'male',
     FEMALE: 'female',
     OTHER: 'other',

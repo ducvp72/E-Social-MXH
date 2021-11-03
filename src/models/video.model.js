@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
-const { imageTypes } = require('../config/image');
-const imageSchema = mongoose.Schema({
+
+
+const videoSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -12,27 +13,27 @@ const imageSchema = mongoose.Schema({
         required: false,
         trim: true,
     },
-    imageTypes: {
-        type: String,
-        enum: [imageTypes.AVATAR, imageTypes.POST, imageTypes.OTHER],
-        required: true,
-    },
     fileId: {
         required: true,
         type: String,
     },
+    user: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
+        required: true,
+    }
 }, {
     timestamps: true,
 });
 
 // add plugin that converts mongoose to json
-imageSchema.plugin(toJSON);
-imageSchema.plugin(paginate);
+videoSchema.plugin(toJSON);
+videoSchema.plugin(paginate);
 
 
 /**
  * @typedef Image
  */
-const Image = mongoose.model('Image', imageSchema);
+const Video = mongoose.model('Video', videoSchema);
 
-module.exports = Image;
+module.exports = Video;

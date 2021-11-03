@@ -3,8 +3,7 @@ const validate = require('../../middlewares/validate');
 const authValidation = require('../../validations/auth.validation');
 const authController = require('../../controllers/auth.controller');
 const auth = require('../../middlewares/auth');
-const role = require('../../config/roles');
-var passport = require('passport');
+
 const router = express.Router();
 router.post('/register', validate(authValidation.register), authController.register);
 router.post('/login', validate(authValidation.login), authController.login);
@@ -14,6 +13,8 @@ router.post('/forgot-password', validate(authValidation.forgotPassword), authCon
 router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
 router.post('/send-verification-email', auth(''), authController.sendVerificationEmail);
 router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
+router.post('/check-token', auth(''), authController.check_token);
+router.post('/check-auth-v', auth(''), authController.check_token_isEmailVerified);
 
 module.exports = router;
 
@@ -153,8 +154,8 @@ module.exports = router;
  *             example:
  *               refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZWJhYzUzNDk1NGI1NDEzOTgwNmMxMTIiLCJpYXQiOjE1ODkyOTg0ODQsImV4cCI6MTU4OTMwMDI4NH0.m1U63blB0MLej_WfB7yC2FTMnCziif9X8yzwDEfJXAg
  *     responses:
- *       "204":
- *         description: No content
+ *       "200":
+ *         description: OK
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  */
@@ -211,8 +212,8 @@ module.exports = router;
  *             example:
  *               email: fake@example.com
  *     responses:
- *       "204":
- *         description: No content
+ *       "200":
+ *         description: OK
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  */
@@ -290,8 +291,8 @@ module.exports = router;
  *           type: string
  *         description: The verify email token
  *     responses:
- *       "204":
- *         description: No content
+ *       "200":
+ *         description: OK
  *       "401":
  *         description: verify email failed
  *         content:
@@ -301,4 +302,50 @@ module.exports = router;
  *             example:
  *               code: 401
  *               message: verify email failed
+ */
+
+/**
+ * @swagger
+ * /auth/check-token:
+ *   post:
+ *     summary: check-token
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               code: 401
+ *               message: Please authenticate
+ */
+
+/**
+ * @swagger
+ * /auth/check-auth-v:
+ *   post:
+ *     summary: check-token valid and user isVerified
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *       "401":
+ *         description: Unauthorized
+ *       "400":
+ *         description: Email is not verified
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               code: 401
+ *               message: Please authenticate
  */
