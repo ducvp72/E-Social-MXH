@@ -19,16 +19,23 @@ import { register } from "../../../context/actions/register";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { userSignUpSchema } from './../../../validation/validation';
-import { Alertverify } from '../../../components/alert/alertverify';
-import { ErrorAlert } from './../../../components/alert/alert';
+import { userSignUpSchema } from "./../../../validation/validation";
+import { Alertverify } from "../../../components/alert/alertverify";
+import { ErrorAlert } from "./../../../components/alert/alert";
 import * as ROUTES from "./../../../routes/routes";
 
 const Signup = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["tokens","userId","isVerify"]);
+  const [cookies, setCookie, removeCookie] = useCookies([
+    "tokens",
+    "userId",
+    "isVerify",
+  ]);
   const [hidden, setHidden] = useState({ password: false, confirm: false });
   const [showEye, setShowEye] = useState({ password: false, confirm: false });
-  const [registerCheck, setRegisterCheck] = useState({isShow: false, msgErr: ""})
+  const [registerCheck, setRegisterCheck] = useState({
+    isShow: false,
+    msgErr: "",
+  });
   const [dob, setDob] = useState(
     new Date(new Date().setUTCFullYear(new Date().getUTCFullYear()))
   );
@@ -58,7 +65,7 @@ const Signup = () => {
   // };
 
   const handleSubmit = async (data, props) => {
-    const birthday = moment(dob).format("DD/MM/YYYY");
+    const birthday = moment(dob).format("MM/DD/YYYY");
     if (errDob) {
       setErrDob(true);
       props.setSubmitting(false);
@@ -67,12 +74,11 @@ const Signup = () => {
     data.birthday = birthday;
     // console.log(data)
     try {
-      
       const resData = await register(data);
       setCookie("tokens", resData.tokens);
-      setCookie("userId",resData.user.id);
-      setCookie("isVerify",resData.user.isEmailVerified);
-      history.replace(ROUTES.VERIFYING_EMAIL)
+      setCookie("userId", resData.user.id);
+      setCookie("isVerify", resData.user.isEmailVerified);
+      history.replace(ROUTES.VERIFYING_EMAIL);
       // console.log(resData.tokens);
       // console.log("Response", resData)
       // console.log(resData.user.isEmailVerified)
@@ -83,12 +89,12 @@ const Signup = () => {
       //   msgErr: "Please try to register again ( code: "+ resData.status +")"
       // })
     } catch (err) {
-      console.log(err);
       setRegisterCheck({
         ...registerCheck,
         isShow: true,
-        msgErr: "Please try to register again ( code: "+ err.response.status +")"
-      })
+        msgErr:
+          "Please try to register again ( code: " + err.response.status + ")",
+      });
     }
   };
 
@@ -193,6 +199,7 @@ const Signup = () => {
                   </FormHelperText>
                 </div>
               </div>
+
               <div className="customDate">
                 <Field
                   as={TextField}

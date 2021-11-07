@@ -10,3 +10,10 @@
 .css-heg063-MuiTabs-flexContainer{
     justify-content: center;
 }
+
+.customDate > div{
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 4px;
+    position: relative;
+}

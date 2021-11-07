@@ -20,14 +20,15 @@ import { ADMIN } from "./routes";
 import { CHANGE_PASSWORD } from "./routes";
 import { VERIFYING_EMAIL } from "./routes";
 import { VERIFYING_SUCCESS } from "./routes";
-import Userdasboard from '../pages/HomePage/admin/userdashboard/userdasboard';
-import Postdashboard from './../pages/HomePage/admin/postdashboard/postdashboard';
-import Groupchat from './../pages/HomePage/admin/groupchat/groupchat';
-import Adminpassword from './../pages/HomePage/admin/adminpassword/adminpassword';
-import Welcomeadmin from './../pages/HomePage/admin/welcomeadmin';
-import { NewPassword } from './../pages/AuthPage/forgot/newPassword';
-import EmailVerify from './../pages/EmailVerify';
-import SuccesVerify from './../pages/SuccesVerify';
+import Userdasboard from "../pages/HomePage/admin/userdashboard/userdasboard";
+import Postdashboard from "./../pages/HomePage/admin/postdashboard/postdashboard";
+import Groupchat from "./../pages/HomePage/admin/groupchat/groupchat";
+import Adminpassword from "./../pages/HomePage/admin/adminpassword/adminpassword";
+import Welcomeadmin from "./../pages/HomePage/admin/welcomeadmin";
+import { NewPassword } from "./../pages/AuthPage/forgot/newPassword";
+import EmailVerify from "./../pages/EmailVerify";
+import SuccesVerify from "./../pages/SuccesVerify";
+import Loading from "../pages/LoadingPage";
 
 export const routeHomePage = [
   {
@@ -71,7 +72,7 @@ export const routeAuthPage = [
   {
     exact: false,
     path: CHANGE_PASSWORD,
-    component: NewPassword
+    component: NewPassword,
   },
   {
     exact: false,
@@ -80,13 +81,18 @@ export const routeAuthPage = [
   },
   {
     exact: false,
-    path: VERIFYING_EMAIL, 
+    path: VERIFYING_EMAIL,
     component: EmailVerify,
   },
   {
     exact: false,
-    path:  VERIFYING_SUCCESS, 
+    path: VERIFYING_SUCCESS,
     component: SuccesVerify,
+  },
+  {
+    exact: false,
+    path: "/testpage",
+    component: Loading,
   },
   {
     exact: false,
@@ -98,27 +104,27 @@ export const routeAuthPage = [
 export const routeManage = [
   {
     exact: true,
-    path: '/admin',
+    path: "/admin",
     component: Welcomeadmin,
   },
   {
     exact: false,
-    path: '/admin/user',
+    path: "/admin/user",
     component: Userdasboard,
   },
   {
     exact: false,
-    path: '/admin/post',
+    path: "/admin/post",
     component: Postdashboard,
   },
   {
     exact: false,
-    path: '/admin/groupchat',
+    path: "/admin/groupchat",
     component: Groupchat,
   },
   {
     exact: false,
-    path: '/admin/change-password',
+    path: "/admin/change-password",
     component: Adminpassword,
-  }
-]
+  },
+];

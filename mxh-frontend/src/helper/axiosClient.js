@@ -5,13 +5,13 @@ let headers = {};
 
 console.log("BaseURl: ", baseURL);
 
-// if(localStorage.token){
-//     headers.Authorization =  `Bearer ${localStorage.token}`
-// }
+if (localStorage.token) {
+  headers.Authorization = `Bearer ${localStorage.token}`;
+}
 
-const axiosClient = axios.create({
+const axiosInstance = axios.create({
   baseURL: baseURL,
   headers,
 });
 
-export default axiosClient;
+export default axiosInstance;

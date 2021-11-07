@@ -5,7 +5,7 @@ const Addcomments = () => {
   const [comment, setComment] = useState("");
   const handleSubmitComment = (event) => {
     event.preventDefault();
-    setComment('');
+    setComment("");
   };
   return (
     <div className="border-t border-gray-primary">
@@ -24,7 +24,7 @@ const Addcomments = () => {
           className="text-sm text-gray-base w-full mr-3 py-3 px-2"
           type="text"
           value={comment}
-          onChange={({target}) => setComment(target.value)}
+          onChange={({ target }) => setComment(target.value)}
           name="add-comment"
           placeholder="Add a comment..."
         />

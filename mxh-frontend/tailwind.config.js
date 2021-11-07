@@ -10,7 +10,7 @@ module.exports = {
         sm1: "10px",
       },
       fontFamily: {
-        'avatar': ["Finger Paint", "cursive"],
+        avatar: ["Finger Paint", "cursive"],
       },
       colors: {
         primarycolor: "#0099ff",
@@ -27,10 +27,7 @@ module.exports = {
           light: "#262626",
           faded: "#00000059",
         },
-        // black: {
-        //   light: "#262626",
-        //   faded: "#00000059",
-        // },
+        mygrey: "#65676b",
       },
       height: {
         cus: "38rem",

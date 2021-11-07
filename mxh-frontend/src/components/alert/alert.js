@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import Alert from "@mui/material/Alert";
 
 export const ErrorAlert = ({ message }) => {
-  console.log(message)
   return (
     <div>
       <Alert variant="filled" severity="error">

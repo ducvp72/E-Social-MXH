@@ -7,7 +7,7 @@ import Caption from "./../post/caption";
 import { makeStyles } from "@mui/styles";
 import { v4 as uuidv4 } from "uuid";
 import { Comment } from "./../post/comment";
-import './postshow.css'
+import "./postshow.css";
 
 const comment = [
   {
@@ -60,7 +60,11 @@ const Postshow = (props) => {
               ></i>
             </div>
           </div>
-          <div className=" shadow-xl bg-white fixed z-50 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2" style={{width:'900px',height:'650px'}}>
+
+          <div
+            className=" shadow-xl bg-white fixed z-50 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+            style={{ width: "900px", height: "650px" }}
+          >
             <div className="grid grid-cols-3 h-full">
               <div className="col-span-2 h-full overflow-hidden">
                 <img
@@ -82,7 +86,9 @@ const Postshow = (props) => {
                     <Link to={"/p/${username}"}>
                       <p className="font-bold text-md">username</p>
                     </Link>
-                    <p className=" font-black text-2xl cursor-pointer text-gray-400">...</p>
+                    <p className=" font-black text-2xl cursor-pointer text-gray-400">
+                      ...
+                    </p>
                   </div>
                 </div>
                 {/* <Caption item={toggle.postData} /> */}

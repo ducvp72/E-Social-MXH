@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import Statistic from "./statistic";
 import Information from "./information";
 import DialogAction from "./dialog";
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "react-helmet-async";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
   const [following, setFollowing] = useState(false);
   const [action, setAction] = useState(false);
-
+  const currentUser = useSelector((state) => state.auth.data);
   const onClose = () => {
     setAction(false);
   };
@@ -28,15 +29,22 @@ const Profile = () => {
             <div className="py-5">
               <img
                 className="rounded-full h-24 w-24 md:h-44 md:w-44 "
-                src="/assets/person/duc.jpeg"
-                alt="anh2"
+                src={
+                  currentUser
+                    ? `https://mxhld.herokuapp.com/v1/image/${currentUser?.avatar}`
+                    : "/assets/image/defaultAvatar.png"
+                }
+                alt="userimg"
               />
             </div>
           </div>
           <div className="col-span-2  h-full object-fill">
             <div className="flex w-full items-center space-x-4 mt-5">
-              <h1 className="font-sans font-light text-2xl hover:text-red-500">
-                __changtrailanhlung
+              <h1
+                className="font-sans font-light text-3xl hover:text-blue-500 cursor-pointer"
+                style={{ color: "#818181" }}
+              >
+                {currentUser ? currentUser.fullname : "Undefined Fullname"}
               </h1>
               {following ? (
                 <>

@@ -1,11 +1,11 @@
 import { Error } from "@mui/icons-material";
-import axiosClient from "../../helper/axiosClient";
+import axiosInstance from "../../helper/axiosClient";
 import { axios } from "axios";
 import { useCookies } from "react-cookie";
 
 export const register = (obj) =>
   new Promise((resolve, reject) => {
-    axiosClient
+    axiosInstance
       .post("/auth/register", {
         fullname: obj.fullname,
         birthday: obj.birthday,
@@ -14,7 +14,7 @@ export const register = (obj) =>
         password: obj.password,
       })
       .then((res) => {
-        console.log("User Status",res.data);
+        console.log("User Status", res.data);
         resolve(res.data);
       })
       .catch((err) => reject(err));
@@ -22,7 +22,7 @@ export const register = (obj) =>
 
 export const login = (obj) =>
   new Promise((resolve, reject) => {
-    axiosClient
+    axiosInstance
       .post("/auth/login", {
         email: obj.email,
         password: obj.password,
@@ -42,7 +42,7 @@ export const verifyEmail = (obj) => {
       },
     };
 
-    axiosClient
+    axiosInstance
       .post("/auth/send-verification-email", null, config)
       .then((res) => {
         console.log("Send mail successfully !!!", res);
@@ -58,7 +58,7 @@ export const verifyEmail = (obj) => {
 
 export const refresh = (obj) =>
   new Promise((resolve, reject) => {
-    axiosClient
+    axiosInstance
       .post("/auth/refresh-tokens", {
         refreshToken: obj,
       })
@@ -70,7 +70,7 @@ export const refresh = (obj) =>
 
 export const confirmMail = (obj) =>
   new Promise((resolve, reject) => {
-    axiosClient
+    axiosInstance
       .post("/auth/verify-email", null, {
         params: { token: obj },
       })
@@ -78,19 +78,19 @@ export const confirmMail = (obj) =>
         resolve(res.data);
       })
       .catch((err) => {
-          reject(err);
+        reject(err);
       });
   });
 
 export const LogOut = async (obj) => {
-  return axiosClient.post("/auth/logout", {
+  return axiosInstance.post("/auth/logout", {
     refreshToken: obj,
   });
 };
 
 export const forgotPassword = (obj) =>
   new Promise((resolve, reject) => {
-    axiosClient
+    axiosInstance
       .post("/auth/forgot-password", {
         email: obj.email,
       })
@@ -103,7 +103,7 @@ export const forgotPassword = (obj) =>
 
 export const recoverPass = ({ token, password }) => {
   return new Promise((resolve, reject) => {
-    axiosClient
+    axiosInstance
       .post(
         "/auth/reset-password",
         {
@@ -119,7 +119,6 @@ export const recoverPass = ({ token, password }) => {
   });
 };
 
-
 export const checkAuth = (obj) => {
   new Promise((resolve, reject) => {
     console.log("Axios", obj.token);
@@ -129,7 +128,7 @@ export const checkAuth = (obj) => {
       },
     };
 
-    axiosClient
+    axiosInstance
       .post("/auth/check-auth", null, config)
       .then((res) => {
         console.log("Login ok:", res);

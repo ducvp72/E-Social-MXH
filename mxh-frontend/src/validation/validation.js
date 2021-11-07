@@ -1,6 +1,8 @@
 import * as yup from "yup";
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+const fb =
+  /(?:https?:\/\/)?(?:www\.)?(mbasic.facebook|m\.facebook|facebook|fb)\.(com|me)\/(?:(?:\w\.)*#!\/)?(?:pages\/)?(?:[\w\-\.]*\/)*([\w\-\.]*)/;
 export const userSignUpSchema = yup.object().shape({
   fullname: yup
     .string()
@@ -43,19 +45,16 @@ export const userLogin = yup.object().shape({
 
 export const changeInfomation = yup.object().shape({
   fullname: yup
-  .string()
-  .required("Không được bỏ trống tên !")
-  .min(5, "Tên từ 5 kí tự trở lên !")
-  .max(30, "Tên phải dưới 30 kí tự !"),
-  namedisplay: yup
     .string()
-    .required("Tên người dùng không được bỏ trống !")
-    .min(6, "Tên tài khoản tối thiểu 6 kí tự !")
-    .max(16, "Tên tài khoản tối đa 16 kí tự !"),
-  email: yup.string().email().required("Trường email không được bỏ trống !"),
+    .required("Không được bỏ trống tên !")
+    .min(5, "Tên từ 5 kí tự trở lên !")
+    .max(30, "Tên phải dưới 30 kí tự !"),
+  facebook: yup
+    .string()
+    .matches(fb, "Facebook likely https://www.facebook.com/page/"),
+  story: yup.string().min(0).max(150, "Tên phải dưới 150 kí tự !"),
   phone: yup
     .string()
-    .required("Số điện thoại đang trống !")
     .matches(phoneRegExp, "Số điện thoại không đúng định dạng !"),
   gender: yup
     .string()
