@@ -1,8 +1,6 @@
-// Bat buoc khoi tao state ban dau ex:useState({..})
 import axios from "axios";
-import axiosInstance from "./../helper/axiosClient";
-import { userApi } from "./../helper/api/userApi";
 import { Cookies } from "react-cookie";
+import { userApi } from "./../axiosApi/api/userApi";
 
 const initialState = {
   data: null,
@@ -71,7 +69,7 @@ export const actLogin = (user, history) => {
   };
 };
 
-export const actLogout = (token, history) => {
+export const actLogout = (token) => {
   return (dispatch) => {
     axios({
       url: `https://mxhld.herokuapp.com/v1/auth/logout`,
@@ -82,7 +80,6 @@ export const actLogout = (token, history) => {
         dispatch({
           type: "LOG_OUT",
         });
-        history.replace("/signin");
       })
       .catch((err) => {
         console.log(err);
@@ -95,7 +92,7 @@ export const actUpdateUser = (token) => {
     userApi
       .getAuthentication(token)
       .then((result) => {
-        console.log("Get Data by Id", result.data);
+        //get data by authentication to update state User in redux stored
         dispatch({
           type: "UPDATE_USER",
           payload: result.data,

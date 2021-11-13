@@ -1,53 +1,34 @@
-import React, { useState, useEffect } from "react";
-import * as ROUTES from "../../routes/routes";
-import Card from "@mui/material/Card";
+import React, { useEffect, useState } from "react";
 import "./topbar.css";
-import { NavLink } from "react-router-dom";
-import { HOME } from "../../routes/routes";
-import { makeStyles } from "@mui/styles";
+import { NavLink, useParams } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { LogOut } from "../../context/actions/register";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { actLogout } from "./../../reducers/authReducer";
-import Loading from "./../../pages/LoadingPage/index";
+import Loading from "./../../containers/LoadingPage/index";
+import { SkeletonAvatarTopbar } from "../../skeletons/Skeletons";
 export const Topbar = () => {
   const [showNotification, setShowNotification] = useState(false);
-  const [login, setLogin] = useState(true);
-  const [cookies, setCookie, removeCookie] = useCookies(["tokens"]);
+  const [skt, setSkt] = useState(true);
+  const [cookies, setCookies, removeCookie] = useCookies(["auth"]);
   const [loading, setLoading] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.data);
-  // if (currentUser) {
-  //   console.log("Current", currentUser.tokens.refresh.token);
-  //   return;
-  // } else {
-  //   console.log(null);
-  // }
-  const logout = () => {
-    setLogin(false);
-    console.log(login);
-  };
 
-  const handlelogin = () => {
-    setLogin(true);
-    console.log(login);
-  };
+  useEffect(() => {
+    setTimeout(() => {
+      if (currentUser) setSkt(false);
+    }, 1500);
+  }, [currentUser]);
 
   const handlelogout = () => {
     try {
-      // await LogOut(cookies.tokens.refresh.token);
-      // removeCookie("tokens");
-      // removeCookie("userId");
-      // // removeCookie("isVerify");
-      // history.push(ROUTES.SIGNIN);
-      setLoading(true);
-      console.log(currentUser.tokens);
-      dispatch(actLogout(cookies.tokens.refresh.token, history));
-      removeCookie("tokens");
-      // removeCookie("userId");
-      removeCookie("isVerify");
+      // setLoading(true);
+      // console.log(currentUser.tokens);
+      dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
+      removeCookie("auth", { path: "/" });
+      // removeCookie("role");
     } catch (err) {
       console.log(err);
     }
@@ -62,7 +43,7 @@ export const Topbar = () => {
           <nav className="flex justify-between h-full">
             <div className="text-gray-700 text-center flex items-center align-items cursor-pointer">
               <h1 className="flex justify-center w-full font-avatar text-xl">
-                <NavLink to={ROUTES.HOME} arial-label="Vn-Social logo">
+                <NavLink to={`/user/home`} arial-label="Vn-Social logo">
                   <p className=" font-avatar">Vn-Social</p>
                 </NavLink>
               </h1>
@@ -87,9 +68,8 @@ export const Topbar = () => {
               </div>
             </div>
             <div className="text-gray-700 text-center flex items-center align-items">
-              {/* {login ? ( */}
               <>
-                <NavLink to={ROUTES.HOME} activeClassName="text-red-500">
+                <NavLink to={`/user/home`} activeClassName="text-red-500">
                   <svg
                     className="w-8 mr-6 cursor-pointer"
                     xmlns="http://www.w3.org/2000/svg"
@@ -106,28 +86,32 @@ export const Topbar = () => {
                   </svg>
                 </NavLink>
                 <div className="relative">
-                  <NavLink to={ROUTES.INBOX} activeClassName="text-red-500">
-                    <svg
-                      className="w-8 mr-4 cursor-pointer"
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="25"
-                      viewBox="0 0 48 48"
-                      width="22"
-                      fill="none"
-                      stroke="currentColor"
+                  {currentUser && (
+                    <NavLink
+                      to={`/user/inbox/${currentUser.fullname}`}
+                      activeClassName="text-red-500"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1}
-                        fill="currentColor"
-                        d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"
-                      />
-                    </svg>
-                  </NavLink>
+                      <svg
+                        className="w-8 mr-4 cursor-pointer"
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="25"
+                        viewBox="0 0 48 48"
+                        width="22"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1}
+                          fill="currentColor"
+                          d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"
+                        />
+                      </svg>
+                    </NavLink>
+                  )}
                 </div>
                 <div className="relative">
-                  {/* <NavLink to={ROUTES.INBOX} activeClassName="text-red-500"> */}
                   <svg
                     className="w-8 mr-4 cursor-pointer"
                     xmlns="http://www.w3.org/2000/svg"
@@ -144,8 +128,8 @@ export const Topbar = () => {
                       gradientUnits="userSpaceOnUse"
                       spreadMethod="reflect"
                     >
-                      <stop offset="0" stop-color="#1a6dff" />
-                      <stop offset="1" stop-color="#c822ff" />
+                      <stop offset="0" stopColor="#1a6dff" />
+                      <stop offset="1" stopColor="#c822ff" />
                     </linearGradient>
                     <path
                       fill="url(#KJ7ka9GQp0CHqT_2YsWMsa)"
@@ -160,8 +144,8 @@ export const Topbar = () => {
                       gradientUnits="userSpaceOnUse"
                       spreadMethod="reflect"
                     >
-                      <stop offset="0" stop-color="#1a6dff" />
-                      <stop offset="1" stop-color="#c822ff" />
+                      <stop offset="0" stopColor="#1a6dff" />
+                      <stop offset="1" stopColor="#c822ff" />
                     </linearGradient>
                     <path
                       fill="url(#KJ7ka9GQp0CHqT_2YsWMsb)"
@@ -176,8 +160,8 @@ export const Topbar = () => {
                       gradientUnits="userSpaceOnUse"
                       spreadMethod="reflect"
                     >
-                      <stop offset="0" stop-color="#6dc7ff" />
-                      <stop offset="1" stop-color="#e6abff" />
+                      <stop offset="0" stopColor="#6dc7ff" />
+                      <stop offset="1" stopColor="#e6abff" />
                     </linearGradient>
                     <path
                       fill="url(#KJ7ka9GQp0CHqT_2YsWMsc)"
@@ -249,32 +233,38 @@ export const Topbar = () => {
                   // <div className="flex items-center cursor-pointer">
                   <div className="dropdown">
                     {currentUser && (
-                      <img
-                        className="rounded-full h-8 w-8 flex"
-                        src={`https://mxhld.herokuapp.com/v1/image/${currentUser.avatar}`}
-                        alt="userimg"
-                      />
-                    )}
+                      <div>
+                        {skt ? (
+                          <SkeletonAvatarTopbar />
+                        ) : (
+                          <img
+                            className="rounded-full h-8 w-8 flex"
+                            src={`https://mxhld.herokuapp.com/v1/image/${currentUser.avatar}`}
+                            alt="userimg"
+                          />
+                        )}
 
-                    <div className="dropdown-content">
-                      <NavLink
-                        to={ROUTES.PROFILE}
-                        activeClassName="text-red-500"
-                      >
-                        <span className="">Trang cá nhân</span>
-                      </NavLink>
+                        <div className="dropdown-content">
+                          <NavLink
+                            to={`/user/${currentUser.fullname}`}
+                            activeClassName="text-red-500"
+                          >
+                            <span className="">Trang cá nhân</span>
+                          </NavLink>
 
-                      <NavLink to={ROUTES.ACCOUNT}>
-                        <span className="">Cài đặt</span>
-                      </NavLink>
+                          <NavLink to={`/user/setting/${currentUser.fullname}`}>
+                            <span className="">Cài đặt</span>
+                          </NavLink>
 
-                      <div className="w-100 bg-gray-300 h-0.5"></div>
-                      <div className="">
-                        <span onClick={() => handlelogout()} className="">
-                          Đăng xuất
-                        </span>
+                          <div className="w-100 bg-gray-300 h-0.5"></div>
+                          <div className="">
+                            <span onClick={() => handlelogout()} className="">
+                              Đăng xuất
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 )}
               </>

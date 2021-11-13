@@ -1,16 +1,14 @@
-import React, { memo } from "react";
+import React from "react";
 import { Suggestions } from "./suggestions";
-import { User } from './user';
-import { whyDidYouRender } from '@welldone-software/why-did-you-render';
+import { User } from "./user";
 
 export const Sidebar = () => {
   return (
     <div className="">
       <div className="fixed pt-16 z-10">
-        <User/>
-        <Suggestions/>
+        <User />
+        <Suggestions />
       </div>
     </div>
   );
 };
-

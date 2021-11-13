@@ -1,7 +1,5 @@
-import { Error } from "@mui/icons-material";
-import axiosInstance from "../../helper/axiosClient";
-import { axios } from "axios";
 import { useCookies } from "react-cookie";
+import axiosInstance from "./../../axiosApi/apiFrame/axiosClient";
 
 export const register = (obj) =>
   new Promise((resolve, reject) => {

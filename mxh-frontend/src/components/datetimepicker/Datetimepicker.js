@@ -1,9 +1,6 @@
 import React, { useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
 const Datetimepicker = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
   return (
     <div>
       <label className="block mb-2 font-bold">University </label>

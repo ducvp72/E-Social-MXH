@@ -40,13 +40,13 @@ const comment = [
 export const Post = ({ setToggle, item }) => {
   return (
     <div className="rounded col-span-4 border bg-white border-gray-primary mb-10 md:mr-16 sm:mr-1 lg:mr-0">
-      <Header/>
-      <Caption/>
+      <Header />
+      <Caption item={item} />
       <Image src="/assets/person/lam5.png" />
-      <Action/>
-      <Footer item={item}/>
+      <Action />
+      <Footer item={item} />
       <Comment item={item} setToggle={setToggle} />
       <Addcomments />
-  </div>
+    </div>
   );
 };

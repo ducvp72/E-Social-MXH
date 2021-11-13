@@ -4,9 +4,7 @@ import Addcomments from "./../post/addcomments";
 import { Action } from "../post/action";
 import { Footer } from "../post/footer";
 import Caption from "./../post/caption";
-import { makeStyles } from "@mui/styles";
 import { v4 as uuidv4 } from "uuid";
-import { Comment } from "./../post/comment";
 import "./postshow.css";
 
 const comment = [
@@ -39,11 +37,9 @@ const comment = [
   },
 ];
 const Postshow = (props) => {
-  const { toggle, setToggle } = props;
+  const { toggle, setToggle, post } = props;
 
-  useEffect(() => {
-    console.log(toggle);
-  }, [toggle]);
+  // useEffect(() => {}, [toggle]);
   return (
     <>
       {toggle.isShow && (
@@ -98,8 +94,8 @@ const Postshow = (props) => {
                   style={{ height: "26rem" }}
                 >
                   <Caption item={toggle.postData} />
-                  {comment.map((cmt) => {
-                    return <Footer key={uuidv4()} cmt={cmt} />;
+                  {post.map((cmt) => {
+                    return <Footer key={post.id} cmt={cmt} />;
                   })}
                 </div>
                 <hr className="mt-2" />

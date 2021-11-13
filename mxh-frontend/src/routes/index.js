@@ -1,110 +1,99 @@
 import React from "react";
-
-import Home from "./../pages/HomePage/home/Home";
-import Profile from "../pages/HomePage/profile/profile";
-import NotFound from "./../pages/AuthPage/error/Error";
-import Inbox from "../pages/HomePage/inbox/Inbox";
-import Account from "./../pages/HomePage/account/account";
-import Admin from "./../pages/HomePage/admin/admin";
-import Login from "./../pages/HomePage/home/Login";
-
-import { HOME } from "./routes";
-import { SIGNIN } from "./routes";
-import { SIGNUP } from "./routes";
-import { FORGOT_PASSWORD } from "./routes";
-import { PROFILE } from "./routes";
-import { NOT_FOUND } from "./routes";
-import { INBOX } from "./routes";
-import { ACCOUNT } from "./routes";
-import { ADMIN } from "./routes";
-import { CHANGE_PASSWORD } from "./routes";
-import { VERIFYING_EMAIL } from "./routes";
-import { VERIFYING_SUCCESS } from "./routes";
-import Userdasboard from "../pages/HomePage/admin/userdashboard/userdasboard";
-import Postdashboard from "./../pages/HomePage/admin/postdashboard/postdashboard";
-import Groupchat from "./../pages/HomePage/admin/groupchat/groupchat";
-import Adminpassword from "./../pages/HomePage/admin/adminpassword/adminpassword";
-import Welcomeadmin from "./../pages/HomePage/admin/welcomeadmin";
-import { NewPassword } from "./../pages/AuthPage/forgot/newPassword";
-import EmailVerify from "./../pages/EmailVerify";
-import SuccesVerify from "./../pages/SuccesVerify";
-import Loading from "../pages/LoadingPage";
-
+import Home from "./../containers/HomePage/home/Home";
+import Profile from "../containers/AccountPage/profile/profile";
+import NotFound from "../containers/error/Error";
+import Login from "./../containers/HomePage/home/Login";
+import Adminpassword from "./../containers/AdminPage/adminpassword/adminpassword";
+import Loading from "./../containers/LoadingPage/index";
+import EmailVerify from "./../containers/Verifying/EmailVerify";
+import SuccesVerify from "./../containers/Verifying/SuccesVerify";
+import Welcomeadmin from "./../containers/AdminPage/adminControler/welcomeadmin";
+import Postdashboard from "./../containers/AdminPage/postdashboard/postdashboard";
+import { NewPassword } from "./../containers/AuthPage/forgot/newPassword";
+import Userdasboard from "./../containers/AdminPage/userdashboard/userdasboard";
+import * as ROUTES from "../routes/instant/routes";
 export const routeHomePage = [
   {
     exact: true,
-    path: HOME,
+    path: ROUTES.HOME,
     component: Home,
   },
   {
     exact: false,
-    path: PROFILE,
+    path: `/profile/:username`,
     component: Profile,
   },
   {
     exact: false,
-    path: INBOX,
-    component: Inbox,
+    path: `/:username/:postID`,
   },
   {
     exact: false,
-    path: ACCOUNT,
-    component: Account,
+    path: ROUTES.NOT_FOUND,
+    component: NotFound,
+  },
+];
+
+export const routeAcountPage = [
+  {
+    exact: false,
+    path: `/profile/:username`,
+    component: Profile,
+  },
+  {
+    exact: false,
+    path: `/:username/:postID`,
+    component: Loading,
   },
 ];
 
 export const routeAuthPage = [
   {
     exact: false,
-    path: SIGNUP,
+    path: ROUTES.SIGNUP,
     component: Login,
   },
   {
     exact: false,
-    path: SIGNIN,
+    path: ROUTES.SIGNIN,
     component: Login,
   },
   {
     exact: false,
-    path: FORGOT_PASSWORD,
+    path: ROUTES.FORGOT_PASSWORD,
     component: Login,
   },
   {
     exact: false,
-    path: CHANGE_PASSWORD,
+    path: ROUTES.CHANGE_PASSWORD,
     component: NewPassword,
   },
   {
     exact: false,
-    path: ADMIN,
-    component: Admin,
-  },
-  {
-    exact: false,
-    path: VERIFYING_EMAIL,
+    path: ROUTES.VERIFYING_EMAIL,
     component: EmailVerify,
   },
   {
     exact: false,
-    path: VERIFYING_SUCCESS,
+    path: ROUTES.VERIFYING_SUCCESS,
     component: SuccesVerify,
   },
-  {
-    exact: false,
-    path: "/testpage",
-    component: Loading,
-  },
-  {
-    exact: false,
-    path: NOT_FOUND,
-    component: NotFound,
-  },
+  // {
+  //   exact: false,
+  //   path: `/profile/:username`,
+  //   component: Profile,
+  // },
+  // {
+  //   exact: false,
+  //   path: "/testpage",
+  //   component: Loading,
+  // },
 ];
 
 export const routeManage = [
   {
     exact: true,
-    path: "/admin",
+    path: "/",
     component: Welcomeadmin,
   },
   {
@@ -116,11 +105,6 @@ export const routeManage = [
     exact: false,
     path: "/admin/post",
     component: Postdashboard,
-  },
-  {
-    exact: false,
-    path: "/admin/groupchat",
-    component: Groupchat,
   },
   {
     exact: false,

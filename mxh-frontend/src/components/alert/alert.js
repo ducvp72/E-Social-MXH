@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Alert from "@mui/material/Alert";
 
 export const ErrorAlert = ({ message }) => {
@@ -11,8 +11,7 @@ export const ErrorAlert = ({ message }) => {
   );
 };
 
-export const SuccessAlert = (props) => {
-  const {} = props;
+export const SuccessAlert = () => {
   return (
     <div>
       <Alert variant="filled" severity="success">

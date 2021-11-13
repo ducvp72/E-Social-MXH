@@ -2,16 +2,12 @@ import React, { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import Picker from "emoji-picker-react";
 import "./postshow.css";
-import { Opacity } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DialogTitle from "@mui/material/DialogTitle";
-import Typography from "@mui/material/Typography";
 import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import CircularStatic from "./../../pages/LoadingPage/upfileLoading";
+import CircularStatic from "./../../containers/LoadingPage/upfileLoading";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {

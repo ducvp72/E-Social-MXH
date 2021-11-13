@@ -1,6 +1,6 @@
-import { RouterSharp } from "@mui/icons-material";
 import React from "react";
-import * as ROUTES from "../../routes/routes";
+import * as ROUTES from "../../routes/instant/routes";
+
 import { Link } from "react-router-dom";
 
 export const Header = () => {
@@ -15,17 +15,17 @@ export const Header = () => {
               alt=""
             />
           </Link>
-            <div>
-              <Link to={ROUTES.PROFILE}>
-                <p className="font-medium text-base">username</p>
-              </Link>
-              <p
-                className="text-gray-base uppercase  cursor-pointer"
-                style={{ fontSize: "0.7rem", lineHeight: "1rem" }}
-              >
-                5 days ago
-              </p>
-            </div>
+          <div>
+            <Link to={ROUTES.PROFILE}>
+              <p className="font-medium text-base">username</p>
+            </Link>
+            <p
+              className="text-gray-base uppercase  cursor-pointer"
+              style={{ fontSize: "0.7rem", lineHeight: "1rem" }}
+            >
+              5 days ago
+            </p>
+          </div>
         </div>
       </div>
       <div className=" flex justify-end mr-2 items-center">
