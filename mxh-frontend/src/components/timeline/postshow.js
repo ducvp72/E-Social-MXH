@@ -6,36 +6,6 @@ import { Footer } from "../post/footer";
 import Caption from "./../post/caption";
 import { v4 as uuidv4 } from "uuid";
 import "./postshow.css";
-
-const comment = [
-  {
-    cmts: "Qua pro",
-  },
-  {
-    cmts: "Han quoc nha",
-  },
-  {
-    cmts: "Ban 10d",
-  },
-  {
-    cmts: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam semper diam at erat pulvinar, at pulvinar felis blandit. Vestibulum volutpat tellus diam, consequat gravida libero rhoncus ut. Maecenas imperdiet felis nisi, fringilla luctus felis hendrerit sit amet. Pellentesque interdum, nisl nec interdum maximus, augue diam porttitor lorem, et sollicitudin felis neque sit amet",
-  },
-  {
-    cmts: "Ngầu lòi",
-  },
-  {
-    cmts: "Devops",
-  },
-  {
-    cmts: "LamPC",
-  },
-  {
-    cmts: "gắt",
-  },
-  {
-    cmts: "dam!!!!!!!!!!!!!!",
-  },
-];
 const Postshow = (props) => {
   const { toggle, setToggle, post } = props;
 
