@@ -1,6 +1,7 @@
 import React from "react";
 
-const UserPost = () => {
+const UserPost = (props) => {
+  const { setToggle } = props;
   return (
     <div>
       <div className="shadow-2xl cursor-pointer rounded-sm  border-white relative group">
@@ -11,7 +12,10 @@ const UserPost = () => {
         />
         <div className=" absolute top-0 w-full h-full hidden group-hover:block transition delay-150 duration-500 ease-in-out ">
           <div className="bg-gray-900 h-full w-full top-0 left-0 opacity-50 absolute z-10 " />
-          <div className=" absolute z-20 flex justify-center items-center space-x-2 md:space-x-7 lg:space-x-7 w-full h-full">
+          <div
+            onClick={() => setToggle({ isShow: true, postData: {} })}
+            className=" absolute z-20 flex justify-center items-center space-x-2 md:space-x-7 lg:space-x-7 w-full h-full"
+          >
             <div className="flex space-x-1">
               <span>
                 <svg

@@ -91,7 +91,7 @@ export const Timeline = () => {
     }
     setPage(page + 1);
   };
-  // console.log("PostApi...", post);
+  console.log("PostApi...", post);
   return (
     <div className="md:col-span-2 sm:col-start-1 sm:col-end-7 md:py-16 md:px-0 lg:px-12 xl:p-16  py-16">
       <Postshow post={post} setToggle={setToggle} toggle={toggle} />

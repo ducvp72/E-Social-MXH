@@ -1,7 +1,5 @@
 import React from "react";
-import * as ROUTES from "../routes/instant/routes";
 import Login from "./../containers/HomePage/home/Login";
-
 import {
   BrowserRouter as Router,
   Switch,
@@ -13,7 +11,6 @@ import Profile from "./../containers/AccountPage/profile/profile";
 import DefaultLayout from "../layout/defaultLayout";
 import NotFound from "./../containers/error/Error";
 import AdminAuthRoute from "./helper/AdminAuthRoute";
-import Admin from "./../containers/AdminPage/adminControler/admin";
 import UserAuthRoute from "./helper/userAuthRoute";
 import SuccesVerify from "./../containers/Verifying/SuccesVerify";
 import EmailVerify from "./../containers/Verifying/EmailVerify";
@@ -23,6 +20,7 @@ import { NewPassword } from "./../containers/AuthPage/forgot/newPassword";
 import CheckActive from "./helper/checkActive";
 import OtherProfile from "./../containers/AccountPage/otherProfile/otherProfile";
 import QuestAuthRoute from "./helper/QuestAuthRoute";
+import AdminController from "./../containers/AdminPage/adminControler/adminController";
 
 const Routes = () => {
   return (
@@ -56,7 +54,7 @@ const Routes = () => {
         </QuestAuthRoute>
         <AdminAuthRoute path="/admin">
           <Switch>
-            <Route path="/admin" component={Admin} />
+            <Route path="/admin" component={AdminController} />
             <Route path="*" exact>
               <Redirect to="/404" />
             </Route>

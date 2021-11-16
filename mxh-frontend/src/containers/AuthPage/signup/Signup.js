@@ -18,7 +18,6 @@ import moment from "moment";
 import { useHistory } from "react-router-dom";
 import { userSignUpSchema } from "./../../../validation/validation";
 import { ErrorAlert } from "./../../../components/alert/alert";
-import * as ROUTES from "../../../routes/instant/routes";
 import Swal from "sweetalert2";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { useDispatch } from "react-redux";

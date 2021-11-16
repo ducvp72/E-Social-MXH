@@ -1,9 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { Topbar } from "../../../components/topbar/topbar";
 import { Helmet } from "react-helmet-async";
 import "antd/dist/antd.css";
-
 import {
   BrowserRouter as Router,
   Route,
@@ -23,7 +21,6 @@ import {
   WechatOutlined,
   LockOutlined,
 } from "@ant-design/icons";
-import { routeManage } from "./../../../routes/index";
 
 const { Header, Sider, Content } = Layout;
 
@@ -140,15 +137,7 @@ const Admin = () => {
                 minHeight: 280,
               }}
             >
-              <Switch>
-                {/* <Route path="/admin/user" component={Userdasboard} />
-                <Route path="/admin/post" component={Postdashboard} />
-                <Route path="/admin/groupchat" component={Groupchat} />
-                <Route
-                  patch="/admin/change-password"
-                  component={Adminpassword}
-                /> */}
-                {/* {showTabPanel(routeManage)} */}
+              {/* <Switch>
                 {routeManage.map((item, index) => {
                   return (
                     <Route
@@ -159,7 +148,7 @@ const Admin = () => {
                     />
                   );
                 })}
-              </Switch>
+              </Switch> */}
             </Content>
           </Layout>
         </Layout>

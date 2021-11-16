@@ -1,15 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
+import Addcomments from "./../components/post/addcomments";
+import { Action } from "./../components/post/action";
 import { Link } from "react-router-dom";
-import Addcomments from "./../post/addcomments";
-import { Action } from "../post/action";
-import { Footer } from "../post/footer";
-import Caption from "./../post/caption";
-import { v4 as uuidv4 } from "uuid";
-import "./postshow.css";
-const Postshow = (props) => {
+const CarouselElement = (props) => {
   const { toggle, setToggle, post } = props;
-
-  // useEffect(() => {}, [toggle]);
   return (
     <>
       {toggle.isShow && (
@@ -25,10 +19,27 @@ const Postshow = (props) => {
                 onClick={() => setToggle({ ...toggle, isShow: false })}
               ></i>
             </div>
+
+            <div className=" absolute left-5 top-1/2">
+              <i
+                onClick={() => {
+                  alert("left");
+                }}
+                className="fas fa-3x fa-chevron-circle-left text-white cursor-pointer"
+              />
+            </div>
+            <div className=" absolute right-5 top-1/2 bg-none">
+              <i
+                onClick={() => {
+                  alert("right");
+                }}
+                className="fas fa-3x fa-chevron-circle-right text-white cursor-pointer"
+              />
+            </div>
           </div>
 
           <div
-            className=" shadow-xl bg-white fixed z-50 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+            className=" rounded-md shadow-xl bg-white fixed z-50 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
             style={{ width: "900px", height: "650px" }}
           >
             <div className="grid grid-cols-3 h-full">
@@ -83,4 +94,4 @@ const Postshow = (props) => {
   );
 };
 
-export default Postshow;
+export default CarouselElement;

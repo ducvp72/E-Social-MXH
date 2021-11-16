@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { actLogout } from "./../../../reducers/authReducer";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import ListUserSearch from "./ListUserSearch";
+import LoginToContinute from "../../../components/alert/LoginToContinute";
 const Home = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["auth", "tempTokens"]);
   const currentUser = useSelector((state) => state.auth.data);
@@ -43,6 +44,7 @@ const Home = () => {
       <Helmet>
         <title>Vn-Social</title>
       </Helmet>
+      <LoginToContinute />
       <div className="bg-white overflow-x-auto">
         <div className="bg-white block" style={{ marginTop: "2rem" }}></div>
         <div className=" bg-white grid grid-cols-1 gap-0 md:grid-cols-3 md:gap-0 lg:gap-5 xl:grid-cols-3 xl:gap-4  mx-auto max-w-screen-lg ">

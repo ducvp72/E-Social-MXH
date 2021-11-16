@@ -63,6 +63,19 @@ const Account = () => {
   );
   const [selectedImage, setSelectedImage] = useState(null);
   const [err, setErr] = useState(null);
+
+  const [errDob, setErrDob] = useState(false);
+  const [hidden, setHidden] = useState({
+    oldpassword: false,
+    password: false,
+    confirm: false,
+  });
+  const [showEye, setShowEye] = useState({
+    oldpassword: false,
+    password: false,
+    confirm: false,
+  });
+
   let { userName } = useParams();
   console.log("Current user here", currentUser?.gender.toString());
   useEffect(() => {
@@ -84,18 +97,6 @@ const Account = () => {
         setSkt(false);
       }, 1500);
   }, [currentUser]);
-
-  const [errDob, setErrDob] = useState(false);
-  const [hidden, setHidden] = useState({
-    oldpassword: false,
-    password: false,
-    confirm: false,
-  });
-  const [showEye, setShowEye] = useState({
-    oldpassword: false,
-    password: false,
-    confirm: false,
-  });
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

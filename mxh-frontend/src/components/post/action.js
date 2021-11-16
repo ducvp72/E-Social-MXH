@@ -4,13 +4,12 @@ import { useState } from "react";
 export const Action = ({ docId, totalLikes, likedPhoto, handleFocus }) => {
   const [toggleLiked, setToggleLiked] = useState(likedPhoto);
   const [likes, setLikes] = useState(totalLikes);
-  
+
   const handleToggleLiked = async () => {
     setToggleLiked((toggleLiked) => !toggleLiked);
 
     setLikes((likes) => (toggleLiked ? likes - 1 : likes + 1));
   };
-
   return (
     <>
       <div className="flex justify-between p-4">
@@ -27,7 +26,7 @@ export const Action = ({ docId, totalLikes, likedPhoto, handleFocus }) => {
             viewBox="0 0 24 24"
             stroke="currentColor"
             tabIndex={0}
-            // className="w-8 mr-4 select-none cursor-pointer focus:outline-none 
+            // className="w-8 mr-4 select-none cursor-pointer focus:outline-none
             //   fill-red text-red"
             className="w-8 mr-4 cursor-pointer border-none focus:outline-none fill-red text-red-primary"
           >
@@ -62,9 +61,7 @@ export const Action = ({ docId, totalLikes, likedPhoto, handleFocus }) => {
         </div>
       </div>
       <div className="p-4 py-0">
-        <p className="font-bold">
-          1 like
-        </p>
+        <p className="font-bold">1 like</p>
       </div>
     </>
   );

@@ -39,10 +39,10 @@ export const userLogin = yup.object().shape({
   email: yup.string().email().required("Trường email không được bỏ trống !"),
   password: yup
     .string()
-    .required("Mật khẩu không được bỏ trống !")
+    .required("Password required !")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
-      "Mật khẩu phải từ 8 kí tự trở lên, bao gồm ít nhất 1 chữ hoa và 1 chữ thường"
+      "Password must more than 8 characters, included at least 1 Upcase and 1 Lowcase"
     ),
 });
 

@@ -9,7 +9,10 @@ import { userApi } from "./../../../axiosApi/api/userApi";
 import { NavLink, useParams } from "react-router-dom";
 import UserPost from "./userPost";
 import { SkeletonProfile } from "../../../skeletons/Skeletons";
-
+import Postshow from "./../../../components/timeline/postshow";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+import CarouselElement from "./../../../Carousel/index";
 const Profile = () => {
   const [following, setFollowing] = useState(false);
   const [action, setAction] = useState(false);
@@ -18,6 +21,13 @@ const Profile = () => {
   let { userName } = useParams();
   const [skt, setSkt] = useState(true);
   const location = useLocation();
+  const [toggle, setToggle] = useState({ isShow: false, postData: {} });
+
+  useEffect(() => {
+    document.title = "Login to Vn-Social";
+    getSummary();
+  }, []);
+
   const getSummary = async () => {
     console.log("userSummary day ne");
     try {
@@ -28,10 +38,6 @@ const Profile = () => {
       console.log(error.response.data);
     }
   };
-  useEffect(() => {
-    document.title = "Login to Vn-Social";
-    getSummary();
-  }, [currentUser?.id]);
 
   useEffect(() => {
     if (currentUser)
@@ -86,13 +92,11 @@ const Profile = () => {
           </div>
         </div>
       )}
-
+      {/* <Postshow setToggle={setToggle} toggle={toggle} /> */}
+      <CarouselElement setToggle={setToggle} toggle={toggle} />
       <div className="py-2 w-full xl:w-4/6 lg:w-4/6 md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2">
         <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
-          <UserPost />
-          <UserPost />
-          <UserPost />
-          <UserPost />
+          <UserPost setToggle={setToggle} />
         </div>
       </div>
     </div>

@@ -8,14 +8,14 @@ const ListUserSearch = () => {
       <div className="flex">
         <div className="grid grid-cols-1 w-full ">
           <SkeletonUserThumbnail />
-          {/* <UserThumbnail />
           <UserThumbnail />
           <UserThumbnail />
           <UserThumbnail />
           <UserThumbnail />
           <UserThumbnail />
           <UserThumbnail />
-          <UserThumbnail /> */}
+          <UserThumbnail />
+          <UserThumbnail />
         </div>
       </div>
     </div>

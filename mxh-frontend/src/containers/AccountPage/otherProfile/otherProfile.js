@@ -35,7 +35,6 @@ const OtherProfile = () => {
 
   useEffect(() => {
     document.title = "Login to Vn-Social";
-    // location.pathname = `/profile/${currentUser?.fullname}`;
   }, []);
   return (
     <div>

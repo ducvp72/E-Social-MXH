@@ -24,7 +24,7 @@ const UserThumbnail = () => {
         </div>
         <div className="flex font-boldtext-xs space-x-0 mr-3">
           <div className="h-8 w-8 flex items-center justify-center border rounded-full bg-gray-200 border-gray-300  cursor-pointer hover:bg-gray-300">
-            <i class=" fab fa-lg fa-facebook-messenger text-black"></i>
+            <i className=" fab fa-lg fa-facebook-messenger text-black"></i>
             {/* <i class="fas fa-user-plus"></i> */}
           </div>
         </div>

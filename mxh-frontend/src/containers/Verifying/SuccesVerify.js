@@ -3,7 +3,6 @@ import { Helmet } from "react-helmet-async";
 import { useCookies } from "react-cookie";
 import { useHistory, useLocation } from "react-router-dom";
 import { confirmMail } from "../../context/actions/register";
-import * as ROUTES from "../../routes/instant/routes";
 import Alert from "@mui/material/Alert";
 import { toast, ToastContainer, Zoom, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
