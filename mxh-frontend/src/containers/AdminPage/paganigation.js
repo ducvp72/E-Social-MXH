@@ -13,11 +13,12 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import InfoIcon from "@mui/icons-material/Info";
 import SearchIcon from "@mui/icons-material/Search";
-import { useStyles } from "../paganigationStyle";
+import { useStyles } from "./paganigationStyle";
+import ReadMoreOutlinedIcon from "@mui/icons-material/ReadMoreOutlined";
 import Swal from "sweetalert2";
-import EditPost from "./editPost";
+import EditUser from "./userdashboard/editUser";
 
-export const PostDB = () => {
+export const Paganigation = () => {
   const [pageSize, setPageSize] = useState(5);
   const [openDialog, setOpenDialog] = useState(false);
   const classes = useStyles();
@@ -42,7 +43,7 @@ export const PostDB = () => {
 
   return (
     <>
-      <EditPost openDialog={openDialog} onClose={onClose} />
+      <EditUser openDialog={openDialog} onClose={onClose} />
       <Container maxWidth="xl" style={{ padding: "1rem" }}>
         {/* Top and Search */}
         <Box>
@@ -83,16 +84,6 @@ export const PostDB = () => {
           <DataGrid
             columns={[
               {
-                field: "id",
-                headerName: "ID",
-                width: 120,
-                headerAlign: "center",
-                align: "center",
-                renderCell: (params) => {
-                  return <p>1</p>;
-                },
-              },
-              {
                 field: "avatar",
                 headerName: "Avatar",
                 width: 120,
@@ -117,8 +108,8 @@ export const PostDB = () => {
                 align: "center",
               },
               {
-                field: "Like",
-                headerName: "Like",
+                field: "gender",
+                headerName: "Gender",
                 minWidth: 60,
                 flex: 1,
                 headerAlign: "center",
@@ -128,19 +119,8 @@ export const PostDB = () => {
                 // },
               },
               {
-                field: "commnent",
-                headerName: "Comments",
-                minWidth: 60,
-                flex: 1,
-                headerAlign: "center",
-                align: "center",
-                // renderCell: (params) => {
-                //   return <>{params.row.price + "$"}</>;
-                // },
-              },
-              {
-                field: "DateCreate",
-                headerName: "Date Create",
+                field: "dob",
+                headerName: "Dob",
                 minWidth: 160,
                 flex: 1,
                 headerAlign: "center",
@@ -195,71 +175,71 @@ export const PostDB = () => {
                 id: 1,
                 avatar: "/assets/image/defaultAvatar.png",
                 username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
+                dob: "7/2/2000",
+                gender: "Male",
               },
               {
                 id: 10,
                 avatar: "/assets/person/duc.jpeg",
                 username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
+                dob: "7/2/2000",
+                gender: "Male",
               },
               {
                 id: 11,
                 avatar: "1",
                 username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
+                dob: "7/2/2000",
+                gender: "Male",
               },
               {
                 id: 12,
                 avatar: "1",
                 username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
+                dob: "7/2/2000",
+                gender: "Male",
               },
               {
                 id: 3,
                 avatar: "1",
                 username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
+                dob: "7/2/2000",
+                gender: "Male",
               },
               {
                 id: 4,
                 avatar: "1",
                 username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
+                dob: "7/2/2000",
+                gender: "Male",
               },
               {
                 id: 5,
                 avatar: "1",
                 username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
+                dob: "7/2/2000",
+                gender: "Male",
               },
               {
                 id: 6,
                 avatar: "1",
                 username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
+                dob: "7/2/2000",
+                gender: "Male",
               },
               {
                 id: 7,
                 avatar: "1",
                 username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
+                dob: "7/2/2000",
+                gender: "Male",
               },
               {
                 id: 8,
                 avatar: "1",
                 username: "Duc2",
-                DateCreate: "7/2/2000",
-                Like: "Male",
+                dob: "7/2/2000",
+                gender: "Male",
               },
             ]}
             onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}

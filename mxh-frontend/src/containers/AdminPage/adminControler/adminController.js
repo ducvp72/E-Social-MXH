@@ -3,9 +3,11 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import Sidebar from "./../../../components-Admin/Sidebar";
 import "../styles/tailwind.css";
 import { UserDashboard } from "./../userdashboard/index";
-import PostDB from "./../postdashboard/index";
+import { PostDB } from "./../postdashboard/index";
 import GroupChatDB from "./../groupchat/index";
 import AdminPassword from "./../adminpassword/index";
+import { Paganigation } from "./../paganigation";
+
 const AdminController = () => {
   return (
     <div>
@@ -27,9 +29,10 @@ const AdminController = () => {
           {/* <Redirect from="*" to="/admin" /> */}
         </Switch>
         {/* <UserDashboard /> */}
-        {/* <PostDB /> */}
+        <PostDB />
         {/* <GroupChatDB /> */}
         {/* <AdminPassword /> */}
+        {/* <Paganigation /> */}
       </div>
     </div>
   );
