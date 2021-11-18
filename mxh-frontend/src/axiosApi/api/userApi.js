@@ -55,4 +55,10 @@ export const userApi = {
   getUserSummary(userID) {
     return axiosApi(`profile/get-summary/${userID}`, `GET`);
   },
+  getUserFullName(userEmail) {
+    return axiosApi(`find?email=${userEmail}`, `GET`);
+  },
+  getAllUser() {
+    return axiosApi(`find`, `GET`);
+  },
 };

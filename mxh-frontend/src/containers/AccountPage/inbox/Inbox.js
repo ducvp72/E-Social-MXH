@@ -12,8 +12,8 @@ const Inbox = () => {
         <meta name="description" content="Helmet application" />
       </Helmet>
       <div className=" w-full h-full">
-        {/* <Chat /> */}
-        Day la chat
+        <Chat />
+        {/* Day la chat */}
       </div>
     </div>
   );

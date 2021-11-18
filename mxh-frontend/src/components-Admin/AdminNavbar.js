@@ -7,7 +7,6 @@ import DropdownItem from "@material-tailwind/react/DropdownItem";
 
 export default function AdminNavbar({ showSidebar, setShowSidebar }) {
   const location = useLocation().pathname;
-
   return (
     <nav className="bg-light-blue-500 md:ml-64 py-6 px-3">
       <div className="h-1/2 container max-w-full mx-auto flex items-center justify-between md:pr-8 md:pl-10">
@@ -45,7 +44,7 @@ export default function AdminNavbar({ showSidebar, setShowSidebar }) {
         <div className="flex justify-between items-center w-full">
           <h4 className="uppercase text-white text-sm tracking-wider mt-1">
             {location === "/"
-              ? "DASHBOARD"
+              ? "User-Dashboard"
               : location.toUpperCase().replace("/", "")}
           </h4>
           {}

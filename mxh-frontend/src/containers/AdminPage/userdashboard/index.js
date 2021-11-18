@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Container,
@@ -16,15 +16,62 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useStyles } from "../paganigationStyle";
 import Swal from "sweetalert2";
 import EditUser from "./editUser";
+import axios from "axios";
+import { userApi } from "./../../../axiosApi/api/userApi";
+import { adminApi } from "./../../../axiosApi/api/adminApi";
+import { useCookies } from "react-cookie";
 
 export const UserDashboard = () => {
   const [pageSize, setPageSize] = useState(5);
   const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [data, setData] = useState(null);
   const classes = useStyles();
+  const [cookies, setCookie, removeCookie] = useCookies(["auth"]);
   const onClose = () => {
     setOpenDialog(false);
   };
-  const handleDelete = () => {
+
+  useEffect(() => {
+    callResultUser(); // chay api
+    return () => clearTimeout(delayDebounceSearch);
+  }, [search]);
+
+  const handleOnKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      callResultUser();
+    }
+  };
+  const callResultUser = async () => {
+    setLoading(true);
+    userApi
+      .getAllUser()
+      .then((result) => {
+        console.log("result", result.data.results);
+        if (search) {
+          getuserByEmail().then((rs) => {
+            console.log("value", rs);
+            setData(rs.data.results);
+          });
+        } else setData(result.data.results);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        // console.log("Get user list error: ", error.response);
+      });
+  };
+  const getuserByEmail = async () => {
+    const result = await userApi.getUserFullName(search);
+    return result;
+  };
+  const delayDebounceSearch = (event) =>
+    setTimeout(() => {
+      setSearch(event.target.value);
+    }, 500);
+  const handleDelete = async (userID) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -35,8 +82,39 @@ export const UserDashboard = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire("Deleted!", "User has been deleted.", "success");
-      }
+        setLoading(true);
+        adminApi
+          .deleteUser(cookies.auth.tokens.access.token, userID)
+          .then((rs) => {
+            //tat loading
+            setLoading(false);
+            //Get list user
+            callResultUser();
+            //Show success
+            Swal.fire({
+              icon: "error",
+              title: "User has been Delelelte",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            // Swal.fire("Deleted!", "User has been deleted.", "success");
+          })
+          .catch((err) => {
+            setLoading(false);
+            Swal.fire({
+              icon: "error",
+              title: err.response.data.message,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          });
+      } else
+        Swal.fire({
+          icon: "warning",
+          title: "Cancle action",
+          showConfirmButton: false,
+          timer: 1500,
+        });
     });
   };
 
@@ -66,6 +144,11 @@ export const UserDashboard = () => {
                       </InputAdornment>
                     ),
                   }}
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                  }}
+                  onKeyDown={handleOnKeyDown}
                 />
               </Box>
             </CardContent>
@@ -91,15 +174,17 @@ export const UserDashboard = () => {
                 renderCell: (params) => {
                   return (
                     <Avatar
-                      src={params.row.avatar}
+                      src={`https://mxhld.herokuapp.com/v1/image/${params.row.avatar}`}
                       alt={"avatar"}
                       className={classes.avatar}
-                    ></Avatar>
+                    >
+                      {params.row.userId}
+                    </Avatar>
                   );
                 },
               },
               {
-                field: "username",
+                field: "email",
                 headerName: "Username",
                 minWidth: 120,
                 flex: 1,
@@ -118,7 +203,7 @@ export const UserDashboard = () => {
                 // },
               },
               {
-                field: "dob",
+                field: "birthday",
                 headerName: "Dob",
                 minWidth: 160,
                 flex: 1,
@@ -157,7 +242,7 @@ export const UserDashboard = () => {
                           <DeleteOutlineIcon
                             className="cursor-pointer"
                             onClick={() => {
-                              handleDelete();
+                              handleDelete(params.row.id);
                             }}
                             color="error"
                           />
@@ -168,84 +253,12 @@ export const UserDashboard = () => {
                 },
               },
             ]}
-            // rows={userList ? userList : []}
-            rows={[
-              {
-                id: 1,
-                avatar: "/assets/image/defaultAvatar.png",
-                username: "Duc",
-                dob: "7/2/2000",
-                gender: "Male",
-              },
-              {
-                id: 10,
-                avatar: "/assets/person/duc.jpeg",
-                username: "Duc",
-                dob: "7/2/2000",
-                gender: "Male",
-              },
-              {
-                id: 11,
-                avatar: "1",
-                username: "Duc",
-                dob: "7/2/2000",
-                gender: "Male",
-              },
-              {
-                id: 12,
-                avatar: "1",
-                username: "Duc",
-                dob: "7/2/2000",
-                gender: "Male",
-              },
-              {
-                id: 3,
-                avatar: "1",
-                username: "Duc",
-                dob: "7/2/2000",
-                gender: "Male",
-              },
-              {
-                id: 4,
-                avatar: "1",
-                username: "Duc",
-                dob: "7/2/2000",
-                gender: "Male",
-              },
-              {
-                id: 5,
-                avatar: "1",
-                username: "Duc",
-                dob: "7/2/2000",
-                gender: "Male",
-              },
-              {
-                id: 6,
-                avatar: "1",
-                username: "Duc",
-                dob: "7/2/2000",
-                gender: "Male",
-              },
-              {
-                id: 7,
-                avatar: "1",
-                username: "Duc",
-                dob: "7/2/2000",
-                gender: "Male",
-              },
-              {
-                id: 8,
-                avatar: "1",
-                username: "Duc2",
-                dob: "7/2/2000",
-                gender: "Male",
-              },
-            ]}
+            rows={data ? data : []}
             onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
             pageSize={pageSize}
             rowsPerPageOptions={[5, 10, 20]}
             pagination
-            // loading={true}
+            loading={loading}
           />
         </div>
       </Container>

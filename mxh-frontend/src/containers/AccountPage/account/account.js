@@ -389,7 +389,7 @@ const Account = () => {
                       <RadioGroup
                         row
                         aria-label="gender"
-                        defaultValue={currentUser?.gender}
+                        value={currentUser?.gender}
                         name="gender"
                         disabled
                       >

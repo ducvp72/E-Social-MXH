@@ -47,8 +47,7 @@ export const Timeline = () => {
     setCreatePost(false);
   };
   const loopSkeleton = () => {
-    let i = 0;
-    for (i = 0; i <= 10; i++) {
+    for (let i = 0; i <= 20; i++) {
       return <SkeletonPost key={i} />;
     }
   };

@@ -40,17 +40,18 @@ export default function Sidebar() {
             <ul className="flex-col min-w-full flex list-none">
               <li className="rounded-lg mb-4 ">
                 <NavLink
-                  to="/User-Dashboard"
+                  exact
+                  to="/admin"
                   className="flex items-center gap-4 text-sm text-gray-700 font-light px-4 py-3 rounded-lg"
                   activeClassName="bg-gradient-to-tr from-light-blue-500 to-light-blue-700 text-white shadow-md"
                 >
-                  <i className="fas fa-2x fa-users"></i>
+                  <i className="fas fa-2x fa-users" />
                   Users
                 </NavLink>
               </li>
               <li className="rounded-lg mb-4">
                 <NavLink
-                  to="/Post-Dashboard"
+                  to="/admin/post-dashboard"
                   exact
                   className="flex items-center gap-4 text-sm text-gray-700 font-light px-4 py-3 rounded-lg"
                   activeClassName="bg-gradient-to-tr from-light-blue-500 to-light-blue-700 text-white shadow-md"
@@ -62,7 +63,7 @@ export default function Sidebar() {
 
               <li className="rounded-lg mb-2">
                 <NavLink
-                  to="/GropChat-Dashboard"
+                  to="/admin/groupchat-dashboard"
                   className="flex items-center gap-4 text-sm text-gray-700 font-light px-4 py-3 rounded-lg"
                   activeClassName="bg-gradient-to-tr from-light-blue-500 to-light-blue-700 text-white shadow-md"
                 >
@@ -74,7 +75,7 @@ export default function Sidebar() {
 
             <ul className="flex-col min-w-full flex list-none absolute bottom-0">
               <li className=" cursor-pointer bg-gradient-to-tr from-light-blue-500 to-light-blue-700 px-4 rounded-lg text-white mb-2">
-                <NavLink to="/">
+                <NavLink to="/admin/admin-changepassword">
                   <div className="flex items-center gap-4 text-sm font-light py-3">
                     <i className="fas fa-lock fa-2x"></i>
                     Change Password

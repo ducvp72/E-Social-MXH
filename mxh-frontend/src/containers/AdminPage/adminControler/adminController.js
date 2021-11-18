@@ -14,22 +14,15 @@ const AdminController = () => {
       <Sidebar />
       <div className="md:ml-64">
         <Switch>
-          <Route exact path="/admin/User-Dashboard" component={UserDashboard} />
-          <Route exact path="/admin/Post-Dashboard" component={PostDB} />
-          <Route
-            exact
-            path="/admin/GropChat-Dashboard"
-            component={GroupChatDB}
-          />
-          <Route
-            exact
-            path="/admin/Admin-ChangePassword"
-            component={AdminPassword}
-          />
-          {/* <Redirect from="*" to="/admin" /> */}
+          <Route exact path="/admin" component={UserDashboard} />
+          <Route path="/admin/post-dashboard" component={PostDB} />
+          <Route path="/admin/groupchat-dashboard" component={GroupChatDB} />
+          <Route path="/admin/admin-changePassword" component={AdminPassword} />
+          <Redirect from="*" to="/admin" />
         </Switch>
+        {/* <QuickFilteringGrid /> */}
         {/* <UserDashboard /> */}
-        <PostDB />
+        {/* <PostDB /> */}
         {/* <GroupChatDB /> */}
         {/* <AdminPassword /> */}
         {/* <Paganigation /> */}
