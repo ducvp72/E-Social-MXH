@@ -16,7 +16,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useStyles } from "../paganigationStyle";
 import Swal from "sweetalert2";
 import EditUser from "./editUser";
-import axios from "axios";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { adminApi } from "./../../../axiosApi/api/adminApi";
 import { useCookies } from "react-cookie";
@@ -27,21 +26,23 @@ export const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [data, setData] = useState(null);
-  const classes = useStyles();
   const [cookies, setCookie, removeCookie] = useCookies(["auth"]);
+  const [user, setUser] = useState({});
+  const classes = useStyles();
   const onClose = () => {
     setOpenDialog(false);
   };
 
   useEffect(() => {
     callResultUser(); // chay api
-    return () => clearTimeout(delayDebounceSearch);
+    // return () => clearTimeout(delayDebounceSearch);
   }, [search]);
 
   const handleOnKeyDown = (e) => {
     if (e.keyCode === 13) {
       e.preventDefault();
       callResultUser();
+      setSearch("");
     }
   };
   const callResultUser = async () => {
@@ -67,10 +68,12 @@ export const UserDashboard = () => {
     const result = await userApi.getUserFullName(search);
     return result;
   };
-  const delayDebounceSearch = (event) =>
+  const delayDebounceSearch = (event) => {
     setTimeout(() => {
       setSearch(event.target.value);
     }, 500);
+  };
+
   const handleDelete = async (userID) => {
     Swal.fire({
       title: "Are you sure?",
@@ -117,10 +120,13 @@ export const UserDashboard = () => {
         });
     });
   };
-
+  const handleEdit = async (user) => {
+    setUser(user);
+    setOpenDialog(true);
+  };
   return (
     <>
-      <EditUser openDialog={openDialog} onClose={onClose} />
+      <EditUser user={user} openDialog={openDialog} onClose={onClose} />
       <Container maxWidth="xl" style={{ padding: "1rem" }}>
         {/* Top and Search */}
         <Box>
@@ -234,7 +240,7 @@ export const UserDashboard = () => {
                           <InfoIcon
                             color="info"
                             onClick={() => {
-                              setOpenDialog(true);
+                              handleEdit(params.row);
                             }}
                           />
                         </div>

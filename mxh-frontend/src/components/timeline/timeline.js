@@ -26,20 +26,20 @@ export const Timeline = () => {
   }, [toggle]);
 
   useEffect(() => {
-    setTimeout(async () => {
-      await axios({
-        method: `GET`,
-        url: `https://jsonplaceholder.typicode.com/posts?_page=1&_limit=3`,
+    setSkt(true);
+    axios({
+      method: `GET`,
+      url: `https://jsonplaceholder.typicode.com/posts?_page=1&_limit=3`,
+    })
+      .then((rs) => {
+        if (rs) setPost(rs.data);
+        setSkt(false);
       })
-        .then((rs) => {
-          if (rs) setPost(rs.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .catch((err) => {
+        console.log(err);
+        setSkt(false);
+      });
 
-      setSkt(false);
-    }, 2000);
     // loopSkeleton();
   }, []);
 
@@ -47,9 +47,11 @@ export const Timeline = () => {
     setCreatePost(false);
   };
   const loopSkeleton = () => {
+    let arr = [];
     for (let i = 0; i <= 20; i++) {
-      return <SkeletonPost key={i} />;
+      arr = [...arr, <SkeletonPost key={i} />];
     }
+    return arr;
   };
   const fetchPosts = async () => {
     await axios({
@@ -128,9 +130,10 @@ export const Timeline = () => {
         }
       >
         {skt
-          ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((ske) => (
-              <SkeletonPost key={ske} />
-            ))
+          ? // ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((ske) => (
+            //     <SkeletonPost key={ske} />
+            //   ))
+            loopSkeleton()
           : post &&
             post.map((item) => {
               return <Post key={item.id} item={item} setToggle={setToggle} />;

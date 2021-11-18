@@ -67,6 +67,7 @@ module.exports = {
       transitionDelay: ["group-hover", "hover", "focus"],
       transitionTimingFunction: ["group-hover", "hover", "focus"],
       transitionProperty: ["group-hover", "hover", "focus"],
+      ring: ["focus"],
     },
   },
   plugins: [],

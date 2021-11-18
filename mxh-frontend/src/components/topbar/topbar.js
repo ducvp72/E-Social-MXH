@@ -8,6 +8,8 @@ import { actLogout } from "./../../reducers/authReducer";
 import Loading from "./../../containers/LoadingPage/index";
 import { SkeletonAvatarTopbar } from "../../skeletons/Skeletons";
 import Button from "@mui/material/Button";
+
+import SearchText from "./autoComplet";
 export const Topbar = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [skt, setSkt] = useState(true);
@@ -54,21 +56,7 @@ export const Topbar = () => {
               <>
                 <div className="text-gray-700 text-center flex items-center align-items cursor-pointer">
                   <div className="container h-2  flex justify-center items-center">
-                    <div className="relative justify-center items-center align-items hidden md:block xl:block sm:block">
-                      <div className="absolute top-2 left-3">
-                        <i className="fa fa-search text-gray-400 z-20 hover:text-gray-500"></i>
-                      </div>
-                      <input
-                        type="text"
-                        className="h-10 w-72 md:h-10 md:w-96 xl:h-10 xl:w-96 lg:h-10 lg:w-96 pl-10 pr-20  z-0 border-2  focus:outline-none"
-                        placeholder="Search anything..."
-                      />
-                      <div className="absolute right-2" style={{ top: "5px" }}>
-                        <button className="h-7 w-20 text-white bg-red-500 hover:bg-red-600">
-                          Search
-                        </button>
-                      </div>
-                    </div>
+                    <SearchText />
                   </div>
                 </div>
                 <div className="text-gray-700 text-center flex items-center align-items">

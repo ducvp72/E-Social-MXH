@@ -58,7 +58,14 @@ BootstrapDialogTitle.propTypes = {
 };
 
 export default function EditUser(props) {
-  const { openDialog, onClose } = props;
+  const { openDialog, onClose, user } = props;
+  const [userInfo, setuserInfo] = useState(user);
+  useEffect(() => {
+    return () => {
+      setuserInfo(user);
+    };
+  }, [user]);
+  console.log("userInfo", userInfo);
   const handleBlock = () => {
     Swal.fire({
       icon: "warning",
@@ -80,8 +87,11 @@ export default function EditUser(props) {
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={onClose}>
           <div className="flex items-center space-x-4">
-            <Avatar alt="Remy Sharp" src="/assets/person/duc.jpeg" />
-            <Typography variant="h6">Username</Typography>
+            <Avatar
+              alt="Remy Sharp"
+              src={`https://mxhld.herokuapp.com/v1/image/${user.avatar}`}
+            />
+            <Typography variant="h6">{userInfo.fullname}</Typography>
           </div>
         </BootstrapDialogTitle>
         <DialogContent dividers>
@@ -93,25 +103,20 @@ export default function EditUser(props) {
           >
             <TextField
               id="outlined-basic"
-              label="Full name"
+              label="Email"
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
+              value={user.email}
             />
 
-            <TextField
-              id="outlined-basic"
-              label="Username"
-              variant="outlined"
-              disabled
-              sx={{ marginBottom: "1rem" }}
-            />
             <TextField
               id="outlined-basic"
               label="Confirm Mail"
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
+              value={user.isEmailVerified}
             />
 
             <TextField
@@ -120,6 +125,7 @@ export default function EditUser(props) {
               disabled
               variant="outlined"
               sx={{ marginBottom: "1rem" }}
+              value={user.phone}
             />
             <TextField
               id="outlined-basic"
@@ -127,6 +133,7 @@ export default function EditUser(props) {
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
+              value={user.birthday}
             />
             <TextField
               id="outlined-basic"
@@ -141,6 +148,7 @@ export default function EditUser(props) {
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
+              // value={user.follower}
             />
 
             <TextField
@@ -149,6 +157,7 @@ export default function EditUser(props) {
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
+              // value={user.follower}
             />
 
             <TextField
@@ -157,6 +166,7 @@ export default function EditUser(props) {
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
+              value={user.createdAt}
             />
             <TextField
               id="outlined-basic"
@@ -164,6 +174,7 @@ export default function EditUser(props) {
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
+              // value={user.follower}
             />
 
             <FormControl component="fieldset">
@@ -172,22 +183,25 @@ export default function EditUser(props) {
                 row
                 aria-label="gender"
                 name="row-radio-buttons-group"
-                disabled={true}
+                defaultValue={user.gender}
               >
                 <FormControlLabel
                   value="female"
                   control={<Radio />}
                   label="Female"
+                  disabled
                 />
                 <FormControlLabel
                   value="male"
                   control={<Radio />}
                   label="Male"
+                  disabled
                 />
                 <FormControlLabel
                   value="other"
                   control={<Radio />}
                   label="Other"
+                  disabled
                 />
               </RadioGroup>
             </FormControl>
