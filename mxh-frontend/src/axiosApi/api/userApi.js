@@ -58,6 +58,9 @@ export const userApi = {
   getUserFullName(userEmail) {
     return axiosApi(`find?email=${userEmail}`, `GET`);
   },
+  getUserName(userfullname) {
+    return axiosApi(`find?fullname=${userfullname}`, `GET`);
+  },
   getAllUser() {
     return axiosApi(`find`, `GET`);
   },

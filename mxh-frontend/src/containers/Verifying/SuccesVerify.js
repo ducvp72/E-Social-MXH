@@ -16,7 +16,6 @@ const SuccesVerify = () => {
   let history = useHistory();
   useEffect(() => {
     const tokens = query.get("token");
-    console.log("Parameter", tokens);
     if (tokens) {
       const resolveAfter = new Promise((resolve) => setTimeout(resolve, 3000));
       toast.promise(resolveAfter, {

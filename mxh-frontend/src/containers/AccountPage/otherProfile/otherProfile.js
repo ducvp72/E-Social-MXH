@@ -9,37 +9,45 @@ import Statistic from "./../profile/statistic";
 import Information from "./../profile/information";
 import DialogAction from "./../profile/dialog";
 import UserPost from "./../profile/userPost";
+import { Avatar } from "@mui/material/Avatar";
 
 const OtherProfile = () => {
   const [following, setFollowing] = useState(false);
   const [action, setAction] = useState(false);
   const [userSmr, setUSerSmr] = useState(null);
-  //   const currentUser = useSelector((state) => state.auth.data);
-  let { userId } = useParams();
+  const [userInfo, setUserInfo] = useState();
+  let { username } = useParams();
+  // useEffect(() => {
+  //   const rs = username.replaceAll(".", " ");
+  //   userApi
+  //     .getUserName(rs)
+  //     .then((rs) => {
+  //       console.log("rs", rs.data.results);
+  //       setUser(rs.data.results);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }, []);
+  useEffect(() => {
+    const rs = username.replaceAll(".", " ");
+    setTimeout(async () => {
+      try {
+        const res = await userApi.getUserName(rs);
+        console.log("res", res.data.results);
+        setUserInfo(...res.data.results);
+      } catch (err) {
+        console.log(err);
+      }
+    }, 1000);
+  }, [username]);
   const onClose = () => {
     setAction(false);
   };
-  const location = useLocation();
-  const getSummary = async () => {
-    console.log("userSummary day ne");
-    try {
-      //   const userSummary = await userApi.getUserSummary(currentUser?.id);
-      //   setUSerSmr(userSummary);
-    } catch (error) {
-      console.log(error.response.data);
-    }
-  };
-  //   useEffect(() => {
-  //     getSummary();
-  //   }, [currentUser?.id]);
-
-  useEffect(() => {
-    document.title = "Login to Vn-Social";
-  }, []);
   return (
     <div>
       <Helmet>
-        <title>Profile</title>
+        <title>{`${username.replaceAll(".", " ")} | Vn-Social`}</title>
         <meta name="description" content="Helmet application" />
       </Helmet>
       <DialogAction open={action} onClose={onClose}></DialogAction>
@@ -52,11 +60,11 @@ const OtherProfile = () => {
             <div className="py-5">
               <img
                 className="rounded-full h-24 w-24 md:h-44 md:w-44 "
-                // src={
-                //   currentUser
-                //     ? `https://mxhld.herokuapp.com/v1/image/${currentUser?.avatar}`
-                //     : "/assets/image/defaultAvatar.png"
-                // }
+                src={
+                  userInfo
+                    ? `https://mxhld.herokuapp.com/v1/image/${userInfo?.avatar}`
+                    : "/assets/image/defaultAvatar.png"
+                }
                 alt="userimg"
               />
             </div>
@@ -67,7 +75,7 @@ const OtherProfile = () => {
                 className="font-sans font-light text-3xl hover:text-blue-500 cursor-pointer"
                 style={{ color: "#818181" }}
               >
-                {/* {currentUser ? currentUser.fullname : "Undefined Fullname"} */}
+                {userInfo ? userInfo?.fullname : "Undefined Fullname"}
               </h1>
               {following ? (
                 <>

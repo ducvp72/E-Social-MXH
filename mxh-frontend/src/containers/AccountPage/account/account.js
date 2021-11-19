@@ -26,6 +26,7 @@ import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { SkeletonAvatarSideBar } from "./../../../skeletons/Skeletons";
+import Loading from "../../LoadingPage/index";
 function TabPanel(props) {
   const { children, value, index } = props;
   return (
@@ -55,7 +56,8 @@ const Account = () => {
   const [dob, setDob] = useState(new Date(currentUser?.birthday));
   const hiddenFileInput = React.useRef(null);
   const [alert, showAlert] = useState(false);
-  const [cookies, setCookie, removeCookie] = useCookies(["tokens"]);
+  // const [cookies, setCookie, removeCookie] = useCookies(["tokens"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["auth"]);
   const [skt, setSkt] = useState(true);
   const dispatch = useDispatch();
   const [userImage, setUserImage] = useState(
@@ -76,8 +78,9 @@ const Account = () => {
     confirm: false,
   });
 
+  const [loading, setLoading] = useState(false);
+
   let { userName } = useParams();
-  console.log("Current user here", currentUser?.gender.toString());
   useEffect(() => {
     if (currentUser) {
       const birthday = currentUser.birthday.toString().split("/");
@@ -120,12 +123,11 @@ const Account = () => {
   };
 
   const changeAvatar = () => {
-    // console.log("Token api", cookies.auth.tokens.access.token);
     console.log("file dc chon", selectedImage);
     let frmData = new FormData();
     frmData.append("file", selectedImage);
     // frmData.append("name", "userUpfile");
-    console.log(frmData);
+    setLoading(true);
     userApi
       .changeUserAvatar(cookies.auth.tokens.access.token, frmData)
       .then((result) => {
@@ -142,14 +144,17 @@ const Account = () => {
           showConfirmButton: false,
           timer: 1500,
         });
+        setLoading(false);
       })
-      .catch((error) => {
+      .catch((err) => {
+        console.log("err", err.response.data.message);
         Swal.fire({
           icon: "error",
-          title: error.data.response.message,
+          title: err.response.data.message,
           showConfirmButton: false,
           timer: 1500,
         });
+        setLoading(false);
       });
   };
 
@@ -198,6 +203,7 @@ const Account = () => {
         dobUser={dob}
       />
       {alert && <SuccessAlert />}
+      {loading && <Loading />}
       <div
         className=" absolute left-1/2 transform -translate-x-1/2  shadow-md border-2 w-2/3"
         style={{ marginTop: "5rem", marginBottom: "2rem" }}

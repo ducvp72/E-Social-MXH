@@ -9,7 +9,7 @@ import Loading from "./../../containers/LoadingPage/index";
 import { SkeletonAvatarTopbar } from "../../skeletons/Skeletons";
 import Button from "@mui/material/Button";
 
-import SearchText from "./autoComplet";
+import SearchText from "./autoComplete";
 export const Topbar = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [skt, setSkt] = useState(true);

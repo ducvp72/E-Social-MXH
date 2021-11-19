@@ -21,6 +21,7 @@ import CheckActive from "./helper/checkActive";
 import OtherProfile from "./../containers/AccountPage/otherProfile/otherProfile";
 import QuestAuthRoute from "./helper/QuestAuthRoute";
 import AdminController from "./../containers/AdminPage/adminControler/adminController";
+import AdminLogin from "./../containers/AdminPage/adminLogin/index";
 
 const Routes = () => {
   return (
@@ -29,6 +30,7 @@ const Routes = () => {
         <Route path="/" exact>
           <Redirect to="/login" />
         </Route>
+        <Route path="/auth/admin/login" exact component={AdminLogin} />
         <Route path="/send-email" exact component={EmailVerify} />
         <Route path="/verifying-email" exact component={SuccesVerify} />
         <Route path="/recover-password" exact component={NewPassword} />

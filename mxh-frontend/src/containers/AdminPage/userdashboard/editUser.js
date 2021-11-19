@@ -18,6 +18,9 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import Swal from "sweetalert2";
+import { adminApi } from "./../../../axiosApi/api/adminApi";
+import { Cookies } from "react-cookie";
+import { useCookies } from "react-cookie";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -60,20 +63,44 @@ BootstrapDialogTitle.propTypes = {
 export default function EditUser(props) {
   const { openDialog, onClose, user } = props;
   const [userInfo, setuserInfo] = useState(user);
+  const [block, setUnblock] = useState(false);
+  const [cookies, setCookies, removeCookies] = useCookies(["auth"]);
   useEffect(() => {
     return () => {
       setuserInfo(user);
     };
   }, [user]);
-  console.log("userInfo", userInfo);
-  const handleBlock = () => {
-    Swal.fire({
-      icon: "warning",
-      title: "User have been block",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-    onClose();
+  const handleBlock = async (userID) => {
+    console.log("auth", cookies.auth.tokens.access.token);
+    try {
+      await adminApi.blockUser(cookies.auth.tokens.access.token, userID);
+      if (user.isBlocked === false) {
+        setUnblock(true);
+        onClose();
+        Swal.fire({
+          icon: "success",
+          title: "User have been block",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        setUnblock(false);
+        onClose();
+        Swal.fire({
+          icon: "success",
+          title: "UnBlock the User",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: error.response.data.message,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
   };
 
   return (
@@ -211,12 +238,12 @@ export default function EditUser(props) {
           <Button
             autoFocus
             variant="contained"
-            color="warning"
+            color={block ? "info" : "warning"}
             onClick={() => {
-              handleBlock();
+              handleBlock(user.id);
             }}
           >
-            Block
+            {block ? "UnBlock" : "Block"}
           </Button>
           <Button autoFocus variant="contained" color="error" onClick={onClose}>
             Cancle

@@ -24,7 +24,7 @@ import Swal from "sweetalert2";
 import { useCookies } from "react-cookie";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { SkeletonAvatarSideBar } from "./../../../skeletons/Skeletons";
-
+import Loading from "../../LoadingPage/index";
 const EditProfile = (props) => {
   const { onClose, open, userData } = props;
   const currentUser = useSelector((state) => state.auth.data);
@@ -35,6 +35,7 @@ const EditProfile = (props) => {
   const [cookies, setCookie, removeCookie] = useCookies(["auth"]);
   const [userInfo, setUserInfo] = useState(null);
   const [skt, setSkt] = useState(true);
+  const [loading, setLoading] = useState(false);
   const onChangeDob = (newDob) => {
     setDob(newDob);
     if (new Date().getUTCFullYear() - newDob.getUTCFullYear() < 13) {
@@ -108,6 +109,7 @@ const EditProfile = (props) => {
 
   return (
     <div className="">
+      {loading && <Loading />}
       <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
         <div className="p-5">
           <div className="flex space-x-4 mb-4 ">

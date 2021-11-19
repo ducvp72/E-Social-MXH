@@ -230,7 +230,6 @@ const Signup = () => {
                   as={TextField}
                   name="confirm"
                   type={hidden.confirm ? "text" : "password"}
-                  // onFocus={()=>{setShowEye({...showEye, confirm: true})}}
                   id="outlined-basic"
                   error={errors.confirm}
                   label="Confirm Password"
