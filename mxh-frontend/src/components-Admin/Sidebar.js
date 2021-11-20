@@ -14,7 +14,7 @@ export default function Sidebar() {
     try {
       dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
       removeCookie("auth", { path: "/" });
-      // history.push("/");
+      // history.push("/auth");
     } catch (err) {
       console.log(err);
     }

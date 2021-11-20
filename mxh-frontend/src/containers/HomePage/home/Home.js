@@ -10,7 +10,6 @@ import Swal from "sweetalert2";
 import { actLogout } from "./../../../reducers/authReducer";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import ListUserSearch from "./ListUserSearch";
-import LoginToContinute from "../../../components/alert/LoginToContinute";
 const Home = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["auth", "tempTokens"]);
   const currentUser = useSelector((state) => state.auth.data);

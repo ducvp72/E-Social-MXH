@@ -17,17 +17,6 @@ const SearchText = () => {
   });
   let requestTimer = null;
 
-  // const onChange = async (e) => {
-  //   try {
-  //     setSearchString(e.target.value);
-  //     const res = await userApi.getUserName(e.target.value);
-  //     console.log("res", res.data.results);
-  //     setRs(res.data.results);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
   const onChange = async (e) => {
     setResult({
       value: e.target.value,
@@ -40,7 +29,10 @@ const SearchText = () => {
       console.log("res", requestTimer.data.results);
       setResult({
         value: e.target.value,
-        users: requestTimer.data.results,
+        users: [
+          { id: Date.now(), fullname: e.target.value },
+          ...requestTimer.data.results,
+        ],
         loading: false,
       });
     } catch (err) {
@@ -50,16 +42,8 @@ const SearchText = () => {
 
   const onSelect = (e) => {
     const rs = e.replaceAll(" ", ".");
-    history.push("/profile/" + rs);
+    history.push("/search/top?q=" + e);
   };
-
-  //   const handleOnKeyDown = (e) => {
-  //     if (e.keyCode === 13) {
-  //       e.preventDefault();
-  //       callResultUser();
-  //       setSearch("");
-  //     }
-  //   };
 
   return (
     <div>
@@ -83,16 +67,20 @@ const SearchText = () => {
             getItemValue={(item) => item.fullname}
             onSelect={onSelect}
             onChange={onChange}
-            renderItem={(item) => (
+            renderItem={(item, isSelect) => (
               <div
                 key={item.id}
-                className="p-2 text-md font-medium hover:bg-gray-100 flex items-center gap-2"
+                className={`p-2 text-md font-medium hover:bg-gray-200 flex items-center gap-2 ${
+                  isSelect && "bg-gray-200"
+                }`}
               >
-                <img
-                  src={`https://mxhld.herokuapp.com/v1/image/${item.avatar}`}
-                  alt="img"
-                  className="h-8 w-8 rounded-full"
-                />
+                {item.avatar && (
+                  <img
+                    src={`https://mxhld.herokuapp.com/v1/image/${item.avatar}`}
+                    alt="img"
+                    className="h-8 w-8 rounded-full"
+                  />
+                )}
                 {item.fullname}
               </div>
             )}
@@ -102,7 +90,7 @@ const SearchText = () => {
                   <div className=" cursor-default ">Search User</div>
                 ) : result.loading ? (
                   <div className=" flex cursor-default items-center justify-center">
-                    <div class="lds-ring">
+                    <div className="lds-ring">
                       <div></div>
                       <div></div>
                       <div></div>

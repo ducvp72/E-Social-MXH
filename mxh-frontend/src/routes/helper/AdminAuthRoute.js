@@ -10,11 +10,13 @@ const AdminAuthRoute = ({ children, ...rest }) => {
     <Route
       {...rest}
       render={() => {
-        return cookies.auth ? (
+        return cookies.auth &&
+          (cookies.auth.user.role === `admin` ||
+            cookies.auth.user.role === `superadmin`) ? (
           children
         ) : (
-          // <Redirect to="/" />
-          <SinginToContinue />
+          <Redirect to="/auth" />
+          // <SinginToContinue />
         );
       }}
     />

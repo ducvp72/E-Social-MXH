@@ -1,12 +1,28 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import Button from "@material-tailwind/react/Button";
 import Icon from "@material-tailwind/react/Icon";
 import Image from "@material-tailwind/react/Image";
 import Dropdown from "@material-tailwind/react/Dropdown";
 import DropdownItem from "@material-tailwind/react/DropdownItem";
+import { useSelector, useDispatch } from "react-redux";
+import { useCookies } from "react-cookie";
+import { actLogout } from "./../reducers/authReducer";
 
 export default function AdminNavbar({ showSidebar, setShowSidebar }) {
+  const [cookies, setCookies, removeCookies] = useCookies(["auth"]);
+  const currentUser = useSelector((state) => state.auth.data);
   const location = useLocation().pathname;
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  const handleLogOut = () => {
+    try {
+      dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
+      removeCookies("auth", { path: "/" });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <nav className="bg-light-blue-500 md:ml-64 py-6 px-3">
       <div className="h-1/2 container max-w-full mx-auto flex items-center justify-between md:pr-8 md:pl-10">
@@ -49,13 +65,19 @@ export default function AdminNavbar({ showSidebar, setShowSidebar }) {
           </h4>
           {}
           <div className="flex items-center">
-            <p className=" font-avatar text-lg text-white">Hi! admin</p>
+            <p className=" font-avatar text-lg text-white">
+              Hi! {currentUser?.adminName}
+            </p>
             <div className="-mr-4 ml-4">
               <Dropdown
                 color="transparent"
                 buttonText={
                   <img
-                    src={"/assets/person/duc.jpeg"}
+                    src={
+                      currentUser
+                        ? `https://mxhld.herokuapp.com/v1/image/${currentUser?.avatar}`
+                        : "/assets/image/defaultAvatar.png"
+                    }
                     className="rounded-full w-12 h-12"
                     alt="img"
                   />
@@ -66,9 +88,16 @@ export default function AdminNavbar({ showSidebar, setShowSidebar }) {
                   color: "transparent",
                 }}
               >
-                <DropdownItem color="lightBlue">Action</DropdownItem>
-                <DropdownItem color="lightBlue">Another Action</DropdownItem>
-                <DropdownItem color="lightBlue">Something Else</DropdownItem>
+                <DropdownItem
+                  onClick={() => {
+                    handleLogOut();
+                  }}
+                  color="lightBlue"
+                >
+                  Log out
+                </DropdownItem>
+                {/* <DropdownItem color="lightBlue">Another Action</DropdownItem>
+                <DropdownItem color="lightBlue">Something Else</DropdownItem> */}
               </Dropdown>
             </div>
           </div>

@@ -11,16 +11,17 @@ import { Visibility } from "@mui/icons-material";
 import { VisibilityOff } from "@mui/icons-material";
 import Button from "@mui/material/Button";
 import { useCookies } from "react-cookie";
-import { adminLogin } from "./../../validation/validation";
-import { adminApi } from "./../../axiosApi/api/adminApi";
+import { adminLogin } from "../../../validation/validation";
+import { adminApi } from "../../../axiosApi/api/adminApi";
 import { useHistory, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
-import { actLoginSuccess } from "../../reducers/authReducer";
+import { actLoginSuccess } from "../../../reducers/authReducer";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { makeStyles } from "@mui/styles";
-import Loading from "./../../containers/LoadingPage/index";
+import Loading from "../../LoadingPage/index";
+import { createBrowserHistory } from "history";
 
 const useStyles = makeStyles(() => ({
   label: {
@@ -29,11 +30,14 @@ const useStyles = makeStyles(() => ({
     fontWeight: "700",
   },
 }));
-const LoginToContinute = (props) => {
+const LoginForm = (props) => {
   const [hidden, setHidden] = useState(false);
-  const [cookies, setCookie, removeCookie] = useCookies(["tokens", "rm_psw"]);
+  const [cookies, setCookie, removeCookie] = useCookies([
+    "tokens",
+    "rm_pswAdmin",
+  ]);
   const [loading, setLoading] = useState(false);
-  const initValue = cookies.rm_psw || { email: "", password: "" };
+  const initValue = cookies.rm_pswAdmin || { adminName: "", password: "" };
   const history = useHistory();
   const [isSave, setIsSave] = useState(false);
   const classes = useStyles();
@@ -42,23 +46,19 @@ const LoginToContinute = (props) => {
 
   useEffect(() => {
     document.body.className = "overflow-hidden";
+    setIsSave(cookies.rm_pswAdmin ? true : false);
   }, []);
 
   const handleSubmit = async (data) => {
     setLoading(true);
-    console.log("data admin", data);
-    if (isSave) setCookie("rm_psw", data);
-    else removeCookie("rm_psw");
+    if (isSave) setCookie("rm_pswAdmin", data);
+    else removeCookie("rm_pswAdmin");
     try {
       const resData = await adminApi.signIn(data);
       dispatch(actLoginSuccess(resData.data.user));
+      console.log("resDAta Amdmin", resData.data.user);
       setLoading(false);
       setCookie("auth", resData.data, { path: "/" });
-      // if (resData.data.user.role === "user") {
-      //   history.replace("/user/home");
-      // } else {
-      history.replace("/admin");
-      // }
     } catch (err) {
       setLoading(false);
       Swal.fire({
@@ -72,14 +72,14 @@ const LoginToContinute = (props) => {
 
   return (
     <div>
-      {loading && <Loading />}
+      <div className=" z-50">{loading && <Loading />}</div>
       <div
-        className=" post-show fixed w-full h-screen opacity-70 bg-transparent z-40 top-0 left-0 flex justify-end items-start "
+        className=" post-show fixed w-full h-screen opacity-70 bg-transparent z-20 top-0 left-0 flex justify-end items-start "
         style={{ background: "#575757" }}
       ></div>
 
       <div
-        className=" rounded-md shadow-xl bg-white fixed z-50 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+        className=" rounded-md shadow-xl bg-white fixed z-40 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
         style={{ width: "400px", height: "350px" }}
       >
         <div className="flex flex-col space-y-2">
@@ -94,16 +94,13 @@ const LoginToContinute = (props) => {
           </div>
           <div className="flex justify-center items-center justify-items-center mt-5">
             <Formik
-              initialValues={{
-                adminName: "",
-                password: "",
-              }}
-              // validationSchema={adminLogin}
+              initialValues={initValue}
+              validationSchema={adminLogin}
               onSubmit={handleSubmit}
             >
               {({ errors, touched, ...props }) => (
                 <Form>
-                  <div className="mt-2 mb-10 w-72 h-24">
+                  <div className="mt-2  w-72">
                     <Field
                       as={TextField}
                       fullWidth
@@ -159,10 +156,10 @@ const LoginToContinute = (props) => {
 
                   <FormControlLabel
                     className={classes.label}
-                    name="savePassword"
+                    name="savePasswordAdmin"
                     control={
                       <Checkbox
-                        defaultChecked={cookies.rm_psw ? true : false}
+                        defaultChecked={cookies.rm_pswAdmin ? true : false}
                       />
                     }
                     onChange={(e) => {
@@ -180,7 +177,7 @@ const LoginToContinute = (props) => {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
+                    sx={{ mb: 2 }}
                     disabled={props.isSubmitting}
                   >
                     {props.isSubmitting ? "Login..." : "Login"}
@@ -195,4 +192,4 @@ const LoginToContinute = (props) => {
   );
 };
 
-export default LoginToContinute;
+export default LoginForm;

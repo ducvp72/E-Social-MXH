@@ -39,8 +39,6 @@ export const Timeline = () => {
         console.log(err);
         setSkt(false);
       });
-
-    // loopSkeleton();
   }, []);
 
   const onClose = () => {
@@ -53,20 +51,6 @@ export const Timeline = () => {
     }
     return arr;
   };
-  const fetchPosts = async () => {
-    await axios({
-      method: `GET`,
-      url: `https://jsonplaceholder.typicode.com/posts?_page=2&_limit=5`,
-    })
-      .then((rs) => {
-        if (rs) console.log("rs2", rs.data);
-        return rs.data;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   const handleFetchPosts = () => {
     return new Promise((resolve, reject) => {
       axios({
@@ -83,16 +67,15 @@ export const Timeline = () => {
     });
   };
   const fetchData = async () => {
-    // const postsFromServer = await fetchPosts();
     const postsFromServer = await handleFetchPosts();
-    // console.log("postsFromServer", postsFromServer ? postsFromServer : null);
+
     setPost([...post, ...postsFromServer]);
     if (postsFromServer.length === 0 || postsFromServer.length < 3) {
       setnoMore(false);
     }
     setPage(page + 1);
   };
-  console.log("PostApi...", post);
+  // console.log("PostApi...", post);
   return (
     <div className="md:col-span-2 sm:col-start-1 sm:col-end-7 md:py-16 md:px-0 lg:px-12 xl:p-16  py-16">
       <Postshow post={post} setToggle={setToggle} toggle={toggle} />
@@ -130,10 +113,7 @@ export const Timeline = () => {
         }
       >
         {skt
-          ? // ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((ske) => (
-            //     <SkeletonPost key={ske} />
-            //   ))
-            loopSkeleton()
+          ? loopSkeleton()
           : post &&
             post.map((item) => {
               return <Post key={item.id} item={item} setToggle={setToggle} />;

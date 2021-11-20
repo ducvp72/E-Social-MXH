@@ -1,10 +1,11 @@
 import React from "react";
-import LoginToContinute from "./../../../components/alert/LoginToContinute";
+import LoginForm from "./loginAdmin";
+import Loading from "./../../LoadingPage/index";
 
 const AdminLogin = () => {
   return (
     <div>
-      <LoginToContinute />
+      <LoginForm />
     </div>
   );
 };

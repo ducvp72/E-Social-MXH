@@ -50,7 +50,6 @@ export const UserDashboard = () => {
     userApi
       .getAllUser()
       .then((result) => {
-        console.log("result", result.data.results);
         if (search) {
           getuserByEmail().then((rs) => {
             console.log("value", rs);

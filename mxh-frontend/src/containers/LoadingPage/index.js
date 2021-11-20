@@ -11,10 +11,6 @@ const Loading = () => {
       </div>
 
       <div className="fixed z-50 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
-        {/* <div class="lds-circle">
-          <div></div>
-        </div> */}
-
         <section className="stage">
           <figure className="ball bubble"></figure>
         </section>

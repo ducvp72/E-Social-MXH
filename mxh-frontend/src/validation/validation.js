@@ -47,19 +47,12 @@ export const userLogin = yup.object().shape({
 });
 
 export const adminLogin = yup.object().shape({
-  email: yup
-    .string()
-    .email()
-    .min(5, "over 5 characters !")
-    .required("Trường email không được bỏ trống !"),
-  password: yup
-    .string()
-    .required("Password required !")
-    .min(5, "over 5 characters !")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
-      "Password must more than 8 characters, included at least 1 Upcase and 1 Lowcase"
-    ),
+  adminName: yup.string().min(5, "over 5 characters !").required(),
+  password: yup.string().required().min(5, "over 5 characters !"),
+  // .matches(
+  //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
+  //   "Password must more than 8 characters, included at least 1 Upcase and 1 Lowcase"
+  // ),
 });
 
 export const changeInfomation = yup.object().shape({

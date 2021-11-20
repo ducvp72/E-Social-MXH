@@ -6,6 +6,7 @@ export const User = () => {
   const [skt, setSkt] = useState(true);
   const currentUser = useSelector((state) => state.auth.data);
   useEffect(() => {
+    setSkt(true);
     setTimeout(() => {
       if (currentUser) setSkt(false);
     }, 1500);

@@ -9,6 +9,7 @@ import {
 import Home from "./../containers/HomePage/home/Home";
 import Profile from "./../containers/AccountPage/profile/profile";
 import DefaultLayout from "../layout/defaultLayout";
+import SearchLayout from "../layout/searchLayout";
 import NotFound from "./../containers/error/Error";
 import AdminAuthRoute from "./helper/AdminAuthRoute";
 import UserAuthRoute from "./helper/userAuthRoute";
@@ -22,6 +23,8 @@ import OtherProfile from "./../containers/AccountPage/otherProfile/otherProfile"
 import QuestAuthRoute from "./helper/QuestAuthRoute";
 import AdminController from "./../containers/AdminPage/adminControler/adminController";
 import AdminLogin from "./../containers/AdminPage/adminLogin/index";
+import SearchAuth from "./helper/SearchAuth";
+import ListUserSearch from "./../containers/HomePage/home/ListUserSearch";
 
 const Routes = () => {
   return (
@@ -30,7 +33,6 @@ const Routes = () => {
         <Route path="/" exact>
           <Redirect to="/login" />
         </Route>
-        <Route path="/auth/admin/login" exact component={AdminLogin} />
         <Route path="/send-email" exact component={EmailVerify} />
         <Route path="/verifying-email" exact component={SuccesVerify} />
         <Route path="/recover-password" exact component={NewPassword} />
@@ -59,6 +61,21 @@ const Routes = () => {
             </Switch>
           </DefaultLayout>
         </QuestAuthRoute>
+        <SearchAuth path="/search">
+          <SearchLayout>
+            <Switch>
+              <Route
+                // path="/search/top?q=:query"
+                path="/search/top"
+                exact
+                component={ListUserSearch}
+              />
+              <Route path="*" exact>
+                <Redirect to="/404" />
+              </Route>
+            </Switch>
+          </SearchLayout>
+        </SearchAuth>
         <AdminAuthRoute path="/admin">
           <Switch>
             <Route path="/admin" component={AdminController} />
@@ -69,6 +86,7 @@ const Routes = () => {
         </AdminAuthRoute>
         <CheckActive>
           <Switch>
+            <Route path="/auth" exact component={AdminLogin} />
             <Route path="/login" exact component={Login} />
             <Route path="/signup" exact component={Login} />
             <Route path="/forgotpassword" exact component={Login} />

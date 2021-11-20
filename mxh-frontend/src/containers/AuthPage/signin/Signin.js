@@ -29,11 +29,7 @@ const Signin = (props) => {
     document.title = "Login to Vn-Social";
   }, []);
   const classes = useStyles();
-  const [cookies, setCookie, removeCookie] = useCookies([
-    "tokens",
-    "rm_psw",
-    // "isVerify",
-  ]);
+  const [cookies, setCookie, removeCookie] = useCookies(["tokens", "rm_psw"]);
   const [isSave, setIsSave] = useState(false);
   const history = useHistory();
   const [loading, setLoading] = useState(false);

@@ -62,8 +62,9 @@ BootstrapDialogTitle.propTypes = {
 
 export default function EditUser(props) {
   const { openDialog, onClose, user } = props;
+  console.log("User", user);
   const [userInfo, setuserInfo] = useState(user);
-  const [block, setUnblock] = useState(false);
+  const [block, setUnblock] = useState({ status: user?.isBlocked, btn: false });
   const [cookies, setCookies, removeCookies] = useCookies(["auth"]);
   useEffect(() => {
     return () => {
@@ -71,11 +72,10 @@ export default function EditUser(props) {
     };
   }, [user]);
   const handleBlock = async (userID) => {
-    console.log("auth", cookies.auth.tokens.access.token);
     try {
       await adminApi.blockUser(cookies.auth.tokens.access.token, userID);
       if (user.isBlocked === false) {
-        setUnblock(true);
+        setUnblock({ ...block, btn: true });
         onClose();
         Swal.fire({
           icon: "success",
@@ -84,7 +84,7 @@ export default function EditUser(props) {
           timer: 1500,
         });
       } else {
-        setUnblock(false);
+        setUnblock({ ...block, btn: false });
         onClose();
         Swal.fire({
           icon: "success",
@@ -102,6 +102,8 @@ export default function EditUser(props) {
       });
     }
   };
+  console.log("UserStatus", user.isBlocked);
+  console.log("Block", block);
 
   return (
     <div>
@@ -175,7 +177,7 @@ export default function EditUser(props) {
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
-              // value={user.follower}
+              value={user ? user.follower : " "}
             />
 
             <TextField
@@ -184,7 +186,7 @@ export default function EditUser(props) {
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
-              // value={user.follower}
+              value={user ? user.followings : " "}
             />
 
             <TextField
@@ -193,7 +195,7 @@ export default function EditUser(props) {
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
-              value={user.createdAt}
+              value={user ? user.createdAt : ""}
             />
             <TextField
               id="outlined-basic"
@@ -201,7 +203,7 @@ export default function EditUser(props) {
               variant="outlined"
               disabled
               sx={{ marginBottom: "1rem" }}
-              // value={user.follower}
+              value={user ? user.reporters : ""}
             />
 
             <FormControl component="fieldset">
@@ -238,12 +240,12 @@ export default function EditUser(props) {
           <Button
             autoFocus
             variant="contained"
-            color={block ? "info" : "warning"}
+            color={block.btn ? "info" : "warning"}
             onClick={() => {
               handleBlock(user.id);
             }}
           >
-            {block ? "UnBlock" : "Block"}
+            {block.btn ? "UnBlock" : "Block"}
           </Button>
           <Button autoFocus variant="contained" color="error" onClick={onClose}>
             Cancle
