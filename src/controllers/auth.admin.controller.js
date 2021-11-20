@@ -1,18 +1,12 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
-const { authService, userService, tokenService, emailService } = require('../services');
-
-const register = catchAsync(async (req, res) => {
-  const user = await userService.createUser(req.body);
-  const tokens = await tokenService.generateAuthTokens(user);
-  res.status(httpStatus.CREATED).send({ user, tokens });
-});
+const { authService, authAdminService, userService, tokenService, emailService } = require('../services');
 
 const login = catchAsync(async (req, res) => {
-  const { email, password } = req.body;
-  const user = await authService.loginUserWithEmailAndPassword(email, password);
-  const tokens = await tokenService.generateAuthTokens(user);
-  res.send({ user, tokens });
+  const { adminName, password } = req.body;
+  const admin = await authAdminService.loginAdmin(adminName, password);
+  const tokens = await tokenService.generateAuthTokens(admin);
+  res.send({ admin, tokens });
 });
 
 const logout = catchAsync(async (req, res) => {
@@ -50,15 +44,8 @@ const verifyEmail = catchAsync(async (req, res) => {
 const check_token = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(req.user);
 });
-const check_token_isEmailVerified = catchAsync(async (req, res) => {
-  if (!req.user.isEmailVerified) {
-    res.status(httpStatus.BAD_REQUEST).send('Email is not verified');
-  }
 
-  res.status(httpStatus.OK).send();
-});
 module.exports = {
-  register,
   login,
   logout,
   refreshTokens,
@@ -67,5 +54,4 @@ module.exports = {
   sendVerificationEmail,
   verifyEmail,
   check_token,
-  check_token_isEmailVerified,
 };

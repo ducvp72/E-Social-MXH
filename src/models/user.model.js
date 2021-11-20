@@ -8,76 +8,80 @@ const { roles } = require('../config/roles');
 // eslint-disable-next-line no-unused-vars
 const genderTypes = require('../config/gender');
 
-
-const userSchema = mongoose.Schema({
+const userSchema = mongoose.Schema(
+  {
     fullname: {
-        type: String,
-        required: true,
-        trim: true,
+      type: String,
+      required: true,
+      trim: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        lowercase: true,
-        validate(value) {
-            if (!validator.isEmail(value)) {
-                throw new Error('Invalid email');
-            }
-        },
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error('Invalid email');
+        }
+      },
     },
     birthday: {
-        type: String,
-        required: true,
-
+      type: String,
+      required: true,
     },
     gender: {
-        type: String,
-        enum: [genderTypes.MALE, genderTypes.FEMALE, genderTypes.OTHER],
-        required: true
+      type: String,
+      enum: [genderTypes.MALE, genderTypes.FEMALE, genderTypes.OTHER],
+      required: true,
     },
     password: {
-        type: String,
-        required: true,
-        trim: true,
-        minlength: 8,
-        validate(value) {
-            if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
-                throw new Error('Password must contain at least one letter and one number');
-            }
-        },
-        private: true, // used by the toJSON plugin
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 8,
+      validate(value) {
+        if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
+          throw new Error('Password must contain at least one letter and one number');
+        }
+      },
+      private: true, // used by the toJSON plugin
     },
     role: {
-        type: String,
-        enum: roles,
-        default: 'user',
+      type: String,
+      enum: roles,
+      default: 'user',
     },
     isEmailVerified: {
-        type: Boolean,
-        default: false,
+      type: Boolean,
+      default: false,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
     },
     avatar: {
-        type: String,
-        default: '6178c1b9c0a87d41ce93efd1',
+      type: String,
+      default: '619628b9793b0c809f103df0',
     },
     previousAvatar: {
-        type: [String],
+      type: [String],
     },
     story: {
-        type: String,
+      type: String,
     },
     phone: {
-        type: String
+      type: String,
     },
     facebook: {
-        type: String,
-    }
-
-}, {
+      type: String,
+    },
+  },
+  {
     timestamps: true,
-});
+  }
+);
 
 // add plugin that converts mongoose to json
 userSchema.plugin(toJSON);
@@ -89,34 +93,31 @@ userSchema.plugin(paginate);
  * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
  * @returns {Promise<boolean>}
  */
-userSchema.statics.isEmailTaken = async function(email, excludeUserId) {
-    const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
-    return !!user;
+userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
+  const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+  return !!user;
 };
-
 /**
  * Check if password matches the user's password
  * @param {string} password
  * @returns {Promise<boolean>}
  */
-userSchema.methods.isPasswordMatch = async function(password) {
-    const user = this;
-    return bcrypt.compare(password, user.password);
+userSchema.methods.isPasswordMatch = async function (password) {
+  const user = this;
+  return bcrypt.compare(password, user.password);
 };
 
-userSchema.pre('save', async function(next) {
-    const user = this;
-    if (user.isModified('password')) {
-        user.password = await bcrypt.hash(user.password, 8);
-    }
-    next();
+userSchema.pre('save', async function (next) {
+  const user = this;
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+  next();
 });
-
 
 /**
  * @typedef User
  */
 const User = mongoose.model('User', userSchema);
-
 
 module.exports = User;

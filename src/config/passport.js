@@ -2,7 +2,7 @@ const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const path = require('path');
 const fs = require('fs');
 const { tokenTypes } = require('./tokens');
-const { User } = require('../models');
+const { User,Admin } = require('../models');
 
 const privateKey = fs.readFileSync(path.join(__dirname, '../key/public-key.pem'));
 const jwtOptions = {
@@ -16,10 +16,17 @@ const jwtVerify = async(payload, done) => {
             throw new Error('Invalid token type');
         }
         const user = await User.findById(payload.sub);
-        if (!user) {
+        const admin = await Admin.findById(payload.sub);
+        if (!user && !admin) {
             return done(null, false);
         }
-        done(null, user);
+        if(user){
+          done(null, user);
+        }
+        else{
+          done(null,admin);
+        }
+        
     } catch (error) {
         done(error, false);
     }

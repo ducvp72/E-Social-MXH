@@ -24,6 +24,20 @@ const createUser = async(userBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async(filter, options) => {
+ // name: { $regex: searchString, $options: 'i' }
+
+ const email = filter.email;
+  const fullname = filter.fullname;
+  if(email){
+    filter.email={$regex: email ||'', $options:'i'};
+  }
+  if(fullname){
+    filter.fullname={$regex: fullname || '', $options:'i'};
+  }
+    
+   
+  
+  // if(fullname)
     const users = await User.paginate(filter, options);
     return users;
 };
@@ -79,6 +93,44 @@ const deleteUserById = async(userId) => {
     return user;
 };
 
+const existUserById = async(userId) => {
+    const user = await getUserById(userId);
+    if (!user) {
+        return false;
+    }
+    return true;
+};
+const searchUserByName = async(searchString, options) => {
+    let userR;
+    console.log(searchString+"ok ");
+  if(!searchString){
+    
+    await User.find({
+  },
+  'name'
+)
+.limit(options.limit)
+.sort({ name: options.sortBy == 'desc' ? -1 : 1 })
+.then((user) => {
+  if (!user) throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  userR = user;
+});
+  }else{
+    await User.find({
+                name: { $regex: searchString, $options: 'i' },
+            },
+            'name'
+        )
+        .limit(options.limit)
+        .sort({ name: options.sortBy == 'desc' ? -1 : 1 })
+        .then((user) => {
+            if (!user) throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+            userR = user;
+        });
+      }
+    return { userR, count: userR.length };
+};
+
 module.exports = {
     createUser,
     queryUsers,
@@ -86,4 +138,6 @@ module.exports = {
     getUserByEmail,
     updateUserById,
     deleteUserById,
+    existUserById,
+    searchUserByName,
 };

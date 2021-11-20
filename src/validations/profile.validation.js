@@ -1,6 +1,6 @@
 const Joi = require('joi').extend(require('@joi/date')).extend(require('joi-phone-number'));
 const { dateFunction } = require('../function');
-Joi.objectId = require('joi-objectid')(Joi);
+const { objectId, password } = require('./custom.validation');
 
 
 const changeProfile = {
@@ -22,10 +22,23 @@ const changeProfile = {
 };
 const findProfileById = {
     params: Joi.object().keys({
-        id: Joi.objectId().required(),
+        id: Joi.string().custom(objectId).required(),
     })
+}
+const resetPassword = {
+    body: Joi.object().keys({
+        oldPassword: Joi.string().required().custom(password),
+        password: Joi.string().required().custom(password),
+    }),
+};
+const getSummary = {
+    params: Joi.object().keys({
+        id: Joi.string().custom(objectId),
+    }),
 }
 module.exports = {
     changeProfile,
     findProfileById,
+    resetPassword,
+    getSummary,
 };

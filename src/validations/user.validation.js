@@ -1,5 +1,5 @@
 const Joi = require('joi').extend(require('@joi/date'));
-const { password, objectId } = require('./custom.validation');
+const { password, objectId, birthday } = require('./custom.validation');
 const { dateFunction } = require('../function');
 
 const createUser = {
@@ -7,13 +7,7 @@ const createUser = {
         email: Joi.string().required().email(),
         password: Joi.string().required().custom(password),
         fullname: Joi.string().required().min(5).max(30),
-        birthday: Joi.date().format("DD/MM/YYYY").raw().required().custom((value, helper) => {
-            if (dateFunction.getAge(value) < 13) {
-                return helper.message("Age must be greater than  or equal to 13")
-            } else {
-                return true;
-            }
-        }),
+        birthday: Joi.date().format("DD/MM/YYYY").raw().required().custom(birthday),
         gender: Joi.string().required().valid('male', 'female', 'other'),
         role: Joi.string().required().valid('user', 'admin'),
     }),
@@ -53,6 +47,15 @@ const deleteUser = {
         userId: Joi.string().custom(objectId),
     }),
 };
+const searchUser = {
+    query: Joi.object().keys({
+        fullname: Joi.string().allow(''),
+        role: Joi.string(),
+        email:Joi.string().allow(''),
+        sortBy: Joi.string().valid('desc', 'asc'),
+        limit: Joi.number().integer(),
+    }),
+}
 
 module.exports = {
     createUser,
@@ -60,4 +63,5 @@ module.exports = {
     getUser,
     updateUser,
     deleteUser,
+    searchUser,
 };

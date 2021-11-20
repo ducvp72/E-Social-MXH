@@ -53,7 +53,7 @@ const getVideo = catchAsync(async(req, res) => {
                     'Content-Length': video[0].length,
                     'Content-Type': video[0].contentType,
                 };
-                res.writeHead(206, head);
+                res.writeHead(200, head);
                 gfs.openDownloadStream(_id, 0, video[0].length - 1).pipe(res);
             } catch {
                 res.status(httpStatus.BAD_REQUEST).send('no files exist');

@@ -11,7 +11,7 @@ const followerSchema = new Schema({
 followerSchema.plugin(toJSON);
 followerSchema.plugin(paginate);
 /**
- * @typedef Follwers
+ * @typedef Follow
  */
 const Follow = mongoose.model('Follow', followerSchema);
 module.exports = Follow;

@@ -1,35 +1,36 @@
 const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
 
-
-const audioSchema = mongoose.Schema({
+const audioSchema = mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true,
-        trim: true,
+      type: String,
+      required: true,
+      trim: true,
     },
     des: {
-        type: String,
-        required: false,
-        trim: true,
+      type: String,
+      required: false,
+      trim: true,
     },
     fileId: {
-        required: true,
-        type: String,
+      required: true,
+      type: String,
     },
     user: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'User',
-        required: true,
-    }
-}, {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+  },
+  {
     timestamps: true,
-});
+  }
+);
 
 // add plugin that converts mongoose to json
 audioSchema.plugin(toJSON);
 audioSchema.plugin(paginate);
-
 
 /**
  * @typedef Image

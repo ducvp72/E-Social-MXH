@@ -11,4 +11,6 @@ router.post('/create-post-audio', auth(''), fileMiddleware.uploadAudioForPost, p
 router.post('/create-post-video', auth(''), fileMiddleware.uploadVideoForPost, postController.createPostVideo);
 router.put('/like', auth(''), validate(postValidation.like), postController.like);
 router.post('/like', auth(''), validate(postValidation.like), postController.hasLike);
+router.put('/comment', auth(''), validate(postValidation.comment), postController.comment);
+router.get('/', validate(postValidation.getPosts), postController.getPosts);
 module.exports = router;

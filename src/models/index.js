@@ -7,3 +7,4 @@ module.exports.Follow = require('./follow.model');
 module.exports.Group = require('./group.model');
 module.exports.Notification = require('./notification.model');
 module.exports.Message = require('./message.model');
+module.exports.Admin = require('./admin.model');

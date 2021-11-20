@@ -2,16 +2,18 @@ const httpStatus = require('http-status');
 const userService = require('./user.service');
 const ApiError = require('../utils/ApiError');
 const { User, Image } = require('../models');
+
 const updateProfile = async(user, userN) => {
-    let userR, phone, facebook, story;
+    let userR;
+    let phone;
+    let facebook;
+    let story;
     if (!userN.phone) phone = user.phone;
     else phone = userN.phone;
     if (!userN.facebook) facebook = user.facebook;
-    else
-        facebook = userN.facebook;
+    else facebook = userN.facebook;
     if (!userN.story) story = user.story;
-    else
-        story = userN.story;
+    else story = userN.story;
 
     await User.findByIdAndUpdate(
             user.id, {
@@ -21,7 +23,6 @@ const updateProfile = async(user, userN) => {
                 phone,
                 facebook,
                 story,
-
             }, { new: true, useFindAndModify: false }
         )
         .then((updatedUser) => {
@@ -35,16 +36,27 @@ const updateProfile = async(user, userN) => {
 };
 const findProfileById = async(id) => {
     let userR;
-    await User.findById(id)
-        .then((user) => {
-            if (!user) throw new ApiError(httpStatus.NOT_FOUND, "Not found");
-            userR = user;
-        });
+    await User.findById(id).then((user) => {
+        if (!user) throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
+        userR = user;
+    });
 
     return userR;
-}
+};
+const resetPassword = async(user, oldPassword, newPassword) => {
+    try {
+        const userR = await userService.getUserById(user._id);
+        if (!userR || !(await userR.isPasswordMatch(oldPassword))) {
+            throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+        }
+        await userService.updateUserById(user._id, { password: newPassword }, { new: true, useFindAndModify: false });
+    } catch (error) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Password reset failed');
+    }
+};
+
 module.exports = {
     updateProfile,
     findProfileById,
-
-}
+    resetPassword,
+};

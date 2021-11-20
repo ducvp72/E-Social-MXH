@@ -14,20 +14,20 @@ const storage = new GridFsStorage({
                 }
                 const filename = buf.toString('hex') + path.extname(file.originalname);
                 const fileInfo = {
-                    filename: filename,
+                    filename,
                     bucketName: 'videos',
                 };
                 resolve(fileInfo);
             });
         });
-    }
+    },
 });
 const uploadV = multer({
     storage,
     // limit the size to 5gb for any files coming in
     limits: { fileSize: 5000000000 },
     // filer out invalid filetypes
-    fileFilter: function(req, file, cb) {
+    fileFilter(req, file, cb) {
         checkVideoType(file, cb);
     },
 });
@@ -36,7 +36,8 @@ function checkVideoType(file, cb) {
     // https://youtu.be/9Qzmri1WaaE?t=1515
     // define a regex that includes the file types we accept
     const filetypes = /mp4|mov|wmv|avi|avchd|flv|mkv|webm/;
-    //check the file extention
+
+    // check the file extention
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     // more importantly, check the mimetype
     const mimetype = filetypes.test(file.mimetype);
@@ -44,7 +45,8 @@ function checkVideoType(file, cb) {
     if (mimetype && extname) return cb(null, true);
     // otherwise, return error message
     cb('filetype');
+
 }
 module.exports = {
-    uploadV
+    uploadV,
 };
