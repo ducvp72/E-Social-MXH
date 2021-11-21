@@ -1,38 +1,33 @@
 import React, { useEffect, useState } from "react";
 import "./topbar.css";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { actLogout } from "./../../reducers/authReducer";
 import Loading from "./../../containers/LoadingPage/index";
 import { SkeletonAvatarTopbar } from "../../skeletons/Skeletons";
-import Button from "@mui/material/Button";
-
 import SearchText from "./autoComplete";
 export const Topbar = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [skt, setSkt] = useState(true);
-  const [cookies, setCookies, removeCookie] = useCookies(["auth"]);
-  const [loading, setLoading] = useState(false);
+  const [cookies, , removeCookie] = useCookies(["auth"]);
+  const [loading] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.data);
 
   useEffect(() => {
     setSkt(true);
-    setTimeout(() => {
-      if (currentUser) setSkt(false);
-    }, 1500);
+    // setTimeout(() => {
+    if (currentUser) setSkt(false);
+    // }, 1500);
   }, [currentUser]);
 
   const handlelogout = () => {
     try {
-      // setLoading(true);
-      // console.log(currentUser.tokens);
       dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
       removeCookie("auth", { path: "/" });
-      // removeCookie("role");
     } catch (err) {
       console.log(err);
     }
@@ -80,7 +75,10 @@ export const Topbar = () => {
                 <div className="relative">
                   {currentUser && (
                     <NavLink
-                      to={`/user/inbox/${currentUser.fullname}`}
+                      to={`/user/inbox/${currentUser.fullname.replaceAll(
+                        " ",
+                        "."
+                      )}`}
                       activeClassName="text-red-500"
                     >
                       <svg
@@ -237,13 +235,21 @@ export const Topbar = () => {
 
                         <div className="dropdown-content">
                           <NavLink
-                            to={`/user/${currentUser.fullname}`}
+                            to={`/user/${currentUser.fullname.replaceAll(
+                              " ",
+                              "."
+                            )}`}
                             activeClassName="text-red-500"
                           >
                             <span className="">Trang cá nhân</span>
                           </NavLink>
 
-                          <NavLink to={`/user/setting/${currentUser.fullname}`}>
+                          <NavLink
+                            to={`/user/setting/${currentUser.fullname.replaceAll(
+                              " ",
+                              "."
+                            )}`}
+                          >
                             <span className="">Cài đặt</span>
                           </NavLink>
 

@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { actLogout } from "./../reducers/authReducer";
 export default function Sidebar() {
-  const [cookies, setCookies, removeCookie] = useCookies(["auth"]);
+  const [cookies, , removeCookie] = useCookies(["auth"]);
   const [showSidebar, setShowSidebar] = useState("-left-64");
   const history = useHistory();
   const dispatch = useDispatch();

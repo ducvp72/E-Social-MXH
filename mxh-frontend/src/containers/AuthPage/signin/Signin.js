@@ -5,10 +5,9 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import "./signin.css";
 import { InputAdornment } from "@mui/material";
 import { IconButton } from "@mui/material";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { login } from "../../../context/actions/register";
 import { makeStyles } from "@mui/styles";
 import { useCookies } from "react-cookie";
 import { userLogin } from "./../../../validation/validation";
@@ -34,7 +33,7 @@ const Signin = (props) => {
   const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showEyes, setShowEyes] = useState(false);
+  const [, setShowEyes] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {

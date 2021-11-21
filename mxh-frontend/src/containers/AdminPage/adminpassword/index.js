@@ -7,13 +7,13 @@ import TextField from "@mui/material/TextField";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { changePassword } from "../../../validation/validation";
 import "./../../../css/style.css";
-import { Cookies, useCookies } from "react-cookie";
-import { actUpdateUser } from "../../../reducers/authReducer";
+import Loading from "../../LoadingPage/index";
 import Swal from "sweetalert2";
-import { useParams } from "react-router-dom";
-import { userApi } from "../../../axiosApi/api/userApi";
-
+import { useCookies } from "react-cookie";
+import { adminApi } from "../../../axiosApi/api/adminApi";
 const AdminPassword = () => {
+  const [loading, setLoading] = useState(false);
+  const [cookies, ,] = useCookies("auth");
   const [hidden, setHidden] = useState({
     oldpassword: false,
     password: false,
@@ -25,19 +25,14 @@ const AdminPassword = () => {
     confirm: false,
   });
   const handleChangePassword = async (data, props) => {
-    console.log(data);
-
-    setTimeout(() => {
-      props.setSubmitting(false);
-    }, 2000);
+    setLoading(true);
     try {
-      const res = await userApi.userchangePassword(
-        // cookies.auth.tokens.access.token,
-        {
-          oldPassword: data.oldpassword,
-          password: data.password,
-        }
-      );
+      await adminApi.adminchangePassword(cookies.auth.tokens.access.token, {
+        oldPassword: data.oldpassword,
+        password: data.password,
+      });
+      setLoading(false);
+      props.setSubmitting(true);
       Swal.fire({
         icon: "success",
         title: "Successfully",
@@ -46,6 +41,7 @@ const AdminPassword = () => {
       });
       props.resetForm();
     } catch (error) {
+      setLoading(false);
       Swal.fire({
         icon: "error",
         title: error.response.data.message,
@@ -60,6 +56,7 @@ const AdminPassword = () => {
   return (
     <>
       <div className="bg-white-500 pt-20 pb-28 px-3 md:px-8 h-auto">
+        {loading && <Loading />}
         <div className="container mx-auto max-w-full">
           <div className="grid grid-cols-1 px-4 mb-16">
             <Formik

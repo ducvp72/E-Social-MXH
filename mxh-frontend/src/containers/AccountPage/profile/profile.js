@@ -1,39 +1,46 @@
 import React, { useState, useEffect } from "react";
 import Statistic from "./statistic";
 import Information from "./information";
-import DialogAction from "./dialog";
 import { Helmet } from "react-helmet-async";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 import { userApi } from "./../../../axiosApi/api/userApi";
-import { NavLink, useParams } from "react-router-dom";
 import UserPost from "./userPost";
 import { SkeletonProfile } from "../../../skeletons/Skeletons";
-import Postshow from "./../../../components/timeline/postshow";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Carousel } from "react-responsive-carousel";
 import CarouselElement from "./../../../Carousel/index";
+import { SkeletonPostThumbnail } from "./../../../skeletons/Skeletons";
+import { postApi } from "../../../axiosApi/api/postApi";
+import InfiniteScroll from "react-infinite-scroll-component";
+import InfititeLoading from "./../../LoadingPage/infititeLoading";
+import { axios } from "axios";
 const Profile = () => {
-  const [following, setFollowing] = useState(false);
-  const [action, setAction] = useState(false);
   const [userSmr, setUSerSmr] = useState(null);
+  const [userPost, setUserPost] = useState(null);
   const currentUser = useSelector((state) => state.auth.data);
-  let { userName } = useParams();
   const [skt, setSkt] = useState(true);
-  const location = useLocation();
   const [toggle, setToggle] = useState({ isShow: false, postData: {} });
-
+  const [noMore, setnoMore] = useState(true);
+  const [page, setPage] = useState(2);
   useEffect(() => {
     document.title = "Login to Vn-Social";
     getSummary();
+    getUserPost();
   }, []);
 
   const getSummary = async () => {
-    console.log("userSummary day ne");
     try {
       const userSummary = await userApi.getUserSummary(currentUser?.id);
-      console.log("userSummary", userSummary);
       setUSerSmr(userSummary);
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  };
+
+  const getUserPost = async () => {
+    try {
+      const userPost = await postApi.getUserPost(currentUser?.id);
+      setUserPost(userPost);
+      console.log("UserApost", userPost.data.results);
     } catch (error) {
       console.log(error.response.data);
     }
@@ -45,6 +52,39 @@ const Profile = () => {
         setSkt(false);
       }, 1000);
   }, [currentUser]);
+
+  const handleFetchPosts = () => {
+    return new Promise((resolve, reject) => {
+      axios({
+        method: `GET`,
+        url: `https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=3`,
+      })
+        .then((rs) => {
+          if (rs) resolve(rs.data);
+        })
+        .catch((err) => {
+          console.log("errPromise", err);
+          reject(err);
+        });
+    });
+  };
+  console.log("handleFetchPosts", handleFetchPosts());
+  const fetchData = async () => {
+    const postsFromServer = await handleFetchPosts();
+
+    setUserPost([...userPost, ...postsFromServer]);
+    if (postsFromServer.length === 0 || postsFromServer.length < 3) {
+      setnoMore(false);
+    }
+    setPage(page + 1);
+  };
+  const loopSkeleton = () => {
+    let arr = [];
+    for (let i = 0; i < 9; i++) {
+      arr = [...arr, <SkeletonPostThumbnail key={i} />];
+    }
+    return arr;
+  };
   return (
     <div>
       <Helmet>
@@ -97,6 +137,30 @@ const Profile = () => {
       <div className="py-2 w-full xl:w-4/6 lg:w-4/6 md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2">
         <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
           <UserPost setToggle={setToggle} />
+          <InfiniteScroll
+            dataLength={userPost?.length}
+            next={fetchData}
+            hasMore={noMore}
+            loader={
+              <div className=" flex justify-center">
+                <InfititeLoading />
+              </div>
+            }
+            endMessage={
+              <p className="flex justify-center font-avatar text-lg">
+                <b>Opp..! You have seen it all</b>
+              </p>
+            }
+          >
+            {skt
+              ? loopSkeleton()
+              : userPost &&
+                userPost.map((item) => {
+                  return (
+                    <UserPost key={item.id} item={item} setToggle={setToggle} />
+                  );
+                })}
+          </InfiniteScroll>
         </div>
       </div>
     </div>

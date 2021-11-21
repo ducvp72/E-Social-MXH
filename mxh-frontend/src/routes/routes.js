@@ -64,12 +64,7 @@ const Routes = () => {
         <SearchAuth path="/search">
           <SearchLayout>
             <Switch>
-              <Route
-                // path="/search/top?q=:query"
-                path="/search/top"
-                exact
-                component={ListUserSearch}
-              />
+              <Route path="/search/top" exact component={ListUserSearch} />
               <Route path="*" exact>
                 <Redirect to="/404" />
               </Route>

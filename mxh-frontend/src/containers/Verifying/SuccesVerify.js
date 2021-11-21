@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useCookies } from "react-cookie";
 import { useHistory, useLocation } from "react-router-dom";
-import { confirmMail } from "../../context/actions/register";
-import Alert from "@mui/material/Alert";
-import { toast, ToastContainer, Zoom, Bounce } from "react-toastify";
+import { toast, ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { userApi } from "./../../axiosApi/api/userApi";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { actLoginSuccess } from "./../../reducers/authReducer";
 const SuccesVerify = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["tempTokens", "auth"]);
@@ -37,9 +35,6 @@ const SuccesVerify = () => {
       });
 
       verifyEmail({ token: tokens });
-      // setTimeout(() => {
-      //   history.push("/user/home");
-      // }, 4000);
     } else {
     }
   }, [query]);

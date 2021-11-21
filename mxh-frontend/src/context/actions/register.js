@@ -1,4 +1,3 @@
-import { useCookies } from "react-cookie";
 import axiosInstance from "./../../axiosApi/apiFrame/axiosClient";
 
 export const register = (obj) =>

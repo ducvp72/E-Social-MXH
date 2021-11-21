@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Timeline } from "./../../../components/timeline/timeline";
 import { Sidebar } from "./../../../components/sidebar/sidebar";
 import { useCookies } from "react-cookie";
-import { verifyEmail, refresh } from "./../../../context/actions/register";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import Swal from "sweetalert2";

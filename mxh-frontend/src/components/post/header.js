@@ -1,7 +1,5 @@
 import React from "react";
 
-import { Link } from "react-router-dom";
-
 export const Header = () => {
   return (
     <div className="grid grid-cols-2 pt-2">

@@ -1,26 +1,33 @@
 import React, { useState, useEffect } from "react";
 import UserThumbnail from "./UserThumbnail";
 import { SkeletonUserThumbnail } from "./../../../skeletons/Skeletons";
-import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "./../../LoadingPage/infititeLoading";
 import { userApi } from "../../../axiosApi/api/userApi";
 import { useLocation } from "react-router-dom";
+import { useCookies } from "react-cookie";
 const ListUserSearch = () => {
   const [users, setUsers] = useState([]);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);
   const search = useLocation().search;
-
-  // let qr = query.get("q");
-
+  const [cookies, ,] = useCookies("auth");
+  const [status, setStatus] = useState(7);
   useEffect(() => {
-    console.log("search");
-    const q = new URLSearchParams(search).get("q");
+    if (status) {
+      // console.log("statusFromchildren", status);
+      const q = new URLSearchParams(search).get("q");
+      callListApi(q);
+    }
+  }, [search, status]);
+
+  // console.log("Mang Rs", users);
+
+  const callListApi = async (q) => {
     setSkt(true);
-    userApi
-      .getUserFullName(q)
+    await userApi
+      .getUserName(cookies.auth.tokens.access.token, q, 1, 5)
       .then((rs) => {
         if (rs) setUsers(rs.data.results);
         console.log("users", users);
@@ -30,15 +37,14 @@ const ListUserSearch = () => {
         console.log(err);
         setSkt(false);
       });
-  }, [search]);
-
+  };
   const handleFetchUsers = () => {
     const q = new URLSearchParams(search).get("q");
     return new Promise((resolve, reject) => {
       userApi
-        .getUserFullName(q)
+        .getUserName(cookies.auth.tokens.access.token, q, page, 5)
         .then((rs) => {
-          if (rs) resolve(rs.data.result);
+          if (rs) resolve(rs.data.results);
         })
         .catch((err) => {
           console.log("errPromise", err);
@@ -50,15 +56,15 @@ const ListUserSearch = () => {
   const fetchData = async () => {
     const usersFromServer = await handleFetchUsers();
     setUsers([...users, ...usersFromServer]);
-    if (usersFromServer.length === 0 || usersFromServer.length < 10) {
+    if (usersFromServer.length === 0 || usersFromServer.length < 5) {
       setnoMore(false);
     }
     setPage(page + 1);
   };
-
+  // console.log("PostApi...", users);
   const loopSkeleton = () => {
     let arr = [];
-    for (let i = 0; i <= 20; i++) {
+    for (let i = 0; i <= 10; i++) {
       arr = [...arr, <SkeletonUserThumbnail key={i} />];
     }
     return arr;
@@ -91,7 +97,13 @@ const ListUserSearch = () => {
                 ? loopSkeleton()
                 : users &&
                   users.map((item) => {
-                    return <UserThumbnail key={item.id} item={item} />;
+                    return (
+                      <UserThumbnail
+                        key={item.id}
+                        item={item}
+                        updateStatus={setStatus}
+                      />
+                    );
                   })}
             </InfiniteScroll>
           )}

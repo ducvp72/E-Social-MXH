@@ -15,7 +15,7 @@ const axiosApi = (
     params: params ? params : null,
     headers: token
       ? {
-          Authorization: `Bearer  ${token}`,
+          Authorization: `Bearer ${token}`, // cach 1 cai
         }
       : null,
   });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
@@ -13,26 +13,21 @@ import { Helmet } from "react-helmet-async";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { FormHelperText, InputAdornment, IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { login, register } from "../../../context/actions/register";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 import { userSignUpSchema } from "./../../../validation/validation";
-import { ErrorAlert } from "./../../../components/alert/alert";
 import Swal from "sweetalert2";
 import { userApi } from "./../../../axiosApi/api/userApi";
-import { useDispatch } from "react-redux";
-import { actLoginSuccess } from "./../../../reducers/authReducer";
 import Loading from "./../../LoadingPage/index";
 import { useCookies } from "react-cookie";
 const Signup = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["tempTokens"]);
+  const [, setCookie] = useCookies(["tempTokens"]);
   const [hidden, setHidden] = useState({ password: false, confirm: false });
   const [showEye, setShowEye] = useState({ password: false, confirm: false });
   const [loading, setLoading] = useState(false);
   const [dob, setDob] = useState(
     new Date(new Date().setUTCFullYear(new Date().getUTCFullYear()))
   );
-  const dispatch = useDispatch();
   const [errDob, setErrDob] = useState(true);
   const initRegisterUser = {
     fullname: "Dinh Long Nguyen",
@@ -41,7 +36,6 @@ const Signup = () => {
     password: "123456789Du",
     confirm: "123456789Du",
   };
-  const [showVerify, setShowVerify] = useState(false);
   let history = useHistory();
   const handleSubmit = async (data, props) => {
     const birthday = moment(dob).format("DD/MM/YYYY");

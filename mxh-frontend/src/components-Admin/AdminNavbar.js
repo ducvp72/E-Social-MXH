@@ -1,7 +1,6 @@
 import { useLocation, useHistory } from "react-router-dom";
 import Button from "@material-tailwind/react/Button";
 import Icon from "@material-tailwind/react/Icon";
-import Image from "@material-tailwind/react/Image";
 import Dropdown from "@material-tailwind/react/Dropdown";
 import DropdownItem from "@material-tailwind/react/DropdownItem";
 import { useSelector, useDispatch } from "react-redux";
@@ -9,7 +8,7 @@ import { useCookies } from "react-cookie";
 import { actLogout } from "./../reducers/authReducer";
 
 export default function AdminNavbar({ showSidebar, setShowSidebar }) {
-  const [cookies, setCookies, removeCookies] = useCookies(["auth"]);
+  const [cookies, , removeCookies] = useCookies(["auth"]);
   const currentUser = useSelector((state) => state.auth.data);
   const location = useLocation().pathname;
   const history = useHistory();
@@ -73,11 +72,7 @@ export default function AdminNavbar({ showSidebar, setShowSidebar }) {
                 color="transparent"
                 buttonText={
                   <img
-                    src={
-                      currentUser
-                        ? `https://mxhld.herokuapp.com/v1/image/${currentUser?.avatar}`
-                        : "/assets/image/defaultAvatar.png"
-                    }
+                    src={"/assets/image/anonymous.jpg"}
                     className="rounded-full w-12 h-12"
                     alt="img"
                   />

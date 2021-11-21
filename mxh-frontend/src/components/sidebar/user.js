@@ -7,9 +7,9 @@ export const User = () => {
   const currentUser = useSelector((state) => state.auth.data);
   useEffect(() => {
     setSkt(true);
-    setTimeout(() => {
-      if (currentUser) setSkt(false);
-    }, 1500);
+    // setTimeout(() => {
+    if (currentUser) setSkt(false);
+    // }, 1500);
   }, [currentUser]);
   return (
     <Link

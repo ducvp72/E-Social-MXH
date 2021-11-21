@@ -6,7 +6,6 @@ import { UserDashboard } from "./../userdashboard/index";
 import { PostDB } from "./../postdashboard/index";
 import GroupChatDB from "./../groupchat/index";
 import AdminPassword from "./../adminpassword/index";
-import { Paganigation } from "./../paganigation";
 
 const AdminController = () => {
   return (

@@ -1,29 +1,15 @@
 import React from "react";
 import "./syles.css";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Slide from "@mui/material/Slide";
-import LinearProgress from "@mui/material/LinearProgress";
-import { makeStyles } from "@mui/styles";
+
 import { Swal } from "sweetalert2";
 
-const myStyles = makeStyles((theme) => ({
-  red: {
-    color: "#fd1013",
-  },
-}));
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+// const myStyles = makeStyles((theme) => ({
+//   red: {
+//     color: "#fd1013",
+//   },
+// }));
 
 export const Alertverify = (props) => {
-  const { setShowVerify } = props;
-  const classes = myStyles();
-  const [open] = React.useState(true);
   React.useEffect(() => {
     alert();
   }, []);

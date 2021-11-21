@@ -1,4 +1,3 @@
-import { axios } from "axios";
 import axiosApi from "./../apiFrame/axiosApi";
 
 export const adminApi = {
@@ -8,8 +7,14 @@ export const adminApi = {
   deleteUser(token, userID) {
     return axiosApi(`users/${userID}`, `DELETE`, null, null, token);
   },
-  changePassword(token, newPassword) {
-    return axiosApi();
+  adminchangePassword(token, newPassword) {
+    return axiosApi(
+      `auth/admin/change-password`,
+      `PUT`,
+      newPassword,
+      null,
+      token
+    );
   },
   createNewAdmin(token, newPassword) {
     return axiosApi();

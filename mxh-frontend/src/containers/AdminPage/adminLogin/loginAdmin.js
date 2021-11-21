@@ -13,7 +13,6 @@ import Button from "@mui/material/Button";
 import { useCookies } from "react-cookie";
 import { adminLogin } from "../../../validation/validation";
 import { adminApi } from "../../../axiosApi/api/adminApi";
-import { useHistory, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { actLoginSuccess } from "../../../reducers/authReducer";
@@ -21,7 +20,6 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { makeStyles } from "@mui/styles";
 import Loading from "../../LoadingPage/index";
-import { createBrowserHistory } from "history";
 
 const useStyles = makeStyles(() => ({
   label: {
@@ -38,14 +36,13 @@ const LoginForm = (props) => {
   ]);
   const [loading, setLoading] = useState(false);
   const initValue = cookies.rm_pswAdmin || { adminName: "", password: "" };
-  const history = useHistory();
   const [isSave, setIsSave] = useState(false);
   const classes = useStyles();
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    document.body.className = "overflow-hidden";
+    // document.body.className = "overflow-hidden";
     setIsSave(cookies.rm_pswAdmin ? true : false);
   }, []);
 
@@ -56,7 +53,7 @@ const LoginForm = (props) => {
     try {
       const resData = await adminApi.signIn(data);
       dispatch(actLoginSuccess(resData.data.user));
-      console.log("resDAta Amdmin", resData.data.user);
+      // console.log("resDAta Amdmin", resData.data.user);
       setLoading(false);
       setCookie("auth", resData.data, { path: "/" });
     } catch (err) {

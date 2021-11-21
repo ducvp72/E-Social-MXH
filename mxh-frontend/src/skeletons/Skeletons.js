@@ -69,7 +69,7 @@ export const SkeletonPost = () => {
 export const SkeletonPostThumbnail = () => {
   return (
     <div className="">
-      <Skeleton height={"200px"} />
+      <Skeleton height={"320px"} />
     </div>
   );
 };

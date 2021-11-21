@@ -43,7 +43,7 @@ const BootstrapDialogTitle = (props) => {
 };
 
 const CreatePost = (props) => {
-  const { onClose, open, onCloseEmoji } = props;
+  const { onClose, open } = props;
   const [showPicker, setShowPicker] = useState(false);
   const [showMedia, setShowMedia] = useState(false);
   const [inputStr, setInputStr] = useState("");
@@ -62,10 +62,6 @@ const CreatePost = (props) => {
     // setTimeout(() => {
     //   setUploadFile(false);
     // }, 1500);
-  };
-
-  const onhandleFile = () => {
-    setShowMedia(false);
   };
 
   const checkDisabled = (inputText, imgBool) => {

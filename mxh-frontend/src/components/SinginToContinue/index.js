@@ -1,5 +1,5 @@
 import React from "react";
-import { toast, ToastContainer, Zoom, Bounce } from "react-toastify";
+import { toast, ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useHistory } from "react-router-dom";
 const SinginToContinue = () => {
@@ -16,7 +16,7 @@ const SinginToContinue = () => {
     setTimeout(() => {
       history.replace("/");
     }, 2500);
-  }, []);
+  }, [history]);
 
   return (
     <div>

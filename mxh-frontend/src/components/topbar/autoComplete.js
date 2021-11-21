@@ -2,21 +2,17 @@ import React, { useState } from "react";
 import Autocomplete from "react-autocomplete";
 import { useHistory } from "react-router";
 import { userApi } from "../../axiosApi/api/userApi";
-import { history } from "../../routes/browserRouter";
+import { useCookies } from "react-cookie";
 
 const SearchText = () => {
-  const [searchString, setSearchString] = useState("");
-  const [loading, setLoading] = useState(true);
   const history = useHistory();
-  const [rs, setRs] = useState([]);
-
+  const [cookies, ,] = useCookies("auth");
   const [result, setResult] = useState({
     value: "",
     users: [],
     loading: false,
   });
   let requestTimer = null;
-
   const onChange = async (e) => {
     setResult({
       value: e.target.value,
@@ -25,8 +21,13 @@ const SearchText = () => {
     });
     try {
       clearTimeout(requestTimer);
-      requestTimer = await userApi.getUserName(e.target.value);
-      console.log("res", requestTimer.data.results);
+      requestTimer = await userApi.getUserName(
+        cookies.auth.tokens.access.token,
+        e.target.value,
+        1,
+        5
+      );
+      // console.log("res", requestTimer.data.results);
       setResult({
         value: e.target.value,
         users: [
@@ -41,7 +42,7 @@ const SearchText = () => {
   };
 
   const onSelect = (e) => {
-    const rs = e.replaceAll(" ", ".");
+    // const rs = e.replaceAll(" ", ".");
     history.push("/search/top?q=" + e);
   };
 

@@ -1,9 +1,9 @@
 import React from "react";
 import Addcomments from "./../components/post/addcomments";
 import { Action } from "./../components/post/action";
-import { Link } from "react-router-dom";
+
 const CarouselElement = (props) => {
-  const { toggle, setToggle, post } = props;
+  const { toggle, setToggle } = props;
   return (
     <>
       {toggle.isShow && (
@@ -60,9 +60,9 @@ const CarouselElement = (props) => {
                     alt=""
                   />
                   <div className="flex-1 pr-4 flex items-center justify-between">
-                    <Link to={"/p/${username}"}>
-                      <p className="font-bold text-md">username</p>
-                    </Link>
+                    {/* <Link to={`/p/${username}`}> */}
+                    <p className="font-bold text-md">username</p>
+                    {/* </Link> */}
                     <p className=" font-black text-2xl cursor-pointer text-gray-400">
                       ...
                     </p>

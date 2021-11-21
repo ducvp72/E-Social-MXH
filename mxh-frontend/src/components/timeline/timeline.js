@@ -4,7 +4,6 @@ import Postshow from "./postshow";
 import { useSelector } from "react-redux";
 import CreatePost from "./createPost";
 import { SkeletonPost } from "../../skeletons/Skeletons";
-import { userApi } from "./../../axiosApi/api/userApi";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "../../containers/LoadingPage/infititeLoading";

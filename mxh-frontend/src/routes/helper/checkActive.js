@@ -1,12 +1,11 @@
-import { Link, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { Redirect, useLocation, useHistory } from "react-router-dom";
-import { history } from "./../browserRouter";
+import { Redirect, useHistory } from "react-router-dom";
+
 const CheckActive = ({ children, ...rest }) => {
   const [cookies] = useCookies(["auth"]);
-  const location = useLocation();
+
   const history = useHistory();
-  const referer = location.state && location.state.referer;
   return (
     <Route
       {...rest}

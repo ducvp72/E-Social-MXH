@@ -21,6 +21,7 @@ import Swal from "sweetalert2";
 import { adminApi } from "./../../../axiosApi/api/adminApi";
 import { Cookies } from "react-cookie";
 import { useCookies } from "react-cookie";
+import Loading from "./../../LoadingPage/index";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -61,21 +62,30 @@ BootstrapDialogTitle.propTypes = {
 };
 
 export default function EditUser(props) {
-  const { openDialog, onClose, user } = props;
-  console.log("User", user);
+  const { openDialog, onClose, user, upadateStatus } = props;
   const [userInfo, setuserInfo] = useState(user);
-  const [block, setUnblock] = useState({ status: user?.isBlocked, btn: false });
-  const [cookies, setCookies, removeCookies] = useCookies(["auth"]);
+  const [block, setUnblock] = useState(true);
+  const [cookies, ,] = useCookies(["auth"]);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
+    console.log("render");
+    //Chua lock
+    if (user?.isBlocked === false) {
+      setUnblock(true);
+    }
+    //bi lock
+    else setUnblock(false);
     return () => {
       setuserInfo(user);
     };
   }, [user]);
   const handleBlock = async (userID) => {
+    setLoading(true);
     try {
       await adminApi.blockUser(cookies.auth.tokens.access.token, userID);
+      //chua lock
       if (user.isBlocked === false) {
-        setUnblock({ ...block, btn: true });
+        setUnblock(true);
         onClose();
         Swal.fire({
           icon: "success",
@@ -83,8 +93,11 @@ export default function EditUser(props) {
           showConfirmButton: false,
           timer: 1500,
         });
+        setLoading(false);
+        upadateStatus(Date.now());
       } else {
-        setUnblock({ ...block, btn: false });
+        //lock
+        setUnblock(false);
         onClose();
         Swal.fire({
           icon: "success",
@@ -92,8 +105,11 @@ export default function EditUser(props) {
           showConfirmButton: false,
           timer: 1500,
         });
+        setLoading(false);
+        upadateStatus(Date.now());
       }
     } catch (error) {
+      setLoading(false);
       Swal.fire({
         icon: "error",
         title: error.response.data.message,
@@ -102,156 +118,161 @@ export default function EditUser(props) {
       });
     }
   };
-  console.log("UserStatus", user.isBlocked);
-  console.log("Block", block);
-
   return (
     <div>
-      <BootstrapDialog
-        onClose={onClose}
-        aria-labelledby="customized-dialog-title"
-        open={openDialog}
-        fullWidth
-        maxWidth="sm"
-      >
-        <BootstrapDialogTitle id="customized-dialog-title" onClose={onClose}>
-          <div className="flex items-center space-x-4">
-            <Avatar
-              alt="Remy Sharp"
-              src={`https://mxhld.herokuapp.com/v1/image/${user.avatar}`}
-            />
-            <Typography variant="h6">{userInfo.fullname}</Typography>
-          </div>
-        </BootstrapDialogTitle>
-        <DialogContent dividers>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <TextField
-              id="outlined-basic"
-              label="Email"
-              variant="outlined"
-              disabled
-              sx={{ marginBottom: "1rem" }}
-              value={user.email}
-            />
+      <div className="z-40 fixed">
+        <BootstrapDialog
+          onClose={onClose}
+          aria-labelledby="customized-dialog-title"
+          open={openDialog}
+          fullWidth
+          maxWidth="sm"
+        >
+          <div className=" z-50">{loading && <Loading />}</div>
+          <BootstrapDialogTitle id="customized-dialog-title" onClose={onClose}>
+            <div className="flex items-center space-x-4">
+              <Avatar
+                alt="Remy Sharp"
+                src={`https://mxhld.herokuapp.com/v1/image/${user.avatar}`}
+              />
+              <Typography variant="h6">{user?.fullname}</Typography>
+            </div>
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <TextField
+                id="outlined-basic"
+                label="Email"
+                variant="outlined"
+                disabled
+                sx={{ marginBottom: "1rem" }}
+                value={user.email}
+              />
 
-            <TextField
-              id="outlined-basic"
-              label="Confirm Mail"
-              variant="outlined"
-              disabled
-              sx={{ marginBottom: "1rem" }}
-              value={user.isEmailVerified}
-            />
+              <TextField
+                id="outlined-basic"
+                label="Confirm Mail"
+                variant="outlined"
+                disabled
+                sx={{ marginBottom: "1rem" }}
+                value={user.isEmailVerified}
+              />
 
-            <TextField
-              id="outlined-basic"
-              label="Phone"
-              disabled
-              variant="outlined"
-              sx={{ marginBottom: "1rem" }}
-              value={user.phone}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Date of birth"
-              variant="outlined"
-              disabled
-              sx={{ marginBottom: "1rem" }}
-              value={user.birthday}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Posts"
-              variant="outlined"
-              disabled
-              sx={{ marginBottom: "1rem" }}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Followers"
-              variant="outlined"
-              disabled
-              sx={{ marginBottom: "1rem" }}
-              value={user ? user.follower : " "}
-            />
+              <TextField
+                id="outlined-basic"
+                label="Phone"
+                disabled
+                variant="outlined"
+                sx={{ marginBottom: "1rem" }}
+                value={user.phone}
+              />
+              <TextField
+                id="outlined-basic"
+                label="Date of birth"
+                variant="outlined"
+                disabled
+                sx={{ marginBottom: "1rem" }}
+                value={user.birthday}
+              />
+              <TextField
+                id="outlined-basic"
+                label="Posts"
+                variant="outlined"
+                disabled
+                sx={{ marginBottom: "1rem" }}
+              />
+              <TextField
+                id="outlined-basic"
+                label="Followers"
+                variant="outlined"
+                disabled
+                sx={{ marginBottom: "1rem" }}
+                value={user ? user.follower : " "}
+              />
 
-            <TextField
-              id="outlined-basic"
-              label="Followings"
-              variant="outlined"
-              disabled
-              sx={{ marginBottom: "1rem" }}
-              value={user ? user.followings : " "}
-            />
+              <TextField
+                id="outlined-basic"
+                label="Followings"
+                variant="outlined"
+                disabled
+                sx={{ marginBottom: "1rem" }}
+                value={user ? user.followings : " "}
+              />
 
-            <TextField
-              id="outlined-basic"
-              label="DateCreate"
-              variant="outlined"
-              disabled
-              sx={{ marginBottom: "1rem" }}
-              value={user ? user.createdAt : ""}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Reporers"
-              variant="outlined"
-              disabled
-              sx={{ marginBottom: "1rem" }}
-              value={user ? user.reporters : ""}
-            />
+              <TextField
+                id="outlined-basic"
+                label="DateCreate"
+                variant="outlined"
+                disabled
+                sx={{ marginBottom: "1rem" }}
+                value={user ? user.createdAt : ""}
+              />
+              <TextField
+                id="outlined-basic"
+                label="Reporers"
+                variant="outlined"
+                disabled
+                sx={{ marginBottom: "1rem" }}
+                value={user ? user.reporters : ""}
+              />
 
-            <FormControl component="fieldset">
-              <FormLabel component="legend">Gender</FormLabel>
-              <RadioGroup
-                row
-                aria-label="gender"
-                name="row-radio-buttons-group"
-                defaultValue={user.gender}
-              >
-                <FormControlLabel
-                  value="female"
-                  control={<Radio />}
-                  label="Female"
-                  disabled
-                />
-                <FormControlLabel
-                  value="male"
-                  control={<Radio />}
-                  label="Male"
-                  disabled
-                />
-                <FormControlLabel
-                  value="other"
-                  control={<Radio />}
-                  label="Other"
-                  disabled
-                />
-              </RadioGroup>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            autoFocus
-            variant="contained"
-            color={block.btn ? "info" : "warning"}
-            onClick={() => {
-              handleBlock(user.id);
-            }}
-          >
-            {block.btn ? "UnBlock" : "Block"}
-          </Button>
-          <Button autoFocus variant="contained" color="error" onClick={onClose}>
-            Cancle
-          </Button>
-        </DialogActions>
-      </BootstrapDialog>
+              <FormControl component="fieldset">
+                <FormLabel component="legend">Gender</FormLabel>
+                <RadioGroup
+                  row
+                  aria-label="gender"
+                  name="row-radio-buttons-group"
+                  defaultValue={user.gender}
+                >
+                  <FormControlLabel
+                    value="female"
+                    control={<Radio />}
+                    label="Female"
+                    disabled
+                  />
+                  <FormControlLabel
+                    value="male"
+                    control={<Radio />}
+                    label="Male"
+                    disabled
+                  />
+                  <FormControlLabel
+                    value="other"
+                    control={<Radio />}
+                    label="Other"
+                    disabled
+                  />
+                </RadioGroup>
+              </FormControl>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              autoFocus
+              variant="contained"
+              color={block ? "warning" : "info"}
+              onClick={() => {
+                handleBlock(user.id);
+              }}
+            >
+              {block ? "Block" : "UnBlock"}
+            </Button>
+            <Button
+              autoFocus
+              variant="contained"
+              color="error"
+              onClick={onClose}
+            >
+              Cancle
+            </Button>
+          </DialogActions>
+        </BootstrapDialog>
+      </div>
     </div>
   );
 }

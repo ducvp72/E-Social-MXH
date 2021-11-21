@@ -18,12 +18,10 @@ import { useSelector } from "react-redux";
 import { changePassword } from "./../../../validation/validation";
 import "./../../../css/style.css";
 import EditProfile from "./editProfile";
-import { Cookies, useCookies } from "react-cookie";
+import { useCookies } from "react-cookie";
 import { actUpdateUser } from "../../../reducers/authReducer";
 import SuccessAlert from "./../../../components/alert/successAlert";
-import ErrorAlert from "../../../components/alert/errorAlert";
 import Swal from "sweetalert2";
-import { useParams } from "react-router-dom";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { SkeletonAvatarSideBar } from "./../../../skeletons/Skeletons";
 import Loading from "../../LoadingPage/index";
@@ -57,16 +55,13 @@ const Account = () => {
   const hiddenFileInput = React.useRef(null);
   const [alert, showAlert] = useState(false);
   // const [cookies, setCookie, removeCookie] = useCookies(["tokens"]);
-  const [cookies, setCookie, removeCookie] = useCookies(["auth"]);
+  const [cookies, ,] = useCookies("auth");
   const [skt, setSkt] = useState(true);
   const dispatch = useDispatch();
   const [userImage, setUserImage] = useState(
     `https://mxhld.herokuapp.com/v1/image/${currentUser?.avatar}`
   );
   const [selectedImage, setSelectedImage] = useState(null);
-  const [err, setErr] = useState(null);
-
-  const [errDob, setErrDob] = useState(false);
   const [hidden, setHidden] = useState({
     oldpassword: false,
     password: false,
@@ -80,7 +75,7 @@ const Account = () => {
 
   const [loading, setLoading] = useState(false);
 
-  let { userName } = useParams();
+  // let { userName } = useParams();
   useEffect(() => {
     if (currentUser) {
       const birthday = currentUser.birthday.toString().split("/");
@@ -166,13 +161,10 @@ const Account = () => {
       props.setSubmitting(false);
     }, 2000);
     try {
-      const res = await userApi.userchangePassword(
-        cookies.auth.tokens.access.token,
-        {
-          oldPassword: data.oldpassword,
-          password: data.password,
-        }
-      );
+      await userApi.userchangePassword(cookies.auth.tokens.access.token, {
+        oldPassword: data.oldpassword,
+        password: data.password,
+      });
       Swal.fire({
         icon: "success",
         title: "Successfully",

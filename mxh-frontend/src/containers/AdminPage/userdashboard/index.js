@@ -26,24 +26,24 @@ export const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [data, setData] = useState(null);
-  const [cookies, setCookie, removeCookie] = useCookies(["auth"]);
+  const [cookies, ,] = useCookies(["auth"]);
   const [user, setUser] = useState({});
+  const [status, setStatus] = useState(7);
   const classes = useStyles();
-  const onClose = () => {
-    setOpenDialog(false);
-  };
-
   useEffect(() => {
-    callResultUser(); // chay api
+    if (status) console.log("statusFromchildren", status);
+    callResultUser();
     // return () => clearTimeout(delayDebounceSearch);
-  }, [search]);
-
+  }, [search, status]);
   const handleOnKeyDown = (e) => {
     if (e.keyCode === 13) {
       e.preventDefault();
       callResultUser();
       setSearch("");
     }
+  };
+  const onClose = () => {
+    setOpenDialog(false);
   };
   const callResultUser = async () => {
     setLoading(true);
@@ -52,7 +52,7 @@ export const UserDashboard = () => {
       .then((result) => {
         if (search) {
           getuserByEmail().then((rs) => {
-            console.log("value", rs);
+            // console.log("value", rs);
             setData(rs.data.results);
           });
         } else setData(result.data.results);
@@ -64,15 +64,9 @@ export const UserDashboard = () => {
       });
   };
   const getuserByEmail = async () => {
-    const result = await userApi.getUserFullName(search);
+    const result = await userApi.getUserEmail(search);
     return result;
   };
-  const delayDebounceSearch = (event) => {
-    setTimeout(() => {
-      setSearch(event.target.value);
-    }, 500);
-  };
-
   const handleDelete = async (userID) => {
     Swal.fire({
       title: "Are you sure?",
@@ -123,9 +117,21 @@ export const UserDashboard = () => {
     setUser(user);
     setOpenDialog(true);
   };
+
+  const delayDebounceSearch = (event) => {
+    setTimeout(() => {
+      setSearch(event.target.value);
+    }, 500);
+  };
+
   return (
     <>
-      <EditUser user={user} openDialog={openDialog} onClose={onClose} />
+      <EditUser
+        user={user}
+        openDialog={openDialog}
+        onClose={onClose}
+        upadateStatus={setStatus}
+      />
       <Container maxWidth="xl" style={{ padding: "1rem" }}>
         {/* Top and Search */}
         <Box>
