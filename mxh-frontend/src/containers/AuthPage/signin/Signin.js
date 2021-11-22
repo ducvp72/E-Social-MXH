@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
 }));
 const Signin = (props) => {
   useEffect(() => {
-    document.title = "Login to Vn-Social";
+    document.title = "Vn-Social";
   }, []);
   const classes = useStyles();
   const [cookies, setCookie, removeCookie] = useCookies(["tokens", "rm_psw"]);
@@ -87,7 +87,7 @@ const Signin = (props) => {
               className="w-32 hover:scale-150 transition-all duration-500 transform mx-auto"
             />
             <h2 className="py-9 font-display font-bold text-2xl text-gray-700 text-center ">
-              Welcome to Vn-Social Network
+              Welcome to Vn-Social
             </h2>
             <div className="w-5/12">
               <div className=" customDate">

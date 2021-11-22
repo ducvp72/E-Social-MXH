@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Container,
@@ -15,7 +15,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import SearchIcon from "@mui/icons-material/Search";
 import { useStyles } from "../paganigationStyle";
 import Swal from "sweetalert2";
-import EditUser from "./editUser";
+import { EditUser } from "./editUser";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { adminApi } from "./../../../axiosApi/api/adminApi";
 import { useCookies } from "react-cookie";
@@ -30,43 +30,56 @@ export const UserDashboard = () => {
   const [user, setUser] = useState({});
   const [status, setStatus] = useState(7);
   const classes = useStyles();
+
   useEffect(() => {
     if (status) console.log("statusFromchildren", status);
+    getAllUserFirst();
     callResultUser();
-    // return () => clearTimeout(delayDebounceSearch);
   }, [search, status]);
-  const handleOnKeyDown = (e) => {
-    if (e.keyCode === 13) {
-      e.preventDefault();
-      callResultUser();
-      setSearch("");
-    }
-  };
-  const onClose = () => {
-    setOpenDialog(false);
+
+  const getAllUserFirst = () => {
+    setLoading(true);
+    userApi
+      .getAllUser(cookies.auth.tokens.access.token)
+      .then((res) => {
+        console.log("All User", res.data.results);
+        setData(res.data.results);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err);
+      });
   };
   const callResultUser = async () => {
     setLoading(true);
-    userApi
-      .getAllUser()
+    getuserByEmail()
       .then((result) => {
-        if (search) {
-          getuserByEmail().then((rs) => {
-            // console.log("value", rs);
-            setData(rs.data.results);
-          });
-        } else setData(result.data.results);
+        // console.log("Ket qua", result.data.results);
+        setData(result.data.results);
         setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
-        // console.log("Get user list error: ", error.response);
+        console.log(error);
       });
   };
   const getuserByEmail = async () => {
-    const result = await userApi.getUserEmail(search);
+    const result = await userApi.getUserEmail(
+      cookies.auth.tokens.access.token,
+      search
+    );
     return result;
   };
+
+  const handleOnKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      callResultUser();
+      // setSearch("");
+    }
+  };
+
   const handleDelete = async (userID) => {
     Swal.fire({
       title: "Are you sure?",
@@ -113,15 +126,14 @@ export const UserDashboard = () => {
         });
     });
   };
+
   const handleEdit = async (user) => {
     setUser(user);
     setOpenDialog(true);
   };
 
-  const delayDebounceSearch = (event) => {
-    setTimeout(() => {
-      setSearch(event.target.value);
-    }, 500);
+  const onClose = () => {
+    setOpenDialog(false);
   };
 
   return (

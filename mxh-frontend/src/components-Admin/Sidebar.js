@@ -61,7 +61,7 @@ export default function Sidebar() {
                 </NavLink>
               </li>
 
-              <li className="rounded-lg mb-2">
+              {/* <li className="rounded-lg mb-2">
                 <NavLink
                   to="/admin/groupchat-dashboard"
                   className="flex items-center gap-4 text-sm text-gray-700 font-light px-4 py-3 rounded-lg"
@@ -70,7 +70,7 @@ export default function Sidebar() {
                   <i className="fas fa-2x fa-comments"></i>
                   Chats
                 </NavLink>
-              </li>
+              </li> */}
             </ul>
 
             <ul className="flex-col min-w-full flex list-none absolute bottom-0">

@@ -22,6 +22,7 @@
     "date-fns": "^2.23.0",
     "emoji-picker-react": "^3.4.8",
     "formik": "^2.2.9",
+    "global": "^4.4.0",
     "history": "^5.1.0",
     "moment": "^2.29.1",
     "react": "^17.0.2",
@@ -53,7 +54,8 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "sh ./deploy-surge.sh"
   },
   "eslintConfig": {
     "extends": [

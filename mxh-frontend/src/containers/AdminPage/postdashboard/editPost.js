@@ -54,17 +54,8 @@ BootstrapDialogTitle.propTypes = {
 };
 
 export default function EditPost(props) {
-  const { openDialog, onClose } = props;
-  const handleBlock = () => {
-    Swal.fire({
-      icon: "warning",
-      title: "User have been block",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-    onClose();
-  };
-
+  const { openDialog, onClose, postInfo } = props;
+  console.log("Post", postInfo);
   return (
     <div>
       <BootstrapDialog
@@ -73,11 +64,15 @@ export default function EditPost(props) {
         open={openDialog}
         fullWidth
         maxWidth="lg"
+        height="600px"
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={onClose}>
           <div className="flex items-center space-x-4">
-            <Avatar alt="Remy Sharp" src="/assets/person/duc.jpeg" />
-            <Typography variant="h6">Username</Typography>
+            <Avatar
+              alt="Remy Sharp"
+              src={`https://mxhld.herokuapp.com/v1/image/${postInfo?.user?.avatar}`}
+            />
+            <Typography variant="h6">{postInfo?.user?.fullname}</Typography>
           </div>
         </BootstrapDialogTitle>
         <DialogContent dividers>
@@ -85,21 +80,26 @@ export default function EditPost(props) {
             sx={{
               display: "flex",
               flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 4,
             }}
           >
             <Box
               sx={{
                 display: "flex",
-                marginRight: "2rem",
               }}
             >
-              <img
-                alt="anh2"
-                src="assets/person/lam5.png"
-                className="object-cover"
-                width="600px"
-                height="500px"
-              />
+              <div className=" shadow boder">
+                <img
+                  alt="anh2"
+                  // src={`https://mxhld.herokuapp.com/v1/image/${params.row.user.avatar}`}
+                  src={`/assets/image/defaultAvatar.png`}
+                  className="object-cover p-5"
+                  width="480px"
+                  style={{ height: "480px" }}
+                />
+              </div>
             </Box>
 
             <Box
@@ -108,35 +108,23 @@ export default function EditPost(props) {
                 flexDirection: "column",
               }}
             >
-              <TextField
-                id="outlined-basic"
-                label="Username"
-                variant="outlined"
-                disabled
-                sx={{ marginBottom: "1rem" }}
-              />
-              <div className=" boder border-2">
+              <div className=" boder border-2 mb-4">
                 <TextareaAutosize
                   aria-label="minimum height"
                   minRows={3}
                   placeholder="Text"
-                  style={{ width: 550 }}
+                  style={{ width: 550, color: "#a5a5a5" }}
+                  value={postInfo?.text}
+                  disabled
                 />
               </div>
-
-              <TextField
-                id="outlined-basic"
-                label="Phone"
-                disabled
-                variant="outlined"
-                sx={{ marginBottom: "1rem", marginTop: "1rem" }}
-              />
               <TextField
                 id="outlined-basic"
                 label="Like"
                 variant="outlined"
                 disabled
                 sx={{ marginBottom: "1rem" }}
+                value={postInfo?.likes}
               />
               <TextField
                 id="outlined-basic"
@@ -144,6 +132,7 @@ export default function EditPost(props) {
                 variant="outlined"
                 disabled
                 sx={{ marginBottom: "1rem" }}
+                value={postInfo?.comments}
               />
 
               <TextField
@@ -152,6 +141,7 @@ export default function EditPost(props) {
                 variant="outlined"
                 disabled
                 sx={{ marginBottom: "1rem" }}
+                value={postInfo?.createdAt}
               />
               <TextField
                 id="outlined-basic"
@@ -159,15 +149,16 @@ export default function EditPost(props) {
                 variant="outlined"
                 disabled
                 sx={{ marginBottom: "1rem" }}
+                value={postInfo?.reporters}
               />
             </Box>
           </Box>
         </DialogContent>
-        <DialogActions>
+        {/* <DialogActions>
           <Button autoFocus variant="contained" color="error" onClick={onClose}>
             Cancle
           </Button>
-        </DialogActions>
+        </DialogActions> */}
       </BootstrapDialog>
     </div>
   );

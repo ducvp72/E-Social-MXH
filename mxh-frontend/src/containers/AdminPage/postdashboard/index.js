@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Container,
@@ -16,15 +16,47 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useStyles } from "../paganigationStyle";
 import Swal from "sweetalert2";
 import EditPost from "./editPost";
+import { useCookies } from "react-cookie";
+import { adminApi } from "./../../../axiosApi/api/adminApi";
 
 export const PostDB = () => {
   const [pageSize, setPageSize] = useState(5);
   const [openDialog, setOpenDialog] = useState(false);
+  const [cookies, ,] = useCookies(["auth"]);
   const classes = useStyles();
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(null);
+  const [post, setPost] = useState({});
+  useEffect(() => {
+    fetchAllPost();
+  }, []);
+
+  const fetchAllPost = async () => {
+    setLoading(true);
+    adminApi
+      .getAllPost()
+      .then((result) => {
+        console.log("Ket qua", result.data.results);
+        setData(result.data.results);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+      });
+  };
+
   const onClose = () => {
     setOpenDialog(false);
   };
-  const handleDelete = () => {
+
+  const handleEdit = async (post) => {
+    setPost(post);
+    setOpenDialog(true);
+  };
+
+  const handleDelete = async (postID) => {
+    console.log("Post", postID);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -35,17 +67,47 @@ export const PostDB = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire("Deleted!", "User has been deleted.", "success");
-      }
+        setLoading(true);
+        adminApi
+          .deletePost(cookies.auth.tokens.access.token, { postId: postID })
+          .then((rs) => {
+            //tat loading
+            setLoading(false);
+            //Get list user
+            fetchAllPost();
+            //Show success
+            Swal.fire({
+              icon: "error",
+              title: "Post has been Delelelte",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          })
+          .catch((err) => {
+            setLoading(false);
+            Swal.fire({
+              icon: "error",
+              title: err.response.data.message,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          });
+      } else
+        Swal.fire({
+          icon: "warning",
+          title: "Cancle action",
+          showConfirmButton: false,
+          timer: 1500,
+        });
     });
   };
 
   return (
     <>
-      <EditPost openDialog={openDialog} onClose={onClose} />
+      <EditPost postInfo={post} openDialog={openDialog} onClose={onClose} />
       <Container maxWidth="xl" style={{ padding: "1rem" }}>
         {/* Top and Search */}
-        <Box>
+        {/* <Box>
           <Card variant="outlined">
             <CardContent>
               <Box sx={{ maxWidth: 400, minHeight: 30 }}>
@@ -70,7 +132,7 @@ export const PostDB = () => {
               </Box>
             </CardContent>
           </Card>
-        </Box>
+        </Box> */}
         {/* Data Body */}
         <div
           className={classes.dataGridContainer}
@@ -85,12 +147,12 @@ export const PostDB = () => {
               {
                 field: "id",
                 headerName: "ID",
-                width: 120,
+                width: 90,
                 headerAlign: "center",
                 align: "center",
-                renderCell: (params) => {
-                  return <p>1</p>;
-                },
+                // renderCell: (params) => {
+                //   return <>{createID()}</>;
+                // },
               },
               {
                 field: "avatar",
@@ -101,7 +163,7 @@ export const PostDB = () => {
                 renderCell: (params) => {
                   return (
                     <Avatar
-                      src={params.row.avatar}
+                      src={`https://mxhld.herokuapp.com/v1/image/${params.row.user.avatar}`}
                       alt={"avatar"}
                       className={classes.avatar}
                     ></Avatar>
@@ -109,51 +171,48 @@ export const PostDB = () => {
                 },
               },
               {
-                field: "username",
+                field: "fullname",
                 headerName: "Username",
                 minWidth: 120,
                 flex: 1,
                 headerAlign: "center",
                 align: "center",
+                renderCell: (params) => {
+                  return <>{params.row.user.fullname}</>;
+                },
               },
               {
-                field: "Like",
+                field: "likes",
                 headerName: "Like",
                 minWidth: 60,
                 flex: 1,
                 headerAlign: "center",
                 align: "center",
-                // renderCell: (params) => {
-                //   return <>{params.row.price + "$"}</>;
-                // },
+                renderCell: (params) => {
+                  return <>{params.row.likes}</>;
+                },
               },
               {
-                field: "commnent",
+                field: "commnents",
                 headerName: "Comments",
                 minWidth: 60,
                 flex: 1,
                 headerAlign: "center",
                 align: "center",
-                // renderCell: (params) => {
-                //   return <>{params.row.price + "$"}</>;
-                // },
+                renderCell: (params) => {
+                  return <>{params.row.comments}</>;
+                },
               },
               {
-                field: "DateCreate",
+                field: "createAt",
                 headerName: "Date Create",
                 minWidth: 160,
                 flex: 1,
                 headerAlign: "center",
                 align: "center",
-                // renderCell: (params) => {
-                //   return (
-                //     <Box>
-                //       {params.row.courseCreators[0].firstName +
-                //         " " +
-                //         params.row.courseCreators[0].lastName}
-                //     </Box>
-                //   );
-                // },
+                renderCell: (params) => {
+                  return <>{params.row.createdAt}</>;
+                },
               },
               {
                 field: "action",
@@ -170,7 +229,7 @@ export const PostDB = () => {
                           <InfoIcon
                             color="info"
                             onClick={() => {
-                              setOpenDialog(true);
+                              handleEdit(params.row);
                             }}
                           />
                         </div>
@@ -178,7 +237,7 @@ export const PostDB = () => {
                           <DeleteOutlineIcon
                             className="cursor-pointer"
                             onClick={() => {
-                              handleDelete();
+                              handleDelete(params.row.id);
                             }}
                             color="error"
                           />
@@ -189,84 +248,12 @@ export const PostDB = () => {
                 },
               },
             ]}
-            // rows={userList ? userList : []}
-            rows={[
-              {
-                id: 1,
-                avatar: "/assets/image/defaultAvatar.png",
-                username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
-              },
-              {
-                id: 10,
-                avatar: "/assets/person/duc.jpeg",
-                username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
-              },
-              {
-                id: 11,
-                avatar: "1",
-                username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
-              },
-              {
-                id: 12,
-                avatar: "1",
-                username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
-              },
-              {
-                id: 3,
-                avatar: "1",
-                username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
-              },
-              {
-                id: 4,
-                avatar: "1",
-                username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
-              },
-              {
-                id: 5,
-                avatar: "1",
-                username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
-              },
-              {
-                id: 6,
-                avatar: "1",
-                username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
-              },
-              {
-                id: 7,
-                avatar: "1",
-                username: "Duc",
-                DateCreate: "7/2/2000",
-                Like: "Male",
-              },
-              {
-                id: 8,
-                avatar: "1",
-                username: "Duc2",
-                DateCreate: "7/2/2000",
-                Like: "Male",
-              },
-            ]}
+            rows={data ? data : []}
             onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
             pageSize={pageSize}
             rowsPerPageOptions={[5, 10, 20]}
             pagination
-            // loading={true}
+            loading={loading}
           />
         </div>
       </Container>

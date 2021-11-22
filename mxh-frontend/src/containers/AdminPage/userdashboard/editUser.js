@@ -22,7 +22,7 @@ import { adminApi } from "./../../../axiosApi/api/adminApi";
 import { Cookies } from "react-cookie";
 import { useCookies } from "react-cookie";
 import Loading from "./../../LoadingPage/index";
-
+import { v4 as uuidv4 } from "uuid";
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
@@ -61,14 +61,13 @@ BootstrapDialogTitle.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
-export default function EditUser(props) {
+export const EditUser = React.memo((props) => {
   const { openDialog, onClose, user, upadateStatus } = props;
   const [userInfo, setuserInfo] = useState(user);
   const [block, setUnblock] = useState(true);
   const [cookies, ,] = useCookies(["auth"]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    console.log("render");
     //Chua lock
     if (user?.isBlocked === false) {
       setUnblock(true);
@@ -94,7 +93,8 @@ export default function EditUser(props) {
           timer: 1500,
         });
         setLoading(false);
-        upadateStatus(Date.now());
+        // upadateStatus(Date.now());
+        upadateStatus(uuidv4());
       } else {
         //lock
         setUnblock(false);
@@ -106,7 +106,8 @@ export default function EditUser(props) {
           timer: 1500,
         });
         setLoading(false);
-        upadateStatus(Date.now());
+        // upadateStatus(Date.now());
+        upadateStatus(uuidv4());
       }
     } catch (error) {
       setLoading(false);
@@ -192,7 +193,7 @@ export default function EditUser(props) {
                 variant="outlined"
                 disabled
                 sx={{ marginBottom: "1rem" }}
-                value={user ? user.follower : " "}
+                value={user ? user.followers : " "}
               />
 
               <TextField
@@ -201,7 +202,7 @@ export default function EditUser(props) {
                 variant="outlined"
                 disabled
                 sx={{ marginBottom: "1rem" }}
-                value={user ? user.followings : " "}
+                value={user ? user.following : " "}
               />
 
               <TextField
@@ -275,4 +276,4 @@ export default function EditUser(props) {
       </div>
     </div>
   );
-}
+});

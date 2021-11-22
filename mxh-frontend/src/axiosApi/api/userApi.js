@@ -55,14 +55,11 @@ export const userApi = {
   getUserSummary(userID) {
     return axiosApi(`profile/get-summary/${userID}`, `GET`);
   },
-  getUserEmail(userEmail) {
-    return axiosApi(`find?email=${userEmail}`, `GET`);
+  getUserEmail(token, userEmail) {
+    return axiosApi(`users?email=${userEmail}`, `GET`, null, null, token);
   },
   getUserNameSearch(token, userfullname) {
     return axiosApi(`find?fullname=${userfullname}`, `GET`, null, null, token);
-  },
-  getUserNameSearchTest(userfullname) {
-    return axiosApi(`find/user?fullname=${userfullname}`, `GET`);
   },
   getUserName(token, userfullname, page, limit) {
     return axiosApi(
@@ -73,8 +70,8 @@ export const userApi = {
       token
     );
   },
-  getAllUser() {
-    return axiosApi(`find`, `GET`);
+  getAllUser(token) {
+    return axiosApi(`users`, `GET`, null, null, token);
   },
   userFollow(token, userId) {
     return axiosApi(`follow`, `PUT`, { followingId: userId }, null, token);
