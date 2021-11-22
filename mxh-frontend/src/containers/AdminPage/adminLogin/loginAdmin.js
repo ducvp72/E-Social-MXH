@@ -104,7 +104,7 @@ const LoginForm = (props) => {
                       name="adminName"
                       error={errors.adminName}
                       type="text"
-                      id="outlined-basic"
+                      // id="outlined-basic"
                       label="Username"
                       variant="outlined"
                       helperText={
@@ -119,7 +119,7 @@ const LoginForm = (props) => {
                       fullWidth
                       name="password"
                       type={hidden ? "text" : "password"}
-                      id="outlined-basic"
+                      // id="outlined-basic"
                       error={errors.password}
                       label="Password"
                       variant="outlined"

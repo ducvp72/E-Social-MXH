@@ -441,7 +441,7 @@ const Account = () => {
                         name="oldpassword"
                         error={errors.oldpassword}
                         type={hidden.oldpassword ? "text" : "password"}
-                        id="outlined-basic"
+                        // id="outlined-basic"
                         label="Old Password"
                         variant="outlined"
                         onFocus={() => {
@@ -486,7 +486,7 @@ const Account = () => {
                         name="password"
                         error={errors.password}
                         type={hidden.password ? "text" : "password"}
-                        id="outlined-basic"
+                        // id="outlined-basic"
                         label="Password"
                         variant="outlined"
                         onFocus={() => {

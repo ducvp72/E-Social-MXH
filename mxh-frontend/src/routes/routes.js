@@ -54,6 +54,9 @@ const Routes = () => {
         <QuestAuthRoute path="/profile">
           <DefaultLayout>
             <Switch>
+              <Route path="/" exact>
+                <Redirect to="/login" />
+              </Route>
               <Route path="/profile/:username" exact component={OtherProfile} />
               <Route path="*" exact>
                 <Redirect to="/404" />

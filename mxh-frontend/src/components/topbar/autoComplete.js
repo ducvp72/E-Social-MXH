@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Autocomplete from "react-autocomplete";
 import { useHistory } from "react-router";
 import { userApi } from "../../axiosApi/api/userApi";
@@ -13,6 +13,15 @@ const SearchText = () => {
     loading: false,
   });
   let requestTimer = null;
+  useEffect(() => {
+    return () => {
+      setResult({
+        value: "",
+        users: [],
+        loading: false,
+      });
+    };
+  }, []);
   const onChange = async (e) => {
     setResult({
       value: e.target.value,
@@ -40,12 +49,10 @@ const SearchText = () => {
       console.log(err);
     }
   };
-
   const onSelect = (e) => {
     // const rs = e.replaceAll(" ", ".");
     history.push("/search/top?q=" + e);
   };
-
   return (
     <div>
       <div className="relative justify-center hidden md:flex">

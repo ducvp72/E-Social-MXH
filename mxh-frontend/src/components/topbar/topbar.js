@@ -19,9 +19,9 @@ export const Topbar = () => {
 
   useEffect(() => {
     setSkt(true);
-    // setTimeout(() => {
-    if (currentUser) setSkt(false);
-    // }, 1500);
+    setTimeout(() => {
+      if (currentUser) setSkt(false);
+    }, 1500);
   }, [currentUser]);
 
   const handlelogout = () => {

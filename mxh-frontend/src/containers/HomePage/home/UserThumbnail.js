@@ -34,7 +34,7 @@ const UserThumbnail = (props) => {
             <div className="text-mygrey font-normal text-xs italic">
               {item?.isFollow ? (
                 <div className=" text-base flex items-center gap-2">
-                  <i class="fas fa-check-circle text-blue-400"></i>
+                  <i className="fas fa-check-circle text-blue-400"></i>
                   Following
                 </div>
               ) : null}

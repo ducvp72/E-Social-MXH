@@ -77,7 +77,6 @@ export const userApi = {
     return axiosApi(`find`, `GET`);
   },
   userFollow(token, userId) {
-    console.log("abf");
     return axiosApi(`follow`, `PUT`, { followingId: userId }, null, token);
   },
 };

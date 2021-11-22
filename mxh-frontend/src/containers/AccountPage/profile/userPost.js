@@ -1,12 +1,12 @@
 import React from "react";
 
 const UserPost = (props) => {
-  const { setToggle } = props;
+  const { setToggle, item } = props;
   return (
     <div>
       <div className="shadow-2xl cursor-pointer rounded-sm  border-white relative group">
         <img
-          src={"/assets/person/lam5.png"}
+          src={`https://mxhld.herokuapp.com/v1/image/${item.images[0]}?w=500&h=500`}
           alt="ImgPost"
           className="rounded-sm w-full h-40 xl:h-80 sm:h-56 md-h-40 "
         />
