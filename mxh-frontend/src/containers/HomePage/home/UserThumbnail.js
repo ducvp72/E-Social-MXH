@@ -7,6 +7,7 @@ const UserThumbnail = (props) => {
   const { item, updateStatus } = props;
   const [followed, setFollowed] = useState();
   const [cookies, ,] = useCookies(["auth"]);
+  console.log("auth", cookies.auth.user);
   const handleFollow = async () => {
     try {
       await userApi.userFollow(cookies.auth.tokens.access.token, item.id);
@@ -27,7 +28,13 @@ const UserThumbnail = (props) => {
           />
           <div className=" mt-1 ml-3 font-bold flex flex-col">
             <div className=" text-black font-medium text-base">
-              <Link to={`/profile/${item?.fullname.replaceAll(" ", ".")}`}>
+              <Link
+                to={
+                  item?.fullname === cookies.auth.user.fullname
+                    ? `/user/${item?.fullname.replaceAll(" ", ".")}`
+                    : `/profile/${item?.fullname.replaceAll(" ", ".")}`
+                }
+              >
                 {item?.fullname}{" "}
               </Link>
             </div>
@@ -38,7 +45,6 @@ const UserThumbnail = (props) => {
                   Following
                 </div>
               ) : null}
-              {item.id}
               <br />
             </div>
             <div className="">

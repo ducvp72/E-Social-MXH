@@ -7,32 +7,74 @@ import Information from "./../profile/information";
 import DialogAction from "./../profile/dialog";
 import UserPost from "./../profile/userPost";
 import { SkeletonProfile } from "../../../skeletons/Skeletons";
-
+import { useCookies } from "react-cookie";
+import Swal from "sweetalert2";
 const OtherProfile = () => {
-  const [following, setFollowing] = useState(false);
+  const [following, setFollowing] = useState();
   const [action, setAction] = useState(false);
-  const [userSmr, setUSerSmr] = useState(null);
   const [userInfo, setUserInfo] = useState();
   const [skt, setSkt] = useState(true);
+  const [cookies, ,] = useCookies(["auth"]);
   let { username } = useParams();
+  const [userSmr, setUSerSmr] = useState();
+  const rs = username.replaceAll(".", " ");
+
   useEffect(() => {
-    const rs = username.replaceAll(".", " ");
     setSkt(true);
     userApi
-      .getUserNameSearch(rs)
+      .getUserNameSearch(cookies.auth.tokens.access.token, rs)
       .then((res) => {
         console.log("res", res.data.results);
         setUserInfo(...res.data.results);
+        // console.log(userInfo?.id);
+        getSummary(userInfo?.id);
         setSkt(false);
       })
       .catch((err) => {
         setSkt(false);
-        console.log(err);
+        // console.log(err);
       });
-  }, [username]);
+  }, [rs]);
+
+  useEffect(() => {
+    getSummary(userInfo?.id);
+  }, [userInfo]);
+
+  const getSummary = async (id) => {
+    try {
+      const userSummary = await userApi.getUserSummary(id);
+      setUSerSmr(userSummary);
+    } catch (error) {
+      // console.log(error);
+      return;
+    }
+  };
+
   const onClose = () => {
     setAction(false);
   };
+  const handleFollow = () => {
+    userApi.userFollow(cookies.auth.tokens.access.token, userInfo?.id);
+    setFollowing(true);
+    Swal.fire({
+      icon: "success",
+      title: "You following this user",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
+  const handleUnFollow = () => {
+    userApi.userFollow(cookies.auth.tokens.access.token, userInfo?.id);
+    setFollowing(!following);
+    Swal.fire({
+      icon: "success",
+      title: "You not follow this user",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
   return (
     <div>
       <Helmet>
@@ -70,7 +112,7 @@ const OtherProfile = () => {
                   >
                     {userInfo ? userInfo?.fullname : "Undefined Fullname"}
                   </h1>
-                  {following ? (
+                  {userInfo?.isFollow || following ? (
                     <>
                       <button
                         className="border-gray-300 font-normal p-1 rounded-sm"
@@ -80,7 +122,7 @@ const OtherProfile = () => {
                       </button>
                       <button
                         onClick={() => {
-                          setFollowing(false);
+                          handleUnFollow();
                         }}
                         className="border-gray-300 font-normal p-1 rounded-sm bg-red-500 text-white"
                         style={{ borderWidth: "1px" }}
@@ -91,7 +133,7 @@ const OtherProfile = () => {
                   ) : (
                     <button
                       onClick={() => {
-                        setFollowing(true);
+                        handleFollow();
                       }}
                       className="bg-blue-500 p-1 font-normal text-white rounded-sm"
                     >

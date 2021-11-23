@@ -13,8 +13,7 @@ const CheckActive = ({ children, ...rest }) => {
         if (!cookies?.auth) {
           return children;
         }
-
-        console.log(cookies.auth);
+        // console.log(cookies.auth);
         if (
           cookies.auth.user.role === "admin" ||
           cookies.auth.user.role === "superadmin"

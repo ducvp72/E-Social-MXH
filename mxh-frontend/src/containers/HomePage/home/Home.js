@@ -15,7 +15,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    console.log(cookies.auth);
+    // console.log(cookies.auth);
     if (cookies.auth)
       if (cookies.auth.user.isEmailVerified === true) {
         return;
