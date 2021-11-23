@@ -34,7 +34,16 @@ module.exports = {
       },
       width: {
         cus: "38rem",
-        response: "620px",
+      },
+      screens: {
+        tablet: "300px",
+        // => @media (min-width: 640px) { ... }
+
+        laptop: "1024px",
+        // => @media (min-width: 1024px) { ... }
+
+        desktop: "1280px",
+        // => @media (min-width: 1280px) { ... }
       },
     },
     fill: (theme) => ({
@@ -43,18 +52,6 @@ module.exports = {
     fontFamily: {
       display: ["Nunito", "san-serif"],
     },
-    // colors: {
-    //   white: '#ffffff',
-    //   blue: {
-    //     medium: '#005c98'
-    //   },
-
-    //   gray: {
-    //     base: '#616161',
-    //     background: '#fafafa',
-    //     primary: '#dbdbdb'
-    //   },
-    // }
   },
 
   variants: {

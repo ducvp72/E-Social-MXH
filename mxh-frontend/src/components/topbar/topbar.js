@@ -119,7 +119,7 @@ export const Topbar = () => {
                       activeClassName="text-red-500"
                     >
                       <svg
-                        className="w-8 mr-4 cursor-pointer"
+                        className="w-8 mr-2 cursor-pointer"
                         xmlns="http://www.w3.org/2000/svg"
                         height="25"
                         viewBox="0 0 48 48"
@@ -140,7 +140,7 @@ export const Topbar = () => {
                 </div>
                 <div className="relative">
                   <svg
-                    className="w-8 mr-4 cursor-pointer"
+                    className="w-8 mr-2 cursor-pointer"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 64 64"
                     width="40px"
@@ -209,7 +209,7 @@ export const Topbar = () => {
                       99+
                     </span>
                     <svg
-                      className="w-8 mr-6 cursor-pointer"
+                      className="w-8 mr-4 cursor-pointer"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -245,7 +245,7 @@ export const Topbar = () => {
                   title="Sign Out"
                 >
                   <svg
-                    className="w-8 mr-6 text-black-light cursor-pointer "
+                    className="w-8 mr-2 text-black-light cursor-pointer "
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
