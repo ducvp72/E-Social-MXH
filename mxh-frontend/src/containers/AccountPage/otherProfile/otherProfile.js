@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { userApi } from "./../../../axiosApi/api/userApi";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import Statistic from "./../profile/statistic";
 import Information from "./../profile/information";
 import DialogAction from "./../profile/dialog";
@@ -9,53 +9,50 @@ import UserPost from "./../profile/userPost";
 import { SkeletonProfile } from "../../../skeletons/Skeletons";
 import { useCookies } from "react-cookie";
 import Swal from "sweetalert2";
+
 const OtherProfile = () => {
-  const [following, setFollowing] = useState();
+  const [following, setFollowing] = useState(false);
   const [action, setAction] = useState(false);
   const [userInfo, setUserInfo] = useState();
   const [skt, setSkt] = useState(true);
   const [cookies, ,] = useCookies(["auth"]);
   let { username } = useParams();
-  const [userSmr, setUSerSmr] = useState();
-  const rs = username.replaceAll(".", " ");
+  const idUser = useLocation().search;
+  const q = new URLSearchParams(idUser).get("id");
 
   useEffect(() => {
     setSkt(true);
+    getUserInfo();
+  }, [q]);
+
+  const getUserInfo = () => {
     userApi
-      .getUserNameSearch(cookies.auth.tokens.access.token, rs)
+      // .getUserNameSearch(cookies.auth.tokens.access.token, rs)
+      .getUserByID(cookies.auth.tokens.access.token, q)
       .then((res) => {
-        console.log("res", res.data.results);
-        setUserInfo(...res.data.results);
-        // console.log(userInfo?.id);
-        getSummary(userInfo?.id);
+        console.log("res", res.data);
+        setUserInfo(res.data);
+        // setFollowing(res.data.results[0].isFollow);
+        setFollowing(res.data.isFollow);
         setSkt(false);
       })
       .catch((err) => {
         setSkt(false);
         // console.log(err);
       });
-  }, [rs]);
-
-  useEffect(() => {
-    getSummary(userInfo?.id);
-  }, [userInfo]);
-
-  const getSummary = async (id) => {
-    try {
-      const userSummary = await userApi.getUserSummary(id);
-      setUSerSmr(userSummary);
-    } catch (error) {
-      // console.log(error);
-      return;
-    }
   };
 
   const onClose = () => {
     setAction(false);
   };
+
   const handleFollow = () => {
-    userApi.userFollow(cookies.auth.tokens.access.token, userInfo?.id);
-    setFollowing(true);
+    setFollowing(!following);
+    userApi
+      .userFollow(cookies.auth.tokens.access.token, userInfo?.id)
+      .then(() => {
+        getUserInfo();
+      });
     Swal.fire({
       icon: "success",
       title: "You following this user",
@@ -65,8 +62,13 @@ const OtherProfile = () => {
   };
 
   const handleUnFollow = () => {
-    userApi.userFollow(cookies.auth.tokens.access.token, userInfo?.id);
     setFollowing(!following);
+    userApi
+      .userFollow(cookies.auth.tokens.access.token, userInfo?.id)
+      .then(() => {
+        getUserInfo();
+      });
+
     Swal.fire({
       icon: "success",
       title: "You not follow this user",
@@ -112,7 +114,7 @@ const OtherProfile = () => {
                   >
                     {userInfo ? userInfo?.fullname : "Undefined Fullname"}
                   </h1>
-                  {userInfo?.isFollow || following ? (
+                  {following ? (
                     <>
                       <button
                         className="border-gray-300 font-normal p-1 rounded-sm"
@@ -153,7 +155,7 @@ const OtherProfile = () => {
                   </div>
                 </div>
                 <div>
-                  <Statistic userSmr={userSmr?.data} />
+                  <Statistic userInfo={userInfo} />
                 </div>
                 <div className="h-full">
                   <Information />

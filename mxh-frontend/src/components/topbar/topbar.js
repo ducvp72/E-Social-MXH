@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./topbar.css";
 import { NavLink } from "react-router-dom";
 import { useCookies } from "react-cookie";
@@ -8,6 +8,8 @@ import { actLogout } from "./../../reducers/authReducer";
 import Loading from "./../../containers/LoadingPage/index";
 import { SkeletonAvatarTopbar } from "../../skeletons/Skeletons";
 import SearchText from "./autoComplete";
+import Box from "@mui/material/Box";
+import { useOnClickOutside } from "./../../utils/handleRefresh";
 export const Topbar = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [skt, setSkt] = useState(true);
@@ -16,6 +18,34 @@ export const Topbar = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.data);
+  const [active, setActive] = useState(false);
+  const modalRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  // useEffect(() => {
+  //   /**
+  //    * Close modal
+  //    */
+  //   const handleClickOutside = (event) => {
+  //     // Click at avatar button to close
+  //     if (buttonRef.current && buttonRef.current.contains(event.target)) {
+  //       return;
+  //     }
+  //     // Handle click outside to close modal
+  //     if (modalRef.current && !modalRef.current.contains(event.target)) {
+  //       setActive(false);
+  //     }
+  //   };
+  //   // Bind the event listener
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     // Unbind the event listener on clean up
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, [modalRef, buttonRef]);
+
+  // Call hook passing in the ref and a function to call on outside click
+  useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
   useEffect(() => {
     setSkt(true);
@@ -43,7 +73,14 @@ export const Topbar = () => {
             <div className="text-gray-700 text-center flex items-center align-items cursor-pointer">
               <h1 className="flex justify-center w-full font-avatar text-xl">
                 <NavLink to={`/user/home`} arial-label="Vn-Social logo">
-                  <p className=" font-avatar">Vn-Social</p>
+                  <div className="flex gap-2 justify-center items-center">
+                    <img
+                      src={"/assets/image/vni-logo.png"}
+                      alt="logo"
+                      className=" w-8 h-8"
+                    />
+                    <p className=" font-avatar">Vn-Social</p>
+                  </div>
                 </NavLink>
               </h1>
             </div>
@@ -158,35 +195,38 @@ export const Topbar = () => {
                       d="M41,30h-7v-7c0-0.552-0.448-1-1-1h-2c-0.552,0-1,0.448-1,1v7h-7c-0.552,0-1,0.448-1,1v2 c0,0.552,0.448,1,1,1h7v7c0,0.552,0.448,1,1,1h2c0.552,0,1-0.448,1-1v-7h7c0.552,0,1-0.448,1-1v-2C42,30.448,41.552,30,41,30z"
                     />
                   </svg>
-                  {/* </NavLink> */}
                 </div>
-                <div
-                  className="block relative"
-                  onClick={() => setShowNotification(!showNotification)}
-                >
-                  <span
-                    className="absolute cursor-pointer flex text-sm1 text-white items-center justify-center h-5 w-5 rounded-full bg-red-primary"
-                    style={{ top: "-5px", marginLeft: "16px" }}
+                <div className="block relative">
+                  <div
+                    ref={buttonRef}
+                    onClick={() => setActive(!active)}
+                    className=""
                   >
-                    99+
-                  </span>
-                  <svg
-                    className="w-8 mr-6 cursor-pointer"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                    />
-                  </svg>
-                  {showNotification && (
-                    <>
-                      <div className="fixed rounded-md z-10 top-1/5 mt-1 right-2/5 h-96 bg-white shadow-xl transform -translate-x-1/4">
+                    <span
+                      className="absolute cursor-pointer flex text-sm1 text-white items-center justify-center h-5 w-5 rounded-full bg-red-primary"
+                      style={{ top: "-5px", marginLeft: "16px" }}
+                    >
+                      99+
+                    </span>
+                    <svg
+                      className="w-8 mr-6 cursor-pointer"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                      />
+                    </svg>
+                  </div>
+
+                  {active && (
+                    <Box ref={modalRef}>
+                      <div className="border-2 shadow border-gray-100 bg-white fixed rounded-md z-10 top-1/5 mt-1.5 right-2/5 h-96  transform -translate-x-1/4">
                         <div className="py-6">
                           <div className="p-2 mb-2 border-2 border-gray-400 w-72 break-words text-left">
                             status 1
@@ -196,7 +236,7 @@ export const Topbar = () => {
                           </div>
                         </div>
                       </div>
-                    </>
+                    </Box>
                   )}
                 </div>
                 <button

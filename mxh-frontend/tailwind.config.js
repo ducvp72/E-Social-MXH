@@ -34,6 +34,7 @@ module.exports = {
       },
       width: {
         cus: "38rem",
+        response: "620px",
       },
     },
     fill: (theme) => ({

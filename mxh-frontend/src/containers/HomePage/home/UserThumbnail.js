@@ -32,7 +32,7 @@ const UserThumbnail = (props) => {
                 to={
                   item?.fullname === cookies.auth.user.fullname
                     ? `/user/${item?.fullname.replaceAll(" ", ".")}`
-                    : `/profile/${item?.fullname.replaceAll(" ", ".")}`
+                    : `/profile/user?id=${item?.id}`
                 }
               >
                 {item?.fullname}{" "}
@@ -45,6 +45,7 @@ const UserThumbnail = (props) => {
                   Following
                 </div>
               ) : null}
+              {item?.id}
               <br />
             </div>
             <div className="">

@@ -93,8 +93,8 @@ export const EditUser = React.memo((props) => {
           timer: 1500,
         });
         setLoading(false);
-        // upadateStatus(Date.now());
-        upadateStatus(uuidv4());
+
+        upadateStatus();
       } else {
         //lock
         setUnblock(false);
@@ -106,8 +106,8 @@ export const EditUser = React.memo((props) => {
           timer: 1500,
         });
         setLoading(false);
-        // upadateStatus(Date.now());
-        upadateStatus(uuidv4());
+
+        upadateStatus();
       }
     } catch (error) {
       setLoading(false);

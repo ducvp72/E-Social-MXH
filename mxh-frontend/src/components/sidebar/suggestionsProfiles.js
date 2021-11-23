@@ -6,8 +6,8 @@ export const SuggestionsProfiles = () => {
       <div className="flex items-center">
         <img
           className="rounded-full w-8 flex mr-3"
-          src="/assets/person/karl.jpg"
-          alt=""
+          src="/assets/image/defaultAvatar.png"
+          alt="img"
         />
         {/* <Link to={"/p/${username}"}> */}
         <p className="font-bold text-sm">username</p>

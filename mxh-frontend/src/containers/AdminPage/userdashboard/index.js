@@ -32,12 +32,18 @@ export const UserDashboard = () => {
   const classes = useStyles();
 
   useEffect(() => {
+    console.log("run useffect");
     if (status) console.log("statusFromchildren", status);
-    getAllUserFirst();
+    console.log("search: ", search);
+    // if (search === "") {
+    //   getAllUserFirst();
+    // } else {
     callResultUser();
+    // }
   }, [search, status]);
 
   const getAllUserFirst = () => {
+    console.log("call Api get all");
     setLoading(true);
     userApi
       .getAllUser(cookies.auth.tokens.access.token)
@@ -51,11 +57,14 @@ export const UserDashboard = () => {
         console.log(err);
       });
   };
-  const callResultUser = async () => {
+  const callResultUser = () => {
+    console.log("call Api get by keyword");
     setLoading(true);
-    getuserByEmail()
+    userApi
+      .getUserEmail(cookies.auth.tokens.access.token, search)
       .then((result) => {
-        // console.log("Ket qua", result.data.results);
+        console.log("Ket qua", result.data.results);
+        console.log("search: ", search);
         setData(result.data.results);
         setLoading(false);
       })
@@ -64,19 +73,11 @@ export const UserDashboard = () => {
         console.log(error);
       });
   };
-  const getuserByEmail = async () => {
-    const result = await userApi.getUserEmail(
-      cookies.auth.tokens.access.token,
-      search
-    );
-    return result;
-  };
 
   const handleOnKeyDown = (e) => {
     if (e.keyCode === 13) {
       e.preventDefault();
       callResultUser();
-      // setSearch("");
     }
   };
 
@@ -99,6 +100,7 @@ export const UserDashboard = () => {
             setLoading(false);
             //Get list user
             callResultUser();
+            // getAllUserFirst();
             //Show success
             Swal.fire({
               icon: "error",
@@ -136,13 +138,15 @@ export const UserDashboard = () => {
     setOpenDialog(false);
   };
 
+  console.log("data: ", data);
+
   return (
     <>
       <EditUser
         user={user}
         openDialog={openDialog}
         onClose={onClose}
-        upadateStatus={setStatus}
+        upadateStatus={callResultUser}
       />
       <Container maxWidth="xl" style={{ padding: "1rem" }}>
         {/* Top and Search */}

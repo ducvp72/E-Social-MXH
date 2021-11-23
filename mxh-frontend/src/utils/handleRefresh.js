@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Cookies } from "react-cookie";
 import { userApi } from "../axiosApi/api/userApi";
+import { useEffect } from "react";
 
 export const createAxiosResponseInterceptor = () => {
   const interceptor = axios.interceptors.response.use(
@@ -49,4 +50,38 @@ export const createAxiosResponseInterceptor = () => {
   return {
     interceptor,
   };
+};
+
+// Slide Large Array into Group of Array
+export const sliceIntoChunks = (arr, chunkSize) => {
+  const res = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk = arr.slice(i, i + chunkSize);
+    res.push(chunk);
+  }
+  return res;
+};
+
+export const useOnClickOutside = (buttonRef, modalRef, setActive) => {
+  useEffect(() => {
+    /**
+     * Close modal
+     */
+    const handleClickOutside = (event) => {
+      // Click at avatar button to close
+      if (buttonRef.current && buttonRef.current.contains(event.target)) {
+        return;
+      }
+      // Handle click outside to close modal
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setActive();
+      }
+    };
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [buttonRef, buttonRef, setActive]);
 };

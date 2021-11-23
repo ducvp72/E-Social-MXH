@@ -61,6 +61,9 @@ export const userApi = {
   getUserNameSearch(token, userfullname) {
     return axiosApi(`find?fullname=${userfullname}`, `GET`, null, null, token);
   },
+  getUserByID(token, id) {
+    return axiosApi(`find/user/${id}`, `GET`, null, null, token);
+  },
   getUserName(token, userfullname, page, limit) {
     return axiosApi(
       `find?fullname=${userfullname}&page=${page}&limit=${limit}`,

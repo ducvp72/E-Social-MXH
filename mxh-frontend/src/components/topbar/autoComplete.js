@@ -55,13 +55,13 @@ const SearchText = () => {
   };
   return (
     <div>
-      <div className="relative justify-center hidden md:flex">
+      <div className="relative justify-center md:flex">
         <div>
           <Autocomplete
             value={result.value}
             renderInput={(props) => {
               return (
-                <div className=" flex border-2 rounded-full w-full items-center bg-gray-100">
+                <div className="response:hidden flex border-2 rounded-full w-full items-center bg-gray-100">
                   <i className="fas fa-search text-gray-400 p-2" />
                   <input
                     type="text"

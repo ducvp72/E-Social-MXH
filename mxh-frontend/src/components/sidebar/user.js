@@ -7,10 +7,17 @@ export const User = () => {
   const currentUser = useSelector((state) => state.auth.data);
   useEffect(() => {
     setSkt(true);
+    showAvatarTimeout();
+
+    return () => clearTimeout(showAvatarTimeout);
+  }, [currentUser]);
+
+  const showAvatarTimeout = () => {
     setTimeout(() => {
       if (currentUser) setSkt(false);
     }, 1500);
-  }, [currentUser]);
+  };
+
   return (
     <Link
       to="'p/$/{user}'"
