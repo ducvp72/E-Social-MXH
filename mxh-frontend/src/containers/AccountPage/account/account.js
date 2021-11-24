@@ -122,6 +122,7 @@ const Account = () => {
     let frmData = new FormData();
     frmData.append("file", selectedImage);
     // frmData.append("name", "userUpfile");
+    console.log("frmData", frmData);
     setLoading(true);
     userApi
       .changeUserAvatar(cookies.auth.tokens.access.token, frmData)
