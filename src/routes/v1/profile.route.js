@@ -5,11 +5,11 @@ const profileController = require('../../controllers/profile.controller');
 const auth = require('../../middlewares/auth');
 
 const router = express.Router();
-const imageMiddleware = require('../../middlewares/fileMiddleware');
+const fileMiddleware = require('../../middlewares/fileMiddleware');
 
-router.put('/changeAvatar', auth(''), imageMiddleware.uploadImage, profileController.changeAvatar);
+router.put('/changeAvatar', auth(''), fileMiddleware.uploadImage, profileController.changeAvatar);
 router.put('/change-profile', auth(''), validate(profileValidation.changeProfile), profileController.changeProfile);
-router.post('/:id', validate(profileValidation.findProfileById), profileController.findProfileById);
+router.get('/:id', validate(profileValidation.findProfileById), profileController.findProfileById);
 router.put('/change-password', auth(''), validate(profileValidation.resetPassword), profileController.resetPassword);
 router.get('/get-summary/:id', validate(profileValidation.getSummary), profileController.getSummary);
 module.exports = router;

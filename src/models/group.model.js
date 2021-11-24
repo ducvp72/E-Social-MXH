@@ -8,9 +8,9 @@ const groupSchema = new Schema({
         required: true,
         trim: true,
     },
-    users: [{ type: Schema.Types.ObjectId, rel: 'User' }],
-    admin: { type: Schema.Types.ObjectId, rel: 'User' },
-    post: [{ type: Schema.Types.ObjectId, rel: 'Post' }],
+    users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    admin: { type: Schema.Types.ObjectId, ref: 'User' },
+    post: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
 }, {
     timestamps: {},
 });

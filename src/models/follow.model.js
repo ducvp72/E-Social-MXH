@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
+
 const { Schema } = mongoose;
 
 const followerSchema = new Schema({
-    followers: [{ type: Schema.Types.ObjectId, rel: 'User' }],
-    following: [{ type: Schema.Types.ObjectId, rel: 'User' }],
-    user: { type: Schema.Types.ObjectId, rel: 'User' },
+  followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
 followerSchema.plugin(toJSON);

@@ -12,6 +12,8 @@ const audioRoute = require('./audio.route');
 const commentRoute = require('./comment.route');
 const followRoute = require('./follow.route');
 const findRoute = require('./find.route');
+const messageRoute = require('./message.route');
+const conversationRoute = require('./conversation.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -64,6 +66,14 @@ const defaultRoutes = [
   {
     path: '/auth/admin',
     route: authAdminRoute,
+  },
+  {
+    path: '/conversation',
+    route: conversationRoute,
+  },
+  {
+    path: '/message',
+    route: messageRoute,
   },
 ];
 

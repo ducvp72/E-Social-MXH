@@ -12,6 +12,7 @@ const envVarsSchema = Joi.object()
     MONGODB_URL_IMAGE: Joi.string().required().description('Mongo DB url'),
     MONGODB_URL_AUDIO: Joi.string().required().description('Mongo DB url'),
     MONGODB_URL_VIDEO: Joi.string().required().description('Mongo DB url'),
+    MONGODB_URL_FILE: Joi.string().required().description('Mongo DB url'),
     JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30).description('minutes after which access tokens expire'),
     JWT_REFRESH_EXPIRATION_DAYS: Joi.number().default(30).description('days after which refresh tokens expire'),
     JWT_RESET_PASSWORD_EXPIRATION_MINUTES: Joi.number()
@@ -42,6 +43,7 @@ module.exports = {
     url_image: envVars.MONGODB_URL_IMAGE + (envVars.NODE_ENV === 'test' ? '-test' : ''),
     url_audio: envVars.MONGODB_URL_AUDIO + (envVars.NODE_ENV === 'test' ? '-test' : ''),
     url_video: envVars.MONGODB_URL_VIDEO + (envVars.NODE_ENV === 'test' ? '-test' : ''),
+    url_file: envVars.MONGODB_URL_VIDEO + (envVars.NODE_ENV === 'test' ? '-test' : ''),
     url_admin: envVars.MONGODB_URL_ADMIN + (envVars.NODE_ENV === 'test' ? '-test' : ''),
     options: {
       useCreateIndex: true,

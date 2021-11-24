@@ -7,6 +7,13 @@ const login = {
     password: Joi.string().required().custom(password),
   }),
 };
+const changePassword = {
+  body: Joi.object().keys({
+      oldPassword: Joi.string().required().custom(password),
+      password: Joi.string().required().custom(password),
+  }),
+};
 module.exports = {
   login,
+  changePassword,
 };

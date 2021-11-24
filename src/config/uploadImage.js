@@ -24,8 +24,8 @@ const storage = new GridFsStorage({
 });
 const uploadE = multer({
     storage,
-    // limit the size to 20mb for any files coming in
-    limits: { fileSize: 20000000 },
+    // limit the size to 5mb for any files coming in
+    limits: { fileSize: 5000000 },
     // filer out invalid filetypes
     fileFilter: function(req, file, cb) {
         checkImageType(file, cb);
@@ -33,7 +33,6 @@ const uploadE = multer({
 });
 
 function checkImageType(file, cb) {
-    // https://youtu.be/9Qzmri1WaaE?t=1515
     // define a regex that includes the file types we accept
     const filetypes = /jpeg|jpg|png|gif/;
     //check the file extention

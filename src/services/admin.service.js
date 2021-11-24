@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Admin, User } = require('../models');
+const { Admin, User, Post } = require('../models');
 const ApiError = require('../utils/ApiError');
 const userService = require('./user.service');
 /**
@@ -125,6 +125,25 @@ const existUserById = async (userId) => {
   }
   return true;
 };
+const updateAdminById = async (userId, updateBody) => {
+  const user = await getAdminById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  }
+  Object.assign(user, updateBody);
+  await user.save();
+  return user;
+};
+const deletePostById = async (postId)=>{
+  const post = await Post.findOne({ _id: postId });
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
+  }
+  await Post.deleteOne({ _id: postId });
+}
 
 module.exports = {
   createAdmin,
@@ -136,4 +155,6 @@ module.exports = {
   existUserById,
   toggleBlockById,
   unBlockUserById,
+  updateAdminById,
+  deletePostById,
 };

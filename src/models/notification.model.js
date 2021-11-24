@@ -1,9 +1,17 @@
 const mongoose = require('mongoose');
-const { toJSON, paginate } = require('./plugins');
-const { Schema } = mongoose;
+const {
+    toJSON,
+    paginate
+} = require('./plugins');
+const {
+    Schema
+} = mongoose;
 
 const notificationSchema = new Schema({
-    user: { type: Schema.Types.ObjectId, rel: 'users' },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     text: {
         type: String,
         required: true,

@@ -24,13 +24,12 @@ const storage = new GridFsStorage({
 });
 const uploadA = multer({
   storage,
-  // limit the size to 20gb for any files coming in
-  limits: { fileSize: 2000000000 },
+  // limit the size to 20mb for any files coming in
+  limits: { fileSize: 20000000 },
   // filer out invalid filetypes
 });
 
 function checkAudioType(file, cb) {
-  // https://youtu.be/9Qzmri1WaaE?t=1515
   // define a regex that includes the file types we accept
   const filetypes = /mp3|mpeg|mp4|wav|wma|aac/;
   // check the file extention

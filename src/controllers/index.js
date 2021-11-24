@@ -9,3 +9,6 @@ module.exports.audioController = require('./audio.controller');
 module.exports.commentController = require('./comment.controller');
 module.exports.followController = require('./follow.controller');
 module.exports.adminController = require('./admin.controller');
+module.exports.findController = require('./find.controller');
+module.exports.messageController = require('./message.controller');
+module.exports.conversationController = require('./conversation.controller');

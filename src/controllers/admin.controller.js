@@ -37,6 +37,10 @@ const deleteUser = catchAsync(async (req, res) => {
 const toggleBlockUserById = catchAsync(async (req, res) => {
   const user = await adminService.toggleBlockById(req.params.userId);
   res.status(httpStatus.OK).send(user);
+});
+const deletePostUser =catchAsync(async (req, res) => {
+  const user = await adminService.deletePostById(req.body.postId);
+  res.status(httpStatus.OK).send(user);
 })
 module.exports = {
   createAdmin,
@@ -45,4 +49,5 @@ module.exports = {
   updateUser,
   deleteUser,
   toggleBlockUserById,
+  deletePostUser,
 };

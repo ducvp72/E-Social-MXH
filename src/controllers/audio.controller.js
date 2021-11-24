@@ -2,7 +2,6 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const mongoose = require('mongoose');
 const { videoController } = require('./index');
-var GridStore = require('mongodb').GridStore;
 const config = require('../config/config');
 const catchAsync = require('../utils/catchAsync');
 let gfs;

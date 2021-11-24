@@ -2,18 +2,28 @@ const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
 
 const { Schema } = mongoose;
-const moment = require('moment-timezone');
 
 const commentSchema = new Schema(
   {
-    postId: { type: Schema.Types.ObjectId, rel: 'Post' },
-    text: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    user: { type: Schema.Types.ObjectId, rel: 'User' },
-    likes: [{ type: Schema.Types.ObjectId, rel: 'User' }],
+    comments: [
+      {
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        text: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+      },
+    ],
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true,

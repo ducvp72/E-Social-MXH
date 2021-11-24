@@ -52,11 +52,21 @@ const searchUser = {
         fullname: Joi.string().allow(''),
         role: Joi.string(),
         email:Joi.string().allow(''),
-        sortBy: Joi.string().valid('desc', 'asc'),
+        page:Joi.number().integer(),
+        choose: Joi.string(),
+        sortBy: Joi.string(),
+        populate: Joi.string(),
         limit: Joi.number().integer(),
     }),
 }
-
+const searchByKeyword = {
+  query: Joi.object().keys({
+      keyword: Joi.string().allow(''),
+      sortBy: Joi.string(),
+      populate: Joi.string(),
+      limit: Joi.number().integer(),
+  }),
+}
 module.exports = {
     createUser,
     getUsers,
@@ -64,4 +74,5 @@ module.exports = {
     updateUser,
     deleteUser,
     searchUser,
+    searchByKeyword,
 };

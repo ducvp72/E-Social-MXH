@@ -17,13 +17,18 @@ conn.once('open', () => {
 });
 const getImage = catchAsync(async (req, res) => {
   const { id } = req.params;
+  let weight = req.query.w;
+  let height = req.query.h;
   if (!id || id === 'undefined') {
-    res.status(httpStatus.BAD_REQUEST, 'no image id');
+    res.status(httpStatus.BAD_REQUEST, 'No imges were found');
   }
+  if (!weight) weight = 150;
+  if (!height) height = 150;
   const _id = new mongoose.Types.ObjectId(id);
+
   gfs.find({ _id }).toArray((err, files) => {
     if (!files || files.length === 0) return res.status(httpStatus.BAD_REQUEST).send('no files exist');
-    gfs.openDownloadStream(_id).pipe(sharp().resize(150, 150).jpeg()).pipe(res);
+    gfs.openDownloadStream(_id).pipe(sharp().resize(weight, height).jpeg()).pipe(res);
   });
 });
 const deleteImage = catchAsync(async (req, res) => {

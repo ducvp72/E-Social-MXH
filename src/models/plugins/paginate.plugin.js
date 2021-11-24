@@ -31,23 +31,43 @@ const paginate = (schema) => {
     } else {
       sort = 'createdAt';
     }
+    let docsPromise;
+    let limit = null;
+    let page = null;
+    let countPromise;
+    let choose = null;
+    if (options.limit || options.page) {
+      limit = options.limit && parseInt(options.limit, 10) > 0 ? parseInt(options.limit, 10) : 10;
+      page = options.page && parseInt(options.page, 10) > 0 ? parseInt(options.page, 10) : 1;
+      const skip = (page - 1) * limit;
 
-    const limit = options.limit && parseInt(options.limit, 10) > 0 ? parseInt(options.limit, 10) : 10;
-    const page = options.page && parseInt(options.page, 10) > 0 ? parseInt(options.page, 10) : 1;
-    const skip = (page - 1) * limit;
-
-    const countPromise = this.countDocuments(filter).exec();
-    let docsPromise = this.find(filter).sort(sort).skip(skip).limit(limit);
-
-    if (options.populate) {
-      options.populate.split(',').forEach((populateOption) => {
-        docsPromise = docsPromise.populate(
-          populateOption
-            .split('.')
-            .reverse()
-            .reduce((a, b) => ({ path: b, populate: a }))
-        );
-      });
+      if (options.choose) choose = options.choose.split(',');
+      countPromise = this.countDocuments(filter).exec();
+      docsPromise = this.find(filter, choose).sort(sort).skip(skip).limit(limit);
+      if (options.populate) {
+        options.populate.split(',').forEach((populateOption) => {
+          docsPromise = docsPromise.populate(
+            populateOption
+              .split('.')
+              .reverse()
+              .reduce((a, b) => ({ path: b, populate: a }))
+          );
+        });
+      }
+    } else {
+      if (options.choose) choose = options.choose.split(',');
+      countPromise = this.countDocuments(filter).exec();
+      docsPromise = this.find(filter, choose);
+      if (options.populate) {
+        options.populate.split(',').forEach((populateOption) => {
+          docsPromise = docsPromise.populate(
+            populateOption
+              .split('.')
+              .reverse()
+              .reduce((a, b) => ({ path: b, populate: a }))
+          );
+        });
+      }
     }
 
     docsPromise = docsPromise.exec();

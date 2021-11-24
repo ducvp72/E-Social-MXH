@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Follow } = require('../models');
+const { Follow, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { userService } = require('.');
 
@@ -108,7 +108,6 @@ const countFollow = async (userId) => {
     user: userId,
   }).then((newFollow) => {
     if (newFollow) {
-      console.log(newFollow);
       countFollowR.followers = newFollow.followers.length || 0;
       countFollowR.following = newFollow.following.length || 0;
     }

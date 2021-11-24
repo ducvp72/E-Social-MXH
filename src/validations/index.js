@@ -7,3 +7,5 @@ module.exports.postValidation = require('./post.validation');
 module.exports.commentValidation = require('./comment.validation');
 module.exports.followValidation = require('./follow.validation');
 module.exports.adminValidation = require('./admin.validation');
+module.exports.messageValidation = require('./message.validation');
+module.exports.conversationValidation = require('./conversation.validation');

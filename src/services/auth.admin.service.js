@@ -1,7 +1,8 @@
 const httpStatus = require('http-status');
 const tokenService = require('./token.service');
 const adminService = require('./admin.service');
-const Token = require('../models/token.model');
+const { Token, Admin } = require('../models');
+
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
 
@@ -89,6 +90,17 @@ const verifyEmail = async (verifyEmailToken) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
   }
 };
+const resetPasswordPage = async (user, oldPassword, newPassword) => {
+  const userR = await adminService.getAdminById(user._id);
+  if (!userR || !(await userR.isPasswordMatch(oldPassword))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+  }
+  try {
+    await adminService.updateAdminById(user._id, { password: newPassword });
+  } catch (error) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password reset failed');
+  }
+};
 
 module.exports = {
   loginAdmin,
@@ -96,4 +108,5 @@ module.exports = {
   refreshAuth,
   resetPassword,
   verifyEmail,
+  resetPasswordPage,
 };
