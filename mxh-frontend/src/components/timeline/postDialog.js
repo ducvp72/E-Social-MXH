@@ -15,6 +15,8 @@ import Button from "@mui/material/Button";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
+import { toast, ToastContainer, Zoom } from "react-toastify";
+import Loading from "./../../containers/LoadingPage/index";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -55,39 +57,36 @@ const BootstrapDialogTitle = (props) => {
 
 const PostDialog = (props) => {
   const { onClose, open } = props;
-  const [uploadFile, setUploadFile] = useState(false);
   const [inputStr, setInputStr] = useState([]);
-  const [textAreaCount, ChangeTextAreaCount] = useState(0);
   const [active, setActive] = useState(false);
+  const [uploadFile, setUploadFile] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
   const currentUser = useSelector((state) => state.auth.data);
   const hiddenFileInput = React.useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [userImage, setUserImage] = useState(null);
+  const [userImage, setUserImage] = useState();
   const [confirm, setonConfirm] = useState(false);
+
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
   const onEmojiClick = (e, emojiObject) => {
+    if (inputStr?.length >= 2200) {
+      return;
+    }
     setInputStr((prevInput) => prevInput + emojiObject.emoji);
-    // ChangeTextAreaCount(inputStr.length);
     setActive(false);
   };
-  const recalculate = (e) => {
-    setInputStr(e.target.value);
-    // ChangeTextAreaCount(e.target.value.length);
-    // ChangeTextAreaCount(inputStr.length);
-    // console.log("----------------------------");
-    // console.log("Input", inputStr);
-    // console.log("InputLenght", inputStr.length);
-    // console.log("----------------------------");
+
+  const handleInput = (event) => {
+    if (event.target.value?.length >= 20) {
+    }
+    setInputStr(event.target.value);
   };
 
-  // const onEmojiClick = (e, emojiObject) => {
-  //   setInputStr((prevInput) => prevInput + emojiObject.emoji);
-  //   ChangeTextAreaCount(inputStr.length);
-  //   setActive(false);
-  // };
+  // useEffect(() => {
+  //   console.log("CurrentValue", inputStr);
+  // }, [inputStr]);
 
   const handleConfirm = () => {
     setonConfirm(true);
@@ -109,6 +108,7 @@ const PostDialog = (props) => {
   const handleClick = (event) => {
     hiddenFileInput.current.click();
   };
+
   const imageFileHandler = (event) => {
     const file = event.target.files[0];
     setSelectedImage(file);
@@ -128,8 +128,6 @@ const PostDialog = (props) => {
     return true;
   };
 
-  // console.log("Check", checkDisabled());
-
   const onhandleSubmit = () => {
     let frmData = new FormData();
     frmData.append("file", selectedImage);
@@ -138,17 +136,66 @@ const PostDialog = (props) => {
       file: frmData,
     };
     console.log("Send Data", value);
+    toast.success("Let's see your post 😀", {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 1500,
+      hideProgressBar: true,
+    });
+    handleCloseConfirm();
   };
+  // console.log("Type", selectedImage?.type);
+  // console.log("Check", checkDisabled());
   // console.log("Selected-Before", selectedImage);
   // console.log("UserImage-Before", userImage);
+  // console.log("UserImage-Before", userImage);
+
+  const checkFile = () => {
+    if (userImage) {
+      if (
+        selectedImage.type === "image/jpeg" ||
+        selectedImage.type === "image/png" ||
+        selectedImage.type === "image/gif"
+      ) {
+        return (
+          <img
+            style={{
+              width: "550px",
+              height: "550px",
+            }}
+            src={userImage}
+            alt="img"
+            className="z-40"
+          />
+        );
+      }
+      if (selectedImage.type === "video/mp4") {
+        return (
+          <video
+            style={{
+              width: "550px",
+              height: "550px",
+            }}
+            className="z-40"
+            controls
+          >
+            <source src={userImage} />
+          </video>
+        );
+      }
+    }
+  };
+
   return (
     <div>
+      <ToastContainer transition={Zoom} />
       <BootstrapDialog
         maxWidth="lg"
         height="600px"
         open={open}
         aria-labelledby="customized-dialog-title"
       >
+        {/* {<Loading />} */}
+        {uploadFile && <CircularStatic />}
         {
           <div className="right-1/2 left-1/2 top-1/2 absolute z-50 bg-green-700 cursor-pointer">
             <Dialog
@@ -218,9 +265,13 @@ const PostDialog = (props) => {
             <div className="flex-1"></div>
           </div>
         </BootstrapDialogTitle>
-        {uploadFile && <CircularStatic />}
+
         <div className="grid grid-cols-5 gap-0.5">
-          <div className="col-span-3  border-2 border-light-gray-700">
+          <div
+            className={`${
+              selectedImage?.type === "video/mp4" && "bg-black"
+            } col-span-3 border-2 border-light-gray-700`}
+          >
             <div
               style={{
                 width: "550px",
@@ -228,29 +279,21 @@ const PostDialog = (props) => {
               }}
               className="flex justify-center items-center"
             >
-              {userImage && (
-                <img
-                  style={{
-                    width: "550px",
-                    height: "550px",
-                  }}
-                  // src="/assets/person/lam3.png"
-                  src={userImage}
-                  alt="img"
-                  className="z-50"
-                />
-              )}
-              <div className=" absolute z-40">
+              {checkFile()}
+
+              <div className="absolute z-20">
                 <button
                   onClick={handleClick}
-                  className=" mr-2 cursor-pointer border-2 border-gray-400 bg-white p-1 rounded-md text-gray-400 font-medium"
+                  className={`${
+                    selectedImage && "hidden"
+                  } mr-2 cursor-pointer border-2 border-gray-400 bg-white p-1 rounded-md text-gray-400 font-medium`}
                 >
                   Upload a file
                 </button>
                 <input
                   className=" hidden cursor-pointer left-0 top-1  font-medium absolute text-blue-500 text-sm "
                   type="file"
-                  accept="image/*"
+                  accept="image/*,/video/mp4,video/x-m4v,video/*"
                   onChange={imageFileHandler}
                   id="fileChoosen"
                   ref={hiddenFileInput}
@@ -286,8 +329,8 @@ const PostDialog = (props) => {
                 rows="8"
                 className=" boder-2 mt-2 font-normal text-lg text-black focus:outline-none"
                 value={inputStr}
-                // onChange={(e) => setInputStr(e.target.value)}
-                onChange={recalculate}
+                onChange={handleInput}
+                maxLength={2200}
               />
               <div className="flex justify-between items-center">
                 <img
@@ -298,7 +341,7 @@ const PostDialog = (props) => {
                   ref={buttonRef}
                 />
                 <p className="text-gray-400 text-xs font-semibold">
-                  {textAreaCount}/2,200
+                  {inputStr?.length}/2,200
                 </p>
               </div>
               {active ? (

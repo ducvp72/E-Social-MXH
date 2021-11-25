@@ -43,8 +43,9 @@ const Login = () => {
       <div className="wr-sceen h-screen flex flex-col justify-center items-center lg:grid lg:grid-cols-2">
         <img
           src="/assets/access/online.svg"
+          // src="/assets/image/vni-logo.png"
           alt="online"
-          className="hidden lg:block w-1/2 hover:scale-150 transition-all duration-500 transform mx-auto"
+          className="hidden lg:block  w-1/2 hover:scale-150 transition-all duration-500 transform mx-auto"
         />
         <div className="bg-white">
           <Box sx={{ width: "100%", typography: "body1" }}>
