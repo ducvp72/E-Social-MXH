@@ -58,8 +58,8 @@ const BootstrapDialogTitle = (props) => {
 const PostDialog = (props) => {
   const { onClose, open } = props;
   const [inputStr, setInputStr] = useState([]);
-  const [active, setActive] = useState(false);
   const [uploadFile, setUploadFile] = useState(false);
+  const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
   const currentUser = useSelector((state) => state.auth.data);
@@ -79,14 +79,11 @@ const PostDialog = (props) => {
   };
 
   const handleInput = (event) => {
-    if (event.target.value?.length >= 20) {
+    if (event.target.value?.length >= 2200) {
+      return;
     }
     setInputStr(event.target.value);
   };
-
-  // useEffect(() => {
-  //   console.log("CurrentValue", inputStr);
-  // }, [inputStr]);
 
   const handleConfirm = () => {
     setonConfirm(true);
@@ -143,11 +140,6 @@ const PostDialog = (props) => {
     });
     handleCloseConfirm();
   };
-  // console.log("Type", selectedImage?.type);
-  // console.log("Check", checkDisabled());
-  // console.log("Selected-Before", selectedImage);
-  // console.log("UserImage-Before", userImage);
-  // console.log("UserImage-Before", userImage);
 
   const checkFile = () => {
     if (userImage) {
@@ -184,7 +176,11 @@ const PostDialog = (props) => {
       }
     }
   };
-
+  // console.log("Type", selectedImage?.type);
+  // console.log("Check", checkDisabled());
+  // console.log("Selected-Before", selectedImage);
+  // console.log("UserImage-Before", userImage);
+  // console.log("UserImage-Before", userImage);
   return (
     <div>
       <ToastContainer transition={Zoom} />
@@ -327,7 +323,7 @@ const PostDialog = (props) => {
                 placeholder="what are you thinking?"
                 cols=""
                 rows="8"
-                className=" boder-2 mt-2 font-normal text-lg text-black focus:outline-none"
+                className=" resize-none boder-2 mt-2 font-normal text-lg text-black focus:outline-none"
                 value={inputStr}
                 onChange={handleInput}
                 maxLength={2200}

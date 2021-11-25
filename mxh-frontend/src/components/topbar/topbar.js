@@ -10,8 +10,9 @@ import { SkeletonAvatarTopbar } from "../../skeletons/Skeletons";
 import SearchText from "./autoComplete";
 import Box from "@mui/material/Box";
 import { useOnClickOutside } from "./../../utils/handleRefresh";
+import PostDialog from "./../timeline/postDialog";
 export const Topbar = () => {
-  const [showNotification, setShowNotification] = useState(false);
+  const [createPost, setCreatePost] = useState(false);
   const [skt, setSkt] = useState(true);
   const [cookies, , removeCookie] = useCookies(["auth"]);
   const [loading] = useState(false);
@@ -21,28 +22,6 @@ export const Topbar = () => {
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
-
-  // useEffect(() => {
-  //   /**
-  //    * Close modal
-  //    */
-  //   const handleClickOutside = (event) => {
-  //     // Click at avatar button to close
-  //     if (buttonRef.current && buttonRef.current.contains(event.target)) {
-  //       return;
-  //     }
-  //     // Handle click outside to close modal
-  //     if (modalRef.current && !modalRef.current.contains(event.target)) {
-  //       setActive(false);
-  //     }
-  //   };
-  //   // Bind the event listener
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     // Unbind the event listener on clean up
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, [modalRef, buttonRef]);
 
   // Call hook passing in the ref and a function to call on outside click
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
@@ -63,9 +42,14 @@ export const Topbar = () => {
     }
   };
 
+  const onClose = () => {
+    setCreatePost(false);
+  };
+
   const user = 1;
   return (
     <>
+      <PostDialog open={createPost} onClose={onClose} />
       {loading && <Loading />}
       <header className="fixed shadow-md w-full h-16 bg-white border-b border-gray-primary mb-8 z-40">
         <div className="container mx-auto max-w-screen-lg h-full">
@@ -138,7 +122,10 @@ export const Topbar = () => {
                     </NavLink>
                   )}
                 </div>
-                <div className="relative">
+                <div
+                  onClick={() => setCreatePost(!createPost)}
+                  className="relative"
+                >
                   <svg
                     className="w-8 mr-2 cursor-pointer"
                     xmlns="http://www.w3.org/2000/svg"

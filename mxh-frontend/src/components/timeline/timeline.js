@@ -79,9 +79,7 @@ export const Timeline = () => {
   return (
     <div className="md:col-span-2 sm:col-start-1 sm:col-end-7 md:py-16 md:px-0 lg:px-12 xl:p-16  py-16">
       <Postshow post={post} setToggle={setToggle} toggle={toggle} />
-      {/* <CreatePost open={createPost} onClose={onClose} /> */}
       <PostDialog open={createPost} onClose={onClose} />
-
       <div className="rounded border border-gray-primary mb-5 md:mr-16 sm:mr-1 lg:mr-0 shadow-md">
         <div className=" flex" onClick={() => setCreatePost(!createPost)}>
           <input

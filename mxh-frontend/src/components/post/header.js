@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
+import DialogActionPost from "./dialogAction";
 
 export const Header = () => {
+  const [action, setAction] = useState(false);
+  const onClose = () => {
+    setAction(false);
+  };
+
   return (
     <div className="grid grid-cols-2 pt-2">
+      <DialogActionPost open={action} onClose={onClose}></DialogActionPost>
       <div className=" relative flex h-4 p-4 py-6">
         <div className="flex items-center relative">
           {/* <Link to={ROUTES.PROFILE}> */}
@@ -26,7 +33,14 @@ export const Header = () => {
         </div>
       </div>
       <div className=" flex justify-end mr-2 items-center">
-        <p className="font-black text-2xl cursor-pointer text-gray-400">...</p>
+        <div
+          onClick={() => {
+            setAction(!action);
+          }}
+          className=" font-black text-2xl cursor-pointer text-gray-400"
+        >
+          ...
+        </div>
       </div>
     </div>
   );
