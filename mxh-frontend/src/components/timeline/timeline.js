@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Post } from "./../post/post";
 import Postshow from "./postshow";
 import { useSelector } from "react-redux";
-import CreatePost from "./createPost";
 import PostDialog from "./postDialog";
 import { SkeletonPost } from "../../skeletons/Skeletons";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "../../containers/LoadingPage/infititeLoading";
+import { set } from "date-fns";
 
 export const Timeline = () => {
   const [toggle, setToggle] = useState({ isShow: false, postData: {} });
@@ -33,6 +33,7 @@ export const Timeline = () => {
     })
       .then((rs) => {
         if (rs) setPost(rs.data);
+        setToggle({ ...toggle, postData: rs.data });
         setSkt(false);
       })
       .catch((err) => {

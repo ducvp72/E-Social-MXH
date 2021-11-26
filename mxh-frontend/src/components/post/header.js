@@ -8,7 +8,7 @@ export const Header = () => {
   };
 
   return (
-    <div className="grid grid-cols-2 pt-2">
+    <div className="grid grid-cols-2 pt-2 mb-2">
       <DialogActionPost open={action} onClose={onClose}></DialogActionPost>
       <div className=" relative flex h-4 p-4 py-6">
         <div className="flex items-center relative">

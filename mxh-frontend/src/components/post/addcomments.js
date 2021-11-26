@@ -1,15 +1,19 @@
 import React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
 import { useOnClickOutside } from "./../../utils/handleRefresh";
 import "./style.css";
 const Addcomments = () => {
-  const [inputStr, setInputStr] = useState([]);
+  const [inputStr, setInputStr] = useState("");
   const [comment, setComment] = useState("");
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
+
+  useEffect(() => {
+    // console.log("inputStrCmt", inputStr);
+  });
 
   const onEmojiClick = (e, emojiObject) => {
     if (inputStr?.length >= 2200) {
@@ -27,9 +31,11 @@ const Addcomments = () => {
   };
 
   const handleSubmitComment = (event) => {
-    event.preventDefault();
+    // alert(inputStr);
+    event?.preventDefault();
     setComment("");
   };
+
   return (
     <div className="border-gray-primary mb-2">
       <form
@@ -73,24 +79,15 @@ const Addcomments = () => {
           autoComplete="off"
         />
 
-        {/* <input
-          aria-label="Add a comment"
-          autoComplete="off"
-          className="text-sm text-gray-base w-full mr-3 py-3 px-2"
-          type="text"
-          value={comment}
-          onChange={({ target }) => setComment(target.value)}
-          name="add-comment"
-          placeholder="Add a comment..."
-        /> */}
-
         <button
-          className={`text-lg focus:outline-none font-bold text-blue-medium ${
+          className={` text-base focus:outline-none font-bold text-blue-medium ${
             !inputStr && "opacity-25"
           }`}
           type="button"
           disabled={inputStr.length < 1}
-          onClick={handleSubmitComment}
+          onClick={() => {
+            handleSubmitComment();
+          }}
         >
           Post
         </button>

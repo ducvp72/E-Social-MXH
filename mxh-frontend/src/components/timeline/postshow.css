@@ -1,5 +1,5 @@
 .post-show::-webkit-scrollbar {
-    width: 0.1em;
+    width: 0em;
 }
 
 .post-show::-webkit-scrollbar-thumb {

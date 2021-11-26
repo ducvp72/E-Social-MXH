@@ -2,12 +2,12 @@ import React from "react";
 
 export const Comment = ({ setToggle, item }) => {
   return (
-    <div className="p-4 pt-1 pb-4">
+    <div className=" px-4 py-2">
       <p
-        className="text-sm text-gray-base mb-1 cursor-pointer"
+        className="text-sm text-gray-base  cursor-pointer"
         onClick={() => setToggle({ isShow: true, postData: item })}
       >
-        View all
+        View all 100 comments
       </p>
     </div>
   );

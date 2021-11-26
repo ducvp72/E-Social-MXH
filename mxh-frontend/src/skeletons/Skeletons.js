@@ -123,3 +123,12 @@ export const SkeletonProfile = () => {
     </div>
   );
 };
+
+export const SkeletonComment = () => {
+  return (
+    <div className="ml-2 flex gap-2">
+      <Skeleton circle={true} width={35} height={35} />
+      <Skeleton width={"410px"} height={35} />
+    </div>
+  );
+};
