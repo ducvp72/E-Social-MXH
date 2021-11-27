@@ -17,6 +17,8 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import { toast, ToastContainer, Zoom } from "react-toastify";
 import Loading from "./../../containers/LoadingPage/index";
+import { postApi } from "./../../axiosApi/api/postApi";
+import { useCookies } from "react-cookie";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -67,7 +69,8 @@ const PostDialog = (props) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [userImage, setUserImage] = useState();
   const [confirm, setonConfirm] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [cookies, ,] = useCookies("auth");
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
   const onEmojiClick = (e, emojiObject) => {
@@ -124,29 +127,46 @@ const PostDialog = (props) => {
     }
     return true;
   };
+  const FormData = require("form-data");
 
-  const onhandleSubmit = () => {
-    let frmData = new FormData();
-    frmData.append("file", selectedImage);
-    const value = {
-      text: inputStr,
-      file: frmData,
-    };
-    console.log("Send Data", value);
-    toast.success("Let's see your post 😀", {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 1500,
-      hideProgressBar: true,
-    });
-    handleCloseConfirm();
+  const onhandleSubmit = async () => {
+    setLoading(true);
+    let formData = new FormData();
+    formData.append("text", inputStr);
+    formData.append("file", selectedImage);
+
+    console.log("Send Data", formData.get("text"));
+    console.log("Send Data2", formData.get("file"));
+    postApi
+      .createPost(cookies.auth.tokens.access.token, formData)
+      .then(() => {
+        setLoading(false);
+        toast.success("Let's see your post 😀", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1500,
+          hideProgressBar: true,
+        });
+        // handleCloseConfirm();
+        setInputStr(null);
+        delelteCurrentImage();
+        onClose();
+      })
+      .catch((error) => {
+        setLoading(false);
+        toast.error(`${error}`, {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
+      });
   };
 
   const checkFile = () => {
     if (userImage) {
       if (
-        selectedImage.type === "image/jpeg" ||
-        selectedImage.type === "image/png" ||
-        selectedImage.type === "image/gif"
+        selectedImage?.type === "image/jpeg" ||
+        selectedImage?.type === "image/png" ||
+        selectedImage?.type === "image/gif"
       ) {
         return (
           <img
@@ -156,24 +176,26 @@ const PostDialog = (props) => {
             }}
             src={userImage}
             alt="img"
-            className="z-40"
+            className="z-30"
           />
         );
       }
-      if (selectedImage.type === "video/mp4") {
+      if (selectedImage?.type === "video/mp4") {
         return (
           <video
             style={{
               width: "550px",
               height: "550px",
             }}
-            className="z-40"
+            className="z-30"
             controls
           >
             <source src={userImage} />
           </video>
         );
       }
+    } else {
+      return;
     }
   };
   // console.log("Type", selectedImage?.type);
@@ -190,7 +212,8 @@ const PostDialog = (props) => {
         open={open}
         aria-labelledby="customized-dialog-title"
       >
-        {/* {<Loading />} */}
+        <div className="z-50"> {loading && <Loading />}</div>
+
         {uploadFile && <CircularStatic />}
         {
           <div className="right-1/2 left-1/2 top-1/2 absolute z-50 bg-green-700 cursor-pointer">

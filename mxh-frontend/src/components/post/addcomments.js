@@ -9,11 +9,12 @@ const Addcomments = () => {
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
+
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
   useEffect(() => {
     // console.log("inputStrCmt", inputStr);
-  });
+  }, []);
 
   const onEmojiClick = (e, emojiObject) => {
     if (inputStr?.length >= 2200) {
@@ -31,9 +32,24 @@ const Addcomments = () => {
   };
 
   const handleSubmitComment = (event) => {
-    // alert(inputStr);
+    alert(inputStr);
     event?.preventDefault();
     setComment("");
+  };
+
+  // const handleFocus = (event) => {
+  //   console.log(event.target.value);
+  //   event?.preventDefault();
+  // };
+
+  const press = (event) => {
+    if (event.keyCode === 13 && !event.shiftKey) {
+      // Enter was pressed without shift key
+      console.log(event.target.value);
+      event.preventDefault();
+    }
+
+    return;
   };
 
   return (
@@ -68,6 +84,7 @@ const Addcomments = () => {
         />
         {/* <div contenteditable="true"></div> */}
         <textarea
+          // ref={(input) => (this.input = input)}
           cols=""
           rows="1"
           className="border-2 rounded-md border-gray-200 ml-1 focus:outline-none relative break-words overflow-visible  mr-1 py-3 px-2 text-sm resize-none w-full mt-2 font-normal text-gray-base"
@@ -77,6 +94,7 @@ const Addcomments = () => {
           placeholder="Add a comment..."
           type="text"
           autoComplete="off"
+          onKeyDown={press}
         />
 
         <button

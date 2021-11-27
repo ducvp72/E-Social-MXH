@@ -1,9 +1,10 @@
 import React from "react";
 import axiosApi from "./../apiFrame/axiosApi";
+import axiosFrmMulti from "./../apiFrame/axiosFrmMulti";
 
 export const postApi = {
-  createPost() {
-    return axiosApi(`post/create-post-image`);
+  createPost(token, data) {
+    return axiosApi(`post/create-post-file`, `POST`, data, null, token);
   },
   getUserPost(userID, page, limit) {
     return axiosApi(`post?owner=${userID}&page=${page}&limit=${limit}`);
