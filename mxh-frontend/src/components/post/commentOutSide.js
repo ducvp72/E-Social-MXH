@@ -4,20 +4,42 @@ import Picker from "emoji-picker-react";
 import { useOnClickOutside } from "../../utils/handleRefresh";
 import "./style.css";
 import { v4 as uuidv4 } from "uuid";
+import { postApi } from "./../../axiosApi/api/postApi";
+import { useCookies } from "react-cookie";
 const CommentOutSide = (props) => {
-  const { setAddCmt, addCmt } = props;
+  const { setyourComment, yourcomment, item, getTwoPage } = props;
+  // console.log("itemCMt", item?.id);
   const [inputStr, setInputStr] = useState("");
   const [comment, setComment] = useState("");
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
-
+  const [cookies, ,] = useCookies(["auth"]);
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
   // useEffect(() => {
   //   console.log("inputStrCmt: ", inputStr);
   //   const textInput = document.getElementById("txtArea").value;
   // }, [inputStr]);
+
+  // useEffect(() => {
+  //   getFirstPage();
+  // }, []);
+
+  const getFirstPage = async () => {
+    postApi
+      .userComment(cookies.auth.tokens.access.token, {
+        postId: item?.id,
+        text: inputStr,
+      })
+      .then((rs) => {
+        console.log(rs);
+        return;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const onEmojiClick = (e, emojiObject) => {
     if (inputStr?.length >= 2200) {
@@ -36,13 +58,15 @@ const CommentOutSide = (props) => {
 
   const handleSubmitComment = (e) => {
     e?.preventDefault();
-    setAddCmt({
-      ...addCmt,
+    setyourComment({
+      ...yourcomment,
       text: inputStr,
       // realtime: Date.now(),
       realtime: uuidv4(),
     });
+    getFirstPage();
     setInputStr("");
+    // getTwoPage();
   };
 
   const press = (event) => {
@@ -52,13 +76,15 @@ const CommentOutSide = (props) => {
       if (inputStr === "") {
         return;
       } else {
-        setAddCmt({
-          ...addCmt,
+        setyourComment({
+          ...yourcomment,
           text: event.target.value,
-          // realtime: Date.now(),
+
           realtime: uuidv4(),
         });
+        getFirstPage();
         setInputStr("");
+        // getTwoPage();
         event.preventDefault();
       }
     }

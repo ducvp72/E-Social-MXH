@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const Caption = (props) => {
+const CaptionCrs = (props) => {
   const { item } = props;
   const [expand, setExpand] = useState(false);
   const text = item?.text;
@@ -33,4 +33,4 @@ const Caption = (props) => {
   );
 };
 
-export default Caption;
+export default CaptionCrs;

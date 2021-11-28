@@ -45,7 +45,7 @@ const UserThumbnail = (props) => {
                   Following
                 </div>
               ) : null}
-              {item?.id}
+              {/* {item?.id} */}
               <br />
             </div>
             <div className="">

@@ -4,13 +4,12 @@ import Addcomments from "./../post/addcomments";
 import { Action } from "./../post/action";
 import { ListComment } from "./ListComment";
 import Caption from "./../post/caption";
-
+import { SkeletonImagePost } from "./../../skeletons/Skeletons";
 const PostDetail = (props) => {
   const { setPopup, popup, item } = props;
   const [selectedImage, setSelectedImage] = useState(null);
   const [userImage, setUserImage] = useState();
   const [action, setAction] = useState(false);
-  // const [comment, setComment] = useState("");
   const [comment, setComment] = useState({ text: "", realtime: null });
 
   useEffect(() => {
@@ -85,6 +84,7 @@ const PostDetail = (props) => {
               width="800px"
               height="100%"
             />
+            <SkeletonImagePost />
             {/* {checkFile()} */}
           </div>
           <div className="post-show col-span-2">
@@ -107,7 +107,9 @@ const PostDetail = (props) => {
                 </p>
               </div>
             </div>
+
             <hr className="mt-2 " />
+
             <div
               id="scrollableDiv"
               className=" relative overflow-y-auto overflow-x-hidden post-show w-full"

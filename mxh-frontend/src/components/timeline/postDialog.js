@@ -58,7 +58,7 @@ const BootstrapDialogTitle = (props) => {
 };
 
 const PostDialog = (props) => {
-  const { onClose, open } = props;
+  const { onClose, open, upadateStatus } = props;
   const [inputStr, setInputStr] = useState([]);
   const [uploadFile, setUploadFile] = useState(false);
   const [active, setActive] = useState(false);
@@ -150,6 +150,7 @@ const PostDialog = (props) => {
         setInputStr(null);
         delelteCurrentImage();
         onClose();
+        upadateStatus();
       })
       .catch((error) => {
         setLoading(false);

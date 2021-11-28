@@ -22,7 +22,7 @@ const Profile = () => {
   const [userPost, setUserPost] = useState([]);
   const currentUser = useSelector((state) => state.auth.data);
   const [skt, setSkt] = useState(true);
-  // const [toggle, setToggle] = useState({ isShow: false, postData: {} });
+  const [toggle, setToggle] = useState({ isShow: false, postData: {} });
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
 
@@ -147,8 +147,7 @@ const Profile = () => {
           </div>
         </div>
       )}
-      {/* <Postshow setToggle={setToggle} toggle={toggle} /> */}
-      {/* <CarouselElement  setToggle={setToggle} toggle={toggle} /> */}
+
       <div className="py-2 w-full xl:w-4/6 lg:w-4/6 md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2">
         <InfiniteScroll
           dataLength={userPost?.length}

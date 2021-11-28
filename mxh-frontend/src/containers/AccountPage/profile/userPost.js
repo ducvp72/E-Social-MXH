@@ -1,24 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CarouselElement from "./../../../Carousel/index";
 
 const UserPost = (props) => {
-  // const { setToggle, item } = props;
   const { item } = props;
-  const [toggle, setToggle] = useState({ isShow: false, postData: {} });
+  const [popup, setPopup] = useState(false);
+  useEffect(() => {
+    console.log("PopUp", popup);
+  }, [popup]);
+  const handleShowPopup = () => {
+    setPopup(true);
+  };
   return (
     <div>
-      {/* <CarouselElement item={item} setToggle={setToggle} toggle={toggle} /> */}
+      {popup && (
+        <CarouselElement item={item} setPopup={setPopup} popup={popup} />
+      )}
       <div className="shadow-2xl cursor-pointer rounded-sm  border-white relative group">
         <img
           // src={`https://mxhld.herokuapp.com/v1/image/${item.images[0]}?w=500&h=500`}
-          // src={`https://mxhld.herokuapp.com/v1/image/${item.images[0]}?w=500&h=500`}
+          src={"/assets/image/votui.jpg"}
           alt="ImgPost"
           className="rounded-sm w-full h-40 xl:h-80 sm:h-56 md-h-40 "
         />
         <div className=" absolute top-0 w-full h-full hidden group-hover:block transition delay-150 duration-500 ease-in-out ">
           <div className="bg-gray-900 h-full w-full top-0 left-0 opacity-50 absolute z-10 " />
           <div
-            onClick={() => setToggle({ isShow: true, postData: {} })}
+            onClick={() => {
+              handleShowPopup();
+            }}
             className=" absolute z-20 flex justify-center items-center space-x-2 md:space-x-7 lg:space-x-7 w-full h-full"
           >
             <div className="flex space-x-1">

@@ -1,45 +1,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { postApi } from "./../../axiosApi/api/postApi";
-import { useCookies } from "react-cookie";
 
-export const Action = (props) => {
-  const { toggleCheck, setPopup, popup, item } = props;
-  const [likes, setLikes] = useState(item?.hasLike);
-  const [countLike, setCountLike] = useState(item?.likes);
-  const [cookies, ,] = useCookies("auth");
-
-  useEffect(() => {
-    // console.log("IsLikes", likes);
-  }, [likes, toggleCheck]);
+export const ActionCrs = (props) => {
+  const [likes, setLikes] = useState(false);
+  const [countLike, setCountLike] = useState(100);
 
   const handleLiked = async () => {
     setLikes(!likes);
     setCountLike((countLike) => (likes ? countLike - 1 : countLike + 1));
-    handleFetchPosts();
-  };
-
-  const handleFetchPosts = () => {
-    return new Promise((resolve, reject) => {
-      postApi
-        .likePost(cookies.auth.tokens.access.token, { postId: item?.id })
-        .then((rs) => {
-          // resolve(rs.data);
-          return;
-        })
-        .catch((err) => {
-          console.log("errPromise", err);
-          // reject(err);
-        });
-    });
-  };
-
-  const handleSetToggle = () => {
-    if (toggleCheck === true) {
-      return;
-    }
-    // setToggle({ isShow: true, postData: item });
-    setPopup({ ...popup, isShow: true });
   };
 
   return (
@@ -55,7 +23,7 @@ export const Action = (props) => {
               tabIndex={0}
               className={`${
                 likes && "fill-red text-red-primary"
-              }  fill-white text-black w-8 mr-2 cursor-pointer border-none focus:outline-none `}
+              } fill-white text-black w-8 mr-2 cursor-pointer border-none focus:outline-none `}
             >
               <path
                 strokeLinecap="round"
@@ -66,7 +34,7 @@ export const Action = (props) => {
             </svg>
           </button>
 
-          <button onClick={() => handleSetToggle()}>
+          <button>
             <svg
               className="w-8 mr-1 text-black-light select-none cursor-pointer focus:outline-none"
               xmlns="http://www.w3.org/2000/svg"
@@ -105,11 +73,13 @@ export const Action = (props) => {
           </button>
         </div>
       </div>
-      <div className="px-4 py-0">
+      <div className=" flex  px-4 py-0 gap-1">
         <p className=" font-semibold">
           {countLike >= 1000 ? parseInt(countLike / 1000) + "K" : countLike}{" "}
           likes
         </p>
+
+        <p className=" font-semibold">and 100 comments</p>
       </div>
     </>
   );

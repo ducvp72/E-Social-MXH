@@ -38,8 +38,8 @@ export const UserDashboard = () => {
     // if (search === "") {
     //   getAllUserFirst();
     // } else {
-    callResultUser();
     // }
+    callResultUser();
   }, [search, status]);
 
   const getAllUserFirst = () => {

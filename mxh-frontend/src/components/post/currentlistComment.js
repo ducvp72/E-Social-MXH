@@ -16,7 +16,7 @@ export const CurrentComment = (props) => {
     <div className="flex px-2">
       <img
         className="rounded-full h-8 w-8 flex mt-1"
-        src={"/assets/image/defaultAvatar.png"}
+        src={`https://mxhld.herokuapp.com/v1/image/${item?.user.avatar}`}
         alt="userimg"
       />
       <div className="group flex items-center">
@@ -24,7 +24,10 @@ export const CurrentComment = (props) => {
         <div className="py-4 pl-1 pt-1 pb-1 flex items-center w-full ">
           <div className=" bg-gray-200 rounded-xl px-2">
             <div className="">
-              <span className="mr-1 font-medium block"> {item?.name} </span>
+              <span className="mr-1 font-medium block">
+                {" "}
+                {item?.user.fullname}{" "}
+              </span>
               {text?.length > 100 ? (
                 <>
                   <span className="font-normal  text-gray-700 text-base">

@@ -7,7 +7,7 @@ import { userApi } from "../../../axiosApi/api/userApi";
 import { useLocation } from "react-router-dom";
 import { useCookies } from "react-cookie";
 const ListUserSearch = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([""]);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);

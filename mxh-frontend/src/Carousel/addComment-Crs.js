@@ -1,12 +1,10 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
-import { useOnClickOutside } from "./../../utils/handleRefresh";
-import "./style.css";
+
 import { v4 as uuidv4 } from "uuid";
-import { postApi } from "./../../axiosApi/api/postApi";
-import { useCookies } from "react-cookie";
-const Addcomments = (props) => {
+import { useOnClickOutside } from "../utils/handleRefresh";
+const AddCommentCrs = (props) => {
   const { setyourComment, yourcomment } = props;
 
   const [inputStr, setInputStr] = useState("");
@@ -58,7 +56,7 @@ const Addcomments = (props) => {
         setyourComment({
           ...yourcomment,
           text: event.target.value,
-
+          // realtime: Date.now(),
           realtime: uuidv4(),
         });
         setInputStr("");
@@ -127,4 +125,4 @@ const Addcomments = (props) => {
   );
 };
 
-export default Addcomments;
+export default AddCommentCrs;

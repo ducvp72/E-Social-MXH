@@ -9,6 +9,9 @@ import UserPost from "./../profile/userPost";
 import { SkeletonProfile } from "../../../skeletons/Skeletons";
 import { useCookies } from "react-cookie";
 import Swal from "sweetalert2";
+import { SkeletonPostThumbnail } from "./../../../skeletons/Skeletons";
+import { InfiniteScroll } from "react-infinite-scroll-component";
+import InfititeLoading from "./../../LoadingPage/infititeLoading";
 
 const OtherProfile = () => {
   const [following, setFollowing] = useState(false);
@@ -18,6 +21,7 @@ const OtherProfile = () => {
   const [cookies, ,] = useCookies(["auth"]);
   let { username } = useParams();
   const idUser = useLocation().search;
+
   const q = new URLSearchParams(idUser).get("id");
 
   useEffect(() => {
@@ -32,13 +36,12 @@ const OtherProfile = () => {
       .then((res) => {
         console.log("res", res.data);
         setUserInfo(res.data);
-        // setFollowing(res.data.results[0].isFollow);
         setFollowing(res.data.isFollow);
         setSkt(false);
       })
       .catch((err) => {
         setSkt(false);
-        // console.log(err);
+        console.log(err);
       });
   };
 
@@ -75,6 +78,14 @@ const OtherProfile = () => {
       showConfirmButton: false,
       timer: 1500,
     });
+  };
+
+  const loopSkeleton = () => {
+    let arr = [];
+    for (let i = 0; i < 3; i++) {
+      arr = [...arr, <SkeletonPostThumbnail key={i} />];
+    }
+    return arr;
   };
 
   return (
@@ -167,9 +178,36 @@ const OtherProfile = () => {
       )}
 
       <div className="py-2 w-full xl:w-4/6 lg:w-4/6 md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2">
-        <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
-          <UserPost />
-        </div>
+        {/* <InfiniteScroll
+          dataLength={userPost?.length}
+          next={fetchData}
+          hasMore={noMore}
+          loader={
+            <div className=" flex justify-center">
+              <InfititeLoading />
+            </div>
+          }
+          endMessage={
+            <p className="flex justify-center font-avatar text-lg">
+              <b>Opp..! You have seen it all</b>
+            </p>
+          }
+        >
+          {skt ? (
+            <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
+              {loopSkeleton()}
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
+              {userPost &&
+                userPost.map((item) => {
+                  return (
+                    <UserPost key={item.id} item={item} />
+                  );
+                })}
+            </div>
+          )}
+        </InfiniteScroll> */}
       </div>
     </div>
   );

@@ -132,3 +132,11 @@ export const SkeletonComment = () => {
     </div>
   );
 };
+
+export const SkeletonImagePost = () => {
+  return (
+    <div className="">
+      <Skeleton height={"540px"} />
+    </div>
+  );
+};
