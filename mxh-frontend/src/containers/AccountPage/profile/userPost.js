@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
+import CarouselElement from "./../../../Carousel/index";
 
 const UserPost = (props) => {
-  const { setToggle, item } = props;
+  // const { setToggle, item } = props;
+  const { item } = props;
+  const [toggle, setToggle] = useState({ isShow: false, postData: {} });
   return (
     <div>
+      {/* <CarouselElement item={item} setToggle={setToggle} toggle={toggle} /> */}
       <div className="shadow-2xl cursor-pointer rounded-sm  border-white relative group">
         <img
           // src={`https://mxhld.herokuapp.com/v1/image/${item.images[0]}?w=500&h=500`}
@@ -33,7 +37,7 @@ const UserPost = (props) => {
                 </svg>
               </span>
               <p className="text-sm md:text-xl lg:text-xl font-medium text-white">
-                3,692
+                {item?.likes}
               </p>
             </div>
 
@@ -53,7 +57,7 @@ const UserPost = (props) => {
                 </svg>
               </span>
               <p className=" text-sm md:text-xl lg:text-xl font-medium text-white">
-                200
+                {item?.comments}
               </p>
             </div>
           </div>

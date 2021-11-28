@@ -155,9 +155,6 @@ const Account = () => {
   };
 
   const handleChangePassword = async (data, props) => {
-    console.log(data);
-    console.log("token there", cookies.auth.tokens.access.token);
-
     setTimeout(() => {
       props.setSubmitting(false);
     }, 2000);

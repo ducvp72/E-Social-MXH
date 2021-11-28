@@ -54,7 +54,6 @@ export const actLogin = (user, history) => {
     userApi
       .signIn(user)
       .then((result) => {
-        console.log("data here1", result);
         dispatch(actLoginSuccess(result.data.user));
         new Cookies().set("tokens", result.data.tokens);
         console.log("axiosApi");

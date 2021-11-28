@@ -16,12 +16,28 @@ const Postshow = (props) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [userImage, setUserImage] = useState();
   const [action, setAction] = useState(false);
+  // const [comment, setComment] = useState("");
+  const [comment, setComment] = useState({ text: "", realtime: null });
+
   useEffect(() => {
-    console.log("render");
+    // console.log("render");
+    // console.log("comments from child", comment);
+    console.log("Get Comment and Key", comment);
   });
+
+  // useEffect(() => {
+  //   axios get id
+  //   co thong tin item:{
+  //     ten:
+  //     .....
+  //   }
+  //   setUserInfo(res)
+  // });
+
   const onClose = () => {
     setAction(false);
   };
+
   const checkFile = () => {
     if (userImage) {
       if (
@@ -54,6 +70,7 @@ const Postshow = (props) => {
       }
     }
   };
+
   return (
     <>
       {toggle.isShow && (
@@ -74,7 +91,7 @@ const Postshow = (props) => {
 
           <div
             className=" shadow-xl bg-white fixed z-50 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
-            style={{ width: "64rem", height: "600px" }}
+            style={{ width: "64rem", height: "550px" }}
           >
             <div className="grid grid-cols-4 h-full">
               <div className="col-span-2 h-full overflow-hidden">
@@ -85,7 +102,7 @@ const Postshow = (props) => {
                   width="800px"
                   height="100%"
                 />
-
+                {/* <Image /> */}
                 {/* {checkFile()} */}
               </div>
               <div className="post-show col-span-2">
@@ -121,7 +138,7 @@ const Postshow = (props) => {
                     <Caption item={toggle.postData} />
                   </div>
 
-                  <ListComment />
+                  <ListComment comment={comment} />
                 </div>
 
                 <div className="absolute w-1/2 transform top-3/4 -translate-y-4">
@@ -131,7 +148,10 @@ const Postshow = (props) => {
                     21 hours ago
                   </p>
                   <div className=" transform translate-x-4 mr-2">
-                    <Addcomments />
+                    <Addcomments
+                      yourcomment={comment}
+                      setyourComment={setComment}
+                    />
                   </div>
                 </div>
               </div>

@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const Caption = (props) => {
   const { item } = props;
   const [expand, setExpand] = useState(false);
-  const text = item?.body;
+  const text = item?.item.body;
   return (
     <div>
       <div className="p-4 pt-2 pb-1">
-        {/* <span className="mr-1 font-medium ">username </span> */}
         {text?.length > 100 ? (
           <>
             <span className=" font-normal text-gray-700 text-base">

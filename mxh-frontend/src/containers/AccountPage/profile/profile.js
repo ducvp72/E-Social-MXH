@@ -13,34 +13,37 @@ import { postApi } from "../../../axiosApi/api/postApi";
 import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "./../../LoadingPage/infititeLoading";
 import { useCookies } from "react-cookie";
+import { v4 as uuidv4 } from "uuid";
 import { date } from "yup/lib/locale";
 
 const Profile = () => {
-  const [cookies, setCookies, removeCookies] = useCookies(["auth"]);
+  const [cookies, ,] = useCookies(["auth"]);
   const [userSmr, setUSerSmr] = useState(null);
   const [userPost, setUserPost] = useState([]);
   const currentUser = useSelector((state) => state.auth.data);
   const [skt, setSkt] = useState(true);
-  const [toggle, setToggle] = useState({ isShow: false, postData: {} });
+  // const [toggle, setToggle] = useState({ isShow: false, postData: {} });
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
 
-  console.log("UserID", cookies.auth.user.id);
+  // console.log("UserID", cookies.auth.user.id);
 
   useEffect(() => {
-    getUserPost();
-    // return () => {
-    //   setPage(1);
-    // };
-  }, []);
-
-  useEffect(() => {
-    if (currentUser)
+    if (cookies.auth.user.id)
       setTimeout(() => {
         setSkt(false);
       }, 1000);
     getSummary();
-  }, [currentUser]);
+  }, [cookies.auth.user.id]);
+
+  useEffect(() => {
+    getUserPost();
+  }, []);
+
+  useEffect(() => {
+    console.log("lstPostID", userPost);
+    // console.log("Summary", userSmr?.data);
+  }, [userPost]);
 
   const getSummary = async () => {
     try {
@@ -54,9 +57,9 @@ const Profile = () => {
   const getUserPost = async () => {
     setSkt(true);
     await postApi
-      .getUserPost(cookies.auth.user.id, 1, 3)
+      .getUserPost(cookies.auth.user.id, 1, 5)
       .then((res) => {
-        console.log("lstPost", res.data.results);
+        // console.log("lstPost", res.data.results);
         setUserPost(res.data.results);
       })
       .catch((err) => {
@@ -67,7 +70,7 @@ const Profile = () => {
   const handleFetchPosts = () => {
     return new Promise((resolve, reject) => {
       postApi
-        .getUserPost(cookies.auth.user.id, page, 3)
+        .getUserPost(cookies.auth.user.id, page, 5)
         .then((rs) => {
           if (rs) resolve(rs.data.results);
         })
@@ -83,7 +86,7 @@ const Profile = () => {
   const fetchData = async () => {
     const postsFromServer = await handleFetchPosts();
     setUserPost([...userPost, ...postsFromServer]);
-    if (postsFromServer.length === 0 || postsFromServer.length < 3) {
+    if (postsFromServer.length === 0 || postsFromServer.length < 5) {
       setnoMore(false);
     }
     setPage(page + 1);
@@ -145,7 +148,7 @@ const Profile = () => {
         </div>
       )}
       {/* <Postshow setToggle={setToggle} toggle={toggle} /> */}
-      <CarouselElement setToggle={setToggle} toggle={toggle} />
+      {/* <CarouselElement  setToggle={setToggle} toggle={toggle} /> */}
       <div className="py-2 w-full xl:w-4/6 lg:w-4/6 md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2">
         <InfiniteScroll
           dataLength={userPost?.length}
@@ -171,7 +174,8 @@ const Profile = () => {
               {userPost &&
                 userPost.map((item) => {
                   return (
-                    <UserPost key={item.id} item={item} setToggle={setToggle} />
+                    // <UserPost key={item.id} item={item} setToggle={setToggle} />
+                    <UserPost key={item.id} item={item} />
                   );
                 })}
             </div>

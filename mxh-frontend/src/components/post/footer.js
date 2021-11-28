@@ -32,7 +32,7 @@ export const Footer = (props) => {
               </>
             ) : (
               <span className="font-normal text-gray-700 text-base">
-                {text.substr(0, 200)}
+                {text?.substr(0, 200)}
               </span>
             )}
           </div>

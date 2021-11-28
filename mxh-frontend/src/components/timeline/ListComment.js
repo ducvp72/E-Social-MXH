@@ -5,12 +5,26 @@ import InfititeLoading from "../../containers/LoadingPage/infititeLoading";
 import { Footer } from "./../post/footer";
 import { SkeletonComment } from "./../../skeletons/Skeletons";
 
-export const ListComment = () => {
+export const ListComment = (props) => {
+  const { comment } = props;
+
   const [toggle, setToggle] = useState({ isShow: false, postData: {} });
   const [cmt, setCmt] = useState([]);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);
+
+  useEffect(() => {
+    const value = {
+      body: comment.text,
+      id: comment.realtime,
+      title: "aut amet sed",
+      userId: comment.text,
+    };
+    if (comment) {
+      setCmt([value, ...cmt]);
+    }
+  }, [comment.realtime]);
 
   useEffect(() => {
     setSkt(true);
@@ -58,19 +72,22 @@ export const ListComment = () => {
         });
     });
   };
+
   const fetchData = async () => {
     const postsFromServer = await handleFetchPosts();
-
+    // console.log("dat", ...postsFromServer);
     setCmt([...cmt, ...postsFromServer]);
     if (postsFromServer.length === 0 || postsFromServer.length < 15) {
       setnoMore(false);
     }
     setPage(page + 1);
   };
+
   // console.log("PostApi...", post);
-  console.log("Cmt length", cmt.length);
+  // console.log("Cmt length", cmt.length);
   return (
     <div>
+      {/* <p className=""> here {comment ? comment?.text : null}</p> */}
       <InfiniteScroll
         scrollableTarget="scrollableDiv"
         dataLength={cmt?.length}

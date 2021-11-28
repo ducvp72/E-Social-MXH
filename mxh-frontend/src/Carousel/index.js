@@ -3,7 +3,7 @@ import Addcomments from "./../components/post/addcomments";
 import { Action } from "./../components/post/action";
 
 const CarouselElement = (props) => {
-  const { toggle, setToggle } = props;
+  const { toggle, setToggle, item } = props;
   return (
     <>
       {toggle.isShow && (

@@ -2,12 +2,12 @@ import React from "react";
 import { useState, useEffect } from "react";
 
 export const Action = (props) => {
-  const { setToggle, toggleCheck, item } = props;
+  const { setToggle, toggleCheck, setPopup, popup } = props;
   const [likes, setLikes] = useState(false);
   const [countLike, setCountLike] = useState(100);
 
   useEffect(() => {
-    console.log("IsLikes", likes);
+    // console.log("IsLikes", likes);
   }, [likes, toggleCheck]);
 
   const handleLiked = async () => {
@@ -19,7 +19,8 @@ export const Action = (props) => {
     if (toggleCheck === true) {
       return;
     }
-    setToggle({ isShow: true, postData: item });
+    // setToggle({ isShow: true, postData: item });
+    setPopup({ ...popup, isShow: true });
   };
 
   return (

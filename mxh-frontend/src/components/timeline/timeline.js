@@ -17,13 +17,14 @@ export const Timeline = () => {
   const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);
   const currentUser = useSelector((state) => state.auth.data);
-  useEffect(() => {
-    if (toggle.isShow) {
-      document.body.className = "overflow-hidden";
-      return;
-    }
-    document.body.className = "overflow-auto";
-  }, [toggle]);
+  // const mypost = useSelector((state) => state.post.data);
+  // useEffect(() => {
+  //   if (toggle.isShow) {
+  //     document.body.className = "overflow-hidden";
+  //     return;
+  //   }
+  //   document.body.className = "overflow-auto";
+  // }, [toggle]);
 
   useEffect(() => {
     setSkt(true);
@@ -79,7 +80,6 @@ export const Timeline = () => {
   // console.log("PostApi...", post);
   return (
     <div className="md:col-span-2 sm:col-start-1 sm:col-end-7 md:py-16 md:px-0 lg:px-12 xl:p-16  py-16">
-      <Postshow post={post} setToggle={setToggle} toggle={toggle} />
       <PostDialog open={createPost} onClose={onClose} />
       <div className="rounded border border-gray-primary mb-5 md:mr-16 sm:mr-1 lg:mr-0 shadow-md">
         <div className=" flex" onClick={() => setCreatePost(!createPost)}>
@@ -96,7 +96,6 @@ export const Timeline = () => {
           />
         </div>
       </div>
-
       <InfiniteScroll
         dataLength={post?.length}
         next={fetchData}
@@ -116,7 +115,7 @@ export const Timeline = () => {
           ? loopSkeleton()
           : post &&
             post.map((item) => {
-              return <Post key={item.id} item={item} setToggle={setToggle} />;
+              return <Post key={item.id} item={item} />;
             })}
       </InfiniteScroll>
     </div>

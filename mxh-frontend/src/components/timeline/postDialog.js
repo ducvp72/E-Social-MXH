@@ -331,7 +331,7 @@ const PostDialog = (props) => {
               <div className="flex items-center mt-2 ">
                 <img
                   className="rounded-full h-10 w-10 mr-3"
-                  src="/assets/person/lam5.png"
+                  src={`https://mxhld.herokuapp.com/v1/image/${currentUser?.avatar}`}
                   alt=""
                 />
                 <div className="flex-1 pr-4 flex items-center justify-between">

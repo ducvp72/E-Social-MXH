@@ -6,9 +6,13 @@ export const postApi = {
   createPost(token, data) {
     return axiosApi(`post/create-post-file`, `POST`, data, null, token);
   },
+  getAllPost() {
+    return axiosApi(`post`, `GET`);
+  },
   getUserPost(userID, page, limit) {
     return axiosApi(`post?owner=${userID}&page=${page}&limit=${limit}`);
   },
+
   getUserPostTest(userID) {
     return axiosApi(`post?owner=${userID}`);
   },

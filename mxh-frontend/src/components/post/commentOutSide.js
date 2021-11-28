@@ -1,12 +1,11 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
-import { useOnClickOutside } from "./../../utils/handleRefresh";
+import { useOnClickOutside } from "../../utils/handleRefresh";
 import "./style.css";
 import { v4 as uuidv4 } from "uuid";
-const Addcomments = (props) => {
-  const { setyourComment, yourcomment } = props;
-
+const CommentOutSide = (props) => {
+  const { setAddCmt, addCmt } = props;
   const [inputStr, setInputStr] = useState("");
   const [comment, setComment] = useState("");
   const [active, setActive] = useState(false);
@@ -37,8 +36,8 @@ const Addcomments = (props) => {
 
   const handleSubmitComment = (e) => {
     e?.preventDefault();
-    setyourComment({
-      ...yourcomment,
+    setAddCmt({
+      ...addCmt,
       text: inputStr,
       // realtime: Date.now(),
       realtime: uuidv4(),
@@ -53,8 +52,8 @@ const Addcomments = (props) => {
       if (inputStr === "") {
         return;
       } else {
-        setyourComment({
-          ...yourcomment,
+        setAddCmt({
+          ...addCmt,
           text: event.target.value,
           // realtime: Date.now(),
           realtime: uuidv4(),
@@ -125,4 +124,4 @@ const Addcomments = (props) => {
   );
 };
 
-export default Addcomments;
+export default CommentOutSide;
