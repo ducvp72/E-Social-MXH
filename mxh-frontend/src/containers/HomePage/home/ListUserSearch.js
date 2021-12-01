@@ -20,9 +20,10 @@ const ListUserSearch = () => {
       const q = new URLSearchParams(search).get("q");
       callListApi(q);
     }
+    return () => {
+      setUsers(null);
+    };
   }, [search, status]);
-
-  // console.log("Mang Rs", users);
 
   const callListApi = async (q) => {
     setSkt(true);
@@ -30,7 +31,7 @@ const ListUserSearch = () => {
       .getUserName(cookies.auth.tokens.access.token, q, 1, 5)
       .then((rs) => {
         if (rs) setUsers(rs.data.results);
-        console.log("users", users);
+        // console.log("users", users);
         setSkt(false);
       })
       .catch((err) => {

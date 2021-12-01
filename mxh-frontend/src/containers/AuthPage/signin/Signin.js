@@ -52,7 +52,7 @@ const Signin = (props) => {
       setLoading(false);
       setCookie("auth", resData.data, { path: "/" });
       if (resData.data.user.role === "user") {
-        console.log("user");
+        // console.log("user");
 
         history.replace("/user/home");
       } else {
@@ -94,12 +94,12 @@ const Signin = (props) => {
                 <Field
                   as={TextField}
                   name="email"
-                  id="outlined-basic"
+                  id="outlined-basic-email"
                   label="Email"
-                  type=""
+                  type="text"
                   placeholder="Example@gmail.com"
                   variant="outlined"
-                  error={errors.email}
+                  error={!!errors.email}
                   helperText={
                     <ErrorMessage name="email">
                       {(msg) => <span style={{ color: "red" }}>{msg}</span>}
@@ -112,10 +112,10 @@ const Signin = (props) => {
                   as={TextField}
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  id="outlined-basic"
+                  id="outlined-basic-password"
                   label="Password"
                   variant="outlined"
-                  error={errors.password}
+                  error={!!errors.password}
                   helperText={
                     <ErrorMessage name="password">
                       {(msg) => <span style={{ color: "red" }}>{msg}</span>}

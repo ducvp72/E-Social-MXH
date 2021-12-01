@@ -5,48 +5,108 @@ import AddCommentCrs from "./addComment-Crs";
 import { ActionCrs } from "./actionCrs";
 import CaptionCrs from "./captionCrs";
 import { ListCommentCrs } from "./listCommentCrs";
+// import { SkeletonImagePost } from "./../../skeletons/Skeletons";
+import {
+  SkeletonImagePostProfile,
+  SkeletonHeader,
+} from "../skeletons/Skeletons";
+import moment from "moment";
+import DialogActionPost from "./../components/post/dialogAction";
+
 const CarouselElement = (props) => {
-  const { setPopup, popup, item } = props;
-  console.log("item here", item?.text);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [userImage, setUserImage] = useState();
+  const { setPopup, popup, item, otherItem, getUserPost, getSummary } = props;
   const [comment, setComment] = useState({ text: "", realtime: null });
+  const [state, setState] = useState();
+  const [skt, setSkt] = useState(true);
+  const [action, setAction] = useState(false);
+
+  useEffect(() => {
+    checkState();
+    cancleShow();
+    return () => {
+      setState(null);
+      clearTimeout(cancleShow);
+    };
+  }, []);
+  const cancleShow = () => {
+    setTimeout(() => {
+      setSkt(false);
+    }, 500);
+  };
+
+  const onClose = () => {
+    setAction(false);
+  };
+
+  const checkState = () => {
+    if (item) {
+      setState(item);
+      // console.log("My USerpost", item);
+    } else {
+      setState(otherItem);
+      // console.log("Other Profile", otherItem);
+    }
+  };
 
   const checkFile = () => {
-    if (userImage) {
-      if (
-        selectedImage.type === "image/jpeg" ||
-        selectedImage.type === "image/png" ||
-        selectedImage.type === "image/gif"
-      ) {
+    if (state) {
+      if (state?.fileTypes === "IMAGE") {
         return (
-          <img
-            alt="anh2"
-            src={userImage}
-            className="object-cover"
-            width="800px"
-            height="100%"
-          />
+          <div className="flex justify-center h-full">
+            <img
+              src={`https://mxhld.herokuapp.com/v1/file/${state?.file}`}
+              alt="userpost"
+              className="w-full object-cover "
+            />
+          </div>
         );
       }
-      if (selectedImage.type === "video/mp4") {
+      if (state?.fileTypes === "VIDEO") {
         return (
-          <video
-            style={{
-              width: "800px",
-            }}
-            className="w-full h-cus "
-            controls
+          <div
+            style={{ border: "1px solid #91a3b0" }}
+            className="flex justify-center bg-black "
           >
-            <source src={userImage} />
-          </video>
+            <video
+              style={{
+                height: "550px",
+              }}
+              className="w-full focus:outline-none"
+              controls
+            >
+              <source
+                src={`https://mxhld.herokuapp.com/v1/file/${state?.file}`}
+              />
+            </video>
+          </div>
+        );
+      }
+      if (state?.fileTypes === "AUDIO") {
+        return (
+          <div className="flex h-full justify-center items-center bg-gradient-to-r from-green-400 via-yellow-500 to-pink-500">
+            <audio className="w-4/5 focus:outline-none" controls>
+              <source
+                src={`https://mxhld.herokuapp.com/v1/file/${state?.file}`}
+              />
+            </audio>
+          </div>
         );
       }
     }
+    return;
   };
 
   return (
     <>
+      <DialogActionPost
+        state={state}
+        open={action}
+        onClose={onClose}
+        setPopup={setPopup}
+        getUserPost={getUserPost}
+        getSummary={getSummary}
+      ></DialogActionPost>
+
       <Dialog
         open={popup}
         aria-labelledby="alert-dialog-title"
@@ -83,28 +143,35 @@ const CarouselElement = (props) => {
           </div>
           <div
             className=" z-50 rounded-md shadow-xl bg-white fixed  transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
-            style={{ width: "64rem", height: "650px" }}
+            // style={{ width: "64rem", height: "650px" }}
+            style={{ width: "64rem", height: "550px" }}
           >
             <div className="grid grid-cols-4 h-full">
               <div className="col-span-2 h-full overflow-hidden">
-                <img
-                  alt="anh"
-                  src={"/assets/image/votui.jpg"}
-                  className="object-cover"
-                  width="600px"
-                  height="auto"
-                />
+                {skt && <SkeletonImagePostProfile />}
+
+                {checkFile()}
               </div>
               <div className="col-span-2 ">
                 <div className="flex items-center mt-2 pl-2">
+                  {/* {skt ? (
+                    <SkeletonHeader />
+                  ) : ( */}
                   <img
                     className="rounded-full w-10 mr-3"
-                    src="/assets/image/gift.png"
+                    src={`https://mxhld.herokuapp.com/v1/image/${state?.user?.avatar}`}
                     alt=""
                   />
+                  {/* )} */}
+
                   <div className="flex-1 pr-4 flex items-center justify-between">
-                    <p className="font-bold text-md">username</p>
-                    <p className=" font-black text-2xl cursor-pointer text-gray-400">
+                    <p className="font-bold text-md">{state?.user?.fullname}</p>
+                    <p
+                      onClick={() => {
+                        setAction(!action);
+                      }}
+                      className=" font-black text-2xl cursor-pointer text-gray-400"
+                    >
                       ...
                     </p>
                   </div>
@@ -115,25 +182,26 @@ const CarouselElement = (props) => {
                 <div
                   id="scrollableDiv"
                   className=" relative overflow-y-auto overflow-x-hidden post-show w-full"
-                  style={{ height: "26rem" }}
+                  style={{ height: "20rem" }}
                 >
                   <div className="mb-2">
-                    <CaptionCrs item={item} />
+                    <CaptionCrs state={state} />
                   </div>
 
-                  <ListCommentCrs comment={comment} />
+                  <ListCommentCrs state={state} comment={comment} />
                 </div>
 
-                <div className="absolute w-1/2 transform top-3/4 -translate-y-2">
+                <div className="absolute w-1/2 transform top-3/4 -translate-y-6">
                   <hr />
-                  <ActionCrs />
+                  <ActionCrs state={state} />
                   <p className="ml-4 mb-2 italic text-xs text-gray-400">
-                    21 hours ago
+                    {moment(state?.createdAt).fromNow()}
                   </p>
                   <div className=" transform translate-x-4 mr-2">
                     <AddCommentCrs
                       yourcomment={comment}
                       setyourComment={setComment}
+                      state={state}
                     />
                   </div>
                 </div>
@@ -141,8 +209,6 @@ const CarouselElement = (props) => {
             </div>
           </div>
         </DialogContent>
-
-        {/* <DialogActionPost open={action} onClose={onClose}></DialogActionPost> */}
       </Dialog>
     </>
   );

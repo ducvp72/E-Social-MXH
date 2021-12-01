@@ -18,10 +18,10 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import Swal from "sweetalert2";
-import { adminApi } from "./../../../axiosApi/api/adminApi";
+import { adminApi } from "../../../axiosApi/api/adminApi";
 import { Cookies } from "react-cookie";
 import { useCookies } from "react-cookie";
-import Loading from "./../../LoadingPage/index";
+import Loading from "../../LoadingPage/index";
 import { v4 as uuidv4 } from "uuid";
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -93,7 +93,6 @@ export const EditUser = React.memo((props) => {
           timer: 1500,
         });
         setLoading(false);
-
         upadateStatus();
       } else {
         //lock
@@ -106,7 +105,6 @@ export const EditUser = React.memo((props) => {
           timer: 1500,
         });
         setLoading(false);
-
         upadateStatus();
       }
     } catch (error) {

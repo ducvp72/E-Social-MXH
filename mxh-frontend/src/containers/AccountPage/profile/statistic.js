@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 
 const Statistic = (props) => {
   const { userSmr, userInfo } = props;
-  console.log("From other user Info", userInfo);
-  console.log("statistic", userSmr);
   const [state, setState] = useState({
     posts: null,
     followers: null,
@@ -11,6 +9,10 @@ const Statistic = (props) => {
   });
 
   useEffect(() => {
+    checkStatus();
+  }, [userSmr, userInfo]);
+
+  const checkStatus = () => {
     if (userSmr) {
       setState({
         ...state,
@@ -25,7 +27,7 @@ const Statistic = (props) => {
         followers: userInfo?.followers,
         followings: userInfo?.following,
       });
-  }, [state]);
+  };
 
   return (
     <div className="flex items-center space-x-10 w-full mt-5">

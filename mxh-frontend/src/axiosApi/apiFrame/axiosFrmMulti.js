@@ -6,7 +6,8 @@ const axiosFrmMulti = (
   method = "GET",
   data = null,
   params = null,
-  token = null
+  token = null,
+  showLoading
 ) => {
   return axios({
     url: `${baseURL}/${endpoint}`,
@@ -15,10 +16,10 @@ const axiosFrmMulti = (
     params: params ? params : null,
     headers: token
       ? {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // cach 1 cai
         }
       : null,
+    onUploadProgress: showLoading,
   });
 };
 

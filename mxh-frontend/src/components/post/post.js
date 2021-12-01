@@ -10,61 +10,13 @@ import CommentOutSide from "./commentOutSide";
 import { useSelector } from "react-redux";
 import { postApi } from "./../../axiosApi/api/postApi";
 
-let fakedata = [
-  { id: 1, name: "duc", text: "duc dep trai wa" },
-  {
-    id: 2,
-    name: "duy",
-    text: "Duy xau trai wa",
-  },
-];
-
 export const Post = (props) => {
-  const { item } = props;
+  const { item, getFirstPage } = props;
   const [popup, setPopup] = useState({ isShow: false, postData: {} });
   const currentUser = useSelector((state) => state.auth.data);
   const [twoCmt, setTwoComt] = useState([]);
   const [comment, setComment] = useState({ text: "", realtime: null });
-
-  // useEffect(() => {
-  //   if (addCmt && addCmt.text !== "")
-  //     setTwoComt(
-  //       {
-  //         id: addCmt.realtime,
-  //         name: currentUser?.fullname,
-  //         text: addCmt.text,
-  //       },
-  //       ...twoCmt
-  //     );
-
-  // }, [addCmt]);
-
-  // useEffect(() => {
-  //   if (addCmt.length>0)
-  //     setTwoComt(
-  //       {
-  //         id: addCmt.realtime,
-  //         name: currentUser?.fullname,
-  //         text: addCmt.text,
-  //       },
-  //       ...twoCmt
-  //     );
-
-  // }, [addCmt]);
-
-  useEffect(() => {
-    const value = {
-      id: comment.realtime,
-      user: {
-        fullname: currentUser?.fullname,
-        avatar: currentUser?.avatar,
-      },
-      text: comment.text,
-    };
-    if (comment) {
-      setTwoComt([value, ...twoCmt]);
-    }
-  }, [comment.realtime]);
+  const [update, setUpdate] = useState(7);
 
   useEffect(() => {
     if (popup.isShow) {
@@ -76,27 +28,31 @@ export const Post = (props) => {
 
   useEffect(() => {
     getTwoPage();
+    return () => {
+      setTwoComt(null);
+    };
   }, []);
 
   const getTwoPage = async () => {
+    // console.log("cmt o day ne ?");
     postApi
       .getTwoComments(item?.id)
       .then((rs) => {
-        if (rs) setTwoComt(rs.data.results);
+        setTwoComt(rs.data.results);
+        // console.log("Postwo", twoCmt);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-  console.log("Postwo", twoCmt);
 
   return (
     <div className="rounded col-span-4 border bg-white border-gray-primary mb-10 md:mr-16 sm:mr-1 lg:mr-0">
-      <Header item={item} />
+      <Header getFirstPage={getFirstPage} item={item} />
 
       <Caption item={item} />
 
-      <Image item={item} />
+      <Image item={item} setPopup={setPopup} popup={popup} />
 
       <Action item={item} setPopup={setPopup} popup={popup} />
 
@@ -106,15 +62,17 @@ export const Post = (props) => {
         return <CurrentComment key={cmt.id} item={cmt} />;
       })}
 
-      <CommentOutSide
-        getTwoPage={getTwoPage}
-        item={item}
-        yourcomment={comment}
-        setyourComment={setComment}
-      />
+      <CommentOutSide item={item} getTwoPage={getTwoPage} />
 
       {popup.isShow && (
-        <PostDetail item={item} setPopup={setPopup} popup={popup} />
+        <PostDetail
+          item={item}
+          setPopup={setPopup}
+          popup={popup}
+          setUpdate={setUpdate}
+          getFirstPage={getFirstPage}
+          getTwoPage={getTwoPage}
+        />
       )}
     </div>
   );

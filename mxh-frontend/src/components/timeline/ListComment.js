@@ -1,25 +1,35 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "../../containers/LoadingPage/infititeLoading";
 import { Footer } from "./../post/footer";
 import { SkeletonComment } from "./../../skeletons/Skeletons";
+import { postApi } from "./../../axiosApi/api/postApi";
+import { useSelector } from "react-redux";
 
 export const ListComment = (props) => {
-  const { comment } = props;
-
-  const [toggle, setToggle] = useState({ isShow: false, postData: {} });
+  const { comment, item } = props;
+  const currentUser = useSelector((state) => state.auth.data);
+  // const [toggle, setToggle] = useState({ isShow: false, postData: {} });
   const [cmt, setCmt] = useState([]);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);
 
+  // const [totalComment, setTotalComment] = useState(2);
+
+  // useEffect(() => {
+  //   getComments(totalComment);
+  // }, [totalComment]);
+
   useEffect(() => {
+    // console.log("itemIn List", item);
     const value = {
-      body: comment.text,
       id: comment.realtime,
-      title: "aut amet sed",
-      userId: comment.text,
+      user: {
+        fullname: currentUser?.fullname,
+        avatar: currentUser?.avatar,
+      },
+      text: comment.text,
     };
     if (comment) {
       setCmt([value, ...cmt]);
@@ -35,14 +45,15 @@ export const ListComment = (props) => {
   }, []);
 
   const getComments = () => {
-    axios({
-      method: `GET`,
-      url: `https://jsonplaceholder.typicode.com/posts?_page=1&_limit=15`,
-    })
+    postApi
+      .getAllComments(item?.id, 1, 5)
       .then((rs) => {
-        if (rs) setCmt(rs.data);
-        setToggle({ ...toggle, postData: rs.data });
+        if (rs) setCmt(rs.data.results);
+        // setToggle({ ...toggle, postData: rs.data });
         setSkt(false);
+        setnoMore(true);
+        setPage(2);
+        // console.log("Res: ", rs.data.results);
       })
       .catch((err) => {
         console.log(err);
@@ -59,12 +70,10 @@ export const ListComment = (props) => {
   };
   const handleFetchPosts = () => {
     return new Promise((resolve, reject) => {
-      axios({
-        method: `GET`,
-        url: `https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=15`,
-      })
+      postApi
+        .getAllComments(item?.id, page, 5)
         .then((rs) => {
-          if (rs) resolve(rs.data);
+          if (rs) resolve(rs.data.results);
         })
         .catch((err) => {
           console.log("errPromise", err);
@@ -75,19 +84,15 @@ export const ListComment = (props) => {
 
   const fetchData = async () => {
     const postsFromServer = await handleFetchPosts();
-    // console.log("dat", ...postsFromServer);
     setCmt([...cmt, ...postsFromServer]);
-    if (postsFromServer.length === 0 || postsFromServer.length < 15) {
+    if (postsFromServer.length === 0 || postsFromServer.length < 5) {
       setnoMore(false);
     }
     setPage(page + 1);
   };
 
-  // console.log("PostApi...", post);
-  // console.log("Cmt length", cmt.length);
   return (
     <div>
-      {/* <p className=""> here {comment ? comment?.text : null}</p> */}
       <InfiniteScroll
         scrollableTarget="scrollableDiv"
         dataLength={cmt?.length}
@@ -108,18 +113,14 @@ export const ListComment = (props) => {
           ? loopSkeleton()
           : cmt &&
             cmt.map((item) => {
-              return (
-                <div key={item.id} className="flex px-2 mb-2">
-                  <img
-                    className="rounded-full h-8 w-8 flex mt-1"
-                    src={"/assets/image/defaultAvatar.png"}
-                    alt="userimg"
-                  />
-                  <Footer key={item.id} item={item} />
-                </div>
-              );
+              return <Footer key={item.id} item={item} />;
             })}
       </InfiniteScroll>
+      {/* {cmt &&
+        cmt.map((item) => {
+          return <Footer key={item.id} item={item} />;
+        })}
+      <p onClick={() => setTotalComment(totalComment + 2)}>Xem them</p> */}
     </div>
   );
 };

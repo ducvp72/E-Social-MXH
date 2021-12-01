@@ -20,3 +20,18 @@
   //     document.removeEventListener("mousedown", handleClickOutside);
   //   };
   // }, [modalRef, buttonRef]);
+
+
+  // const mypost = useSelector((state) => state.post.data);
+  // useEffect(() => {
+  //   if (toggle.isShow) {
+  //     document.body.className = "overflow-hidden";
+  //     return;
+  //   }
+  //   document.body.className = "overflow-auto";
+  // }, [toggle]);
+
+  // useEffect(()=>{
+  //   if(post.length )
+  //   setCheckPost(post.length )
+  // },[checkPost])

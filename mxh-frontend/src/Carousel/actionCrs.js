@@ -1,13 +1,33 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
+import { postApi } from "./../axiosApi/api/postApi";
 
 export const ActionCrs = (props) => {
-  const [likes, setLikes] = useState(false);
-  const [countLike, setCountLike] = useState(100);
+  const { state } = props;
+  const [likes, setLikes] = useState(state?.hasLike);
+  const [countLike, setCountLike] = useState(state?.likes);
+  const [cookies, ,] = useCookies("auth");
 
   const handleLiked = async () => {
     setLikes(!likes);
     setCountLike((countLike) => (likes ? countLike - 1 : countLike + 1));
+    handleFetchPosts();
+  };
+
+  const handleFetchPosts = () => {
+    return new Promise((resolve, reject) => {
+      postApi
+        .likePost(cookies.auth.tokens.access.token, { postId: state?.id })
+        .then((rs) => {
+          // resolve(rs.data);
+          return;
+        })
+        .catch((err) => {
+          console.log("errPromise", err);
+          // reject(err);
+        });
+    });
   };
 
   return (
@@ -78,8 +98,9 @@ export const ActionCrs = (props) => {
           {countLike >= 1000 ? parseInt(countLike / 1000) + "K" : countLike}{" "}
           likes
         </p>
-
-        <p className=" font-semibold">and 100 comments</p>
+        {state?.comments >= 1 && (
+          <p className=" font-semibold">{state?.comments} comments</p>
+        )}
       </div>
     </>
   );

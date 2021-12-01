@@ -34,7 +34,6 @@ export const UserDashboard = () => {
   useEffect(() => {
     console.log("run useffect");
     if (status) console.log("statusFromchildren", status);
-    console.log("search: ", search);
     // if (search === "") {
     //   getAllUserFirst();
     // } else {
@@ -58,7 +57,6 @@ export const UserDashboard = () => {
       });
   };
   const callResultUser = () => {
-    console.log("call Api get by keyword");
     setLoading(true);
     userApi
       .getUserEmail(cookies.auth.tokens.access.token, search)
@@ -108,7 +106,6 @@ export const UserDashboard = () => {
               showConfirmButton: false,
               timer: 1500,
             });
-            // Swal.fire("Deleted!", "User has been deleted.", "success");
           })
           .catch((err) => {
             setLoading(false);
@@ -225,9 +222,6 @@ export const UserDashboard = () => {
                 flex: 1,
                 headerAlign: "center",
                 align: "center",
-                // renderCell: (params) => {
-                //   return <>{params.row.price + "$"}</>;
-                // },
               },
               {
                 field: "birthday",
@@ -236,15 +230,6 @@ export const UserDashboard = () => {
                 flex: 1,
                 headerAlign: "center",
                 align: "center",
-                // renderCell: (params) => {
-                //   return (
-                //     <Box>
-                //       {params.row.courseCreators[0].firstName +
-                //         " " +
-                //         params.row.courseCreators[0].lastName}
-                //     </Box>
-                //   );
-                // },
               },
               {
                 field: "action",

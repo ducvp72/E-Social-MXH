@@ -1,6 +1,8 @@
 import React from "react";
 import "./style.css";
-const Loading = () => {
+import CircularStatic from "./upfileLoading";
+const Loading = (props) => {
+  const { process } = props;
   return (
     <>
       <div
@@ -11,9 +13,13 @@ const Loading = () => {
       </div>
 
       <div className="fixed z-50 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
-        <section className="stage">
-          <figure className="ball bubble"></figure>
-        </section>
+        {process ? (
+          <CircularStatic process={process} />
+        ) : (
+          <section className="stage">
+            <figure className="ball bubble"></figure>
+          </section>
+        )}
       </div>
     </>
   );

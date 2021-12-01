@@ -1,9 +1,28 @@
 import React from "react";
 import axiosApi from "./../apiFrame/axiosApi";
+import axiosFrmMulti from "./../apiFrame/axiosFrmMulti";
 
 export const postApi = {
-  createPost(token, data) {
-    return axiosApi(`post/create-post-file`, `POST`, data, null, token);
+  createPost(token, data, call) {
+    // return axiosApi(`post/create-post-file`, `POST`, data, null, token);
+    return axiosFrmMulti(
+      `post/create-post-file`,
+      `POST`,
+      data,
+      null,
+      token,
+      call
+    );
+  },
+  createPostTest(token, data, call) {
+    return axiosFrmMulti(
+      `post/create-post-text`,
+      `POST`,
+      data,
+      null,
+      token,
+      call
+    );
   },
   getAllPost() {
     return axiosApi(`post`, `GET`);
@@ -18,14 +37,29 @@ export const postApi = {
       token
     );
   },
+  deleteMyPost(token, data) {
+    return axiosApi(`post`, `DELETE`, data, null, token);
+  },
   likePost(token, id) {
     return axiosApi(`post/like`, `PUT`, id, null, token);
   },
-  getUserPost(userID, page, limit) {
-    return axiosApi(`post?owner=${userID}&page=${page}&limit=${limit}`);
+  getUserPost(token, userID, page, limit) {
+    return axiosApi(
+      `post?owner=${userID}&page=${page}&limit=${limit}&sortBy=createdAt:desc`,
+      `GET`,
+      null,
+      null,
+      token
+    );
   },
   getUserPostTest(userID) {
     return axiosApi(`post?owner=${userID}`);
+  },
+  getAllComments(postId, page, limit) {
+    return axiosApi(
+      `comment?postId=${postId}&page=${page}&limit=${limit}&sortBy=createdAt:desc`,
+      `GET`
+    );
   },
   getTwoComments(postId) {
     return axiosApi(

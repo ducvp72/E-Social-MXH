@@ -43,7 +43,6 @@ const Login = () => {
       <div className="wr-sceen h-screen flex flex-col justify-center items-center lg:grid lg:grid-cols-2">
         <img
           src="/assets/access/online.svg"
-          // src="/assets/image/vni-logo.png"
           alt="online"
           className="hidden lg:block  w-1/2 hover:scale-150 transition-all duration-500 transform mx-auto"
         />
@@ -51,14 +50,16 @@ const Login = () => {
           <Box sx={{ width: "100%", typography: "body1" }}>
             <TabContext value={value}>
               <Box sx={{}}>
-                <TabList
-                  onChange={handleChange}
-                  aria-label="lab API tabs example"
-                >
-                  <Tab label="SIGN IN" value="1" />
-                  <Tab label="SIGN UP" value="2" />
-                  <Tab label="FORGOT PASSWORD" value="3" />
-                </TabList>
+                <div className="flex justify-center items-center  justify-items-center">
+                  <TabList
+                    onChange={handleChange}
+                    aria-label="lab API tabs example"
+                  >
+                    <Tab label="SIGN IN" value="1" />
+                    <Tab label="SIGN UP" value="2" />
+                    <Tab label="FORGOT PASSWORD" value="3" />
+                  </TabList>
+                </div>
               </Box>
               <TabPanel value="1">
                 <Signin />

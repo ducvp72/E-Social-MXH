@@ -91,7 +91,7 @@ const CreatePost = (props) => {
             cols="58"
             rows="4"
             className=" font-normal text-lg text-black focus:outline-none"
-            value={inputStr}
+            value={inputStr || ""}
             onChange={(e) => setInputStr(e.target.value)}
           />
 

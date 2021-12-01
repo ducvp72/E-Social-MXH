@@ -1,19 +1,51 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const Information = () => {
+const Information = (props) => {
+  const { currentUser, userInfo } = props;
+  const [state, setState] = useState({
+    story: null,
+    fb: null,
+    phone: null,
+  });
+
+  useEffect(() => {
+    checStatus();
+  }, []);
+
+  const checStatus = () => {
+    if (currentUser) {
+      setState({
+        ...state,
+        story: currentUser?.story,
+        fb: currentUser?.facebook,
+        phone: currentUser?.phone,
+      });
+    } else
+      setState({
+        ...state,
+        story: userInfo?.story,
+        fb: userInfo?.facebook,
+        phone: userInfo?.phone,
+      });
+  };
+
   return (
-    <div className="mt-5 overflow-hidden">
-      <p className=" font-medium">BoyLanhLung</p>
-      <p className=" font-medium">Đại học Sư Phạm Kĩ Thuật</p>
-      <a
-        href="https://www.facebook.com/DerrickVo72"
-        className="font-medium"
-        style={{ color: "#00376b" }}
-      >
-        https://www.facebook.com/DerrickVo72
-      </a>
-      <p className=" font-normal text-gray-700">La mot senior chinh hieu</p>
-    </div>
+    <>
+      <div className="mt-5 overflow-hidden">
+        <p className=" font-normal text-gray-700">
+          {" "}
+          {state ? state?.story : null}
+        </p>
+        <a
+          href="https://www.facebook.com/DerrickVo72"
+          className="font-medium"
+          style={{ color: "#00376b" }}
+        >
+          {state ? state?.fb : null}
+        </a>
+        <p className=" font-medium"> {state ? state?.phone : null}</p>
+      </div>
+    </>
   );
 };
 

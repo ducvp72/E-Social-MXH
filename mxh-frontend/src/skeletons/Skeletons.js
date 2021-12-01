@@ -82,6 +82,14 @@ export const SkeletonAvatarTopbar = () => {
   );
 };
 
+export const SkeletonHeader = () => {
+  return (
+    <div className="">
+      <Skeleton circle={true} width={35} height={35} />
+    </div>
+  );
+};
+
 export const SkeletonAvatarSideBar = () => {
   return (
     <div className="">
@@ -135,8 +143,24 @@ export const SkeletonComment = () => {
 
 export const SkeletonImagePost = () => {
   return (
-    <div className="">
+    <div className=" h-full">
       <Skeleton height={"540px"} />
+    </div>
+  );
+};
+
+export const SkeletonImagePostProfile = () => {
+  return (
+    <div className=" h-full">
+      <Skeleton height={"650px"} />
+    </div>
+  );
+};
+
+export const SkeletionImagePostOutSide = () => {
+  return (
+    <div className=" h-full">
+      <Skeleton height={"500px"} enableAnimation={true} />
     </div>
   );
 };

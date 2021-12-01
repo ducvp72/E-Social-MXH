@@ -77,6 +77,7 @@ const Account = () => {
 
   // let { userName } = useParams();
   useEffect(() => {
+    console.log("auth", cookies.auth.user.gender);
     if (currentUser) {
       const birthday = currentUser.birthday.toString().split("/");
       setDob(birthday[1] + "/" + birthday[0] + "/" + birthday[2]);
@@ -301,7 +302,7 @@ const Account = () => {
                     <input
                       className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                       type="text"
-                      value={currentUser?.fullname}
+                      value={currentUser?.fullname || ""}
                       name="fullname"
                       disabled
                     />
@@ -317,7 +318,7 @@ const Account = () => {
                     <input
                       className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                       type="text"
-                      value={currentUser?.facebook}
+                      value={currentUser?.facebook || ""}
                       name="facebook"
                       disabled
                     />
@@ -333,7 +334,7 @@ const Account = () => {
                     <input
                       className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                       type="text"
-                      value={currentUser?.phone}
+                      value={currentUser?.phone || ""}
                       name="phone"
                       disabled
                     />
@@ -349,7 +350,7 @@ const Account = () => {
                     <input
                       className="bg-gray-200 appearance-none w-full border-2  border-gray-200 rounded  py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                       type="text"
-                      value={currentUser?.story}
+                      value={currentUser?.story || ""}
                       name="story"
                       disabled
                     />
@@ -365,7 +366,7 @@ const Account = () => {
                     <input
                       className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                       type="text"
-                      value={currentUser?.birthday}
+                      value={currentUser?.birthday || ""}
                       name="phone"
                       disabled
                     />
@@ -373,10 +374,7 @@ const Account = () => {
                 </div>
                 <div className="md:flex md:items-center mb-6">
                   <div className="md:w-1/5">
-                    <label
-                      className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-                      for="inline-password"
-                    >
+                    <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
                       Gender
                     </label>
                   </div>
@@ -385,7 +383,7 @@ const Account = () => {
                       <RadioGroup
                         row
                         aria-label="gender"
-                        value={currentUser?.gender.toString()}
+                        defaultValue={cookies.auth.user.gender || ""}
                         name="gender"
                         disabled
                       >
@@ -439,7 +437,6 @@ const Account = () => {
                         name="oldpassword"
                         error={errors.oldpassword}
                         type={hidden.oldpassword ? "text" : "password"}
-                        // id="outlined-basic"
                         label="Old Password"
                         variant="outlined"
                         onFocus={() => {
@@ -484,7 +481,6 @@ const Account = () => {
                         name="password"
                         error={errors.password}
                         type={hidden.password ? "text" : "password"}
-                        // id="outlined-basic"
                         label="Password"
                         variant="outlined"
                         onFocus={() => {
@@ -528,7 +524,6 @@ const Account = () => {
                         as={TextField}
                         name="confirm"
                         type={hidden.confirm ? "text" : "password"}
-                        id="outlined-basic"
                         error={errors.confirm}
                         label="Confirm Password"
                         variant="outlined"

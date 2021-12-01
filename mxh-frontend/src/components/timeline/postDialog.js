@@ -46,7 +46,7 @@ const BootstrapDialogTitle = (props) => {
             position: "absolute",
             right: 8,
             top: 8,
-            zIndex: 50,
+            zIndex: 30,
             color: (theme) => theme.palette.grey[500],
           }}
         >
@@ -58,9 +58,8 @@ const BootstrapDialogTitle = (props) => {
 };
 
 const PostDialog = (props) => {
-  const { onClose, open, upadateStatus } = props;
+  const { onClose, open, getFirstPage } = props;
   const [inputStr, setInputStr] = useState([]);
-  const [uploadFile, setUploadFile] = useState(false);
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
@@ -71,7 +70,20 @@ const PostDialog = (props) => {
   const [confirm, setonConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [cookies, ,] = useCookies("auth");
+  const [process, setProcess] = useState(0);
+
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
+
+  // useEffect(() => {
+
+  //   console.log("Proceess", process);
+  // }, [process]);
+
+  const getProcess = (progressEvent) => {
+    const { loaded, total } = progressEvent;
+    const percent = ((loaded / total) * 100).toFixed(2);
+    setProcess(percent);
+  };
 
   const onEmojiClick = (e, emojiObject) => {
     if (inputStr?.length >= 2200) {
@@ -122,45 +134,89 @@ const PostDialog = (props) => {
   };
 
   const checkDisabled = (inputText, fileMedia) => {
-    if (inputText?.length >= 1 || fileMedia) {
+    // console.log("FileMdia ", fileMedia);
+    if (inputText?.length >= 1) {
       return false;
     }
     return true;
   };
+
   const FormData = require("form-data");
 
   const onhandleSubmit = async () => {
+    // console.log("UserImage", userImage);
     setLoading(true);
-    let formData = new FormData();
-    formData.append("text", inputStr);
-    formData.append("file", selectedImage);
+    if (!userImage) {
+      postText();
+      getFirstPage();
 
-    console.log("Send Data", formData.get("text"));
-    console.log("Send Data2", formData.get("file"));
-    postApi
-      .createPost(cookies.auth.tokens.access.token, formData)
-      .then(() => {
-        setLoading(false);
-        toast.success("Let's see your post 😀", {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 1500,
-          hideProgressBar: true,
-        });
-        // handleCloseConfirm();
-        setInputStr(null);
-        delelteCurrentImage();
-        onClose();
-        upadateStatus();
-      })
-      .catch((error) => {
-        setLoading(false);
-        toast.error(`${error}`, {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
-      });
+      return;
+    } else {
+      await postMedia();
+      getFirstPage();
+    }
   };
+
+  const postText = async () => {
+    try {
+      await postApi.createPostTest(
+        cookies.auth.tokens.access.token,
+        {
+          text: inputStr,
+        },
+        getProcess
+      );
+      setLoading(false);
+      toast.success("Let's see your post 😀", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1500,
+        hideProgressBar: true,
+      });
+      // handleCloseConfirm();
+      setInputStr(null);
+      // delelteCurrentImage();
+      onClose();
+    } catch (error) {
+      setLoading(false);
+      toast.error(`${error}`, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
+    }
+  };
+  const postMedia = async () => {
+    try {
+      let formData = new FormData();
+      formData.append("text", inputStr);
+      formData.append("file", selectedImage);
+      await postApi.createPost(
+        cookies.auth.tokens.access.token,
+        formData,
+        getProcess
+      );
+      setLoading(false);
+      toast.success("Let's see your post 😀", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1500,
+        hideProgressBar: true,
+      });
+      // handleCloseConfirm();
+      setInputStr(null);
+      delelteCurrentImage();
+      onClose();
+    } catch (error) {
+      setLoading(false);
+      toast.error(`${error}`, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
+    }
+  };
+
+  // console.log("Send Data", formData.get("text"));
+  // console.log("Send Data2", formData.get("file"));
 
   const checkFile = () => {
     if (userImage) {
@@ -195,15 +251,22 @@ const PostDialog = (props) => {
           </video>
         );
       }
+      if (
+        selectedImage?.type === "audio/ogg" ||
+        selectedImage?.type === "audio/mpeg" ||
+        selectedImage?.type === "audio/mp3"
+      ) {
+        return (
+          <audio className=" flex w-4/5  items-center z-30 " controls>
+            <source src={userImage} />
+          </audio>
+        );
+      }
     } else {
       return;
     }
   };
-  // console.log("Type", selectedImage?.type);
-  // console.log("Check", checkDisabled());
-  // console.log("Selected-Before", selectedImage);
-  // console.log("UserImage-Before", userImage);
-  // console.log("UserImage-Before", userImage);
+
   return (
     <div>
       <ToastContainer transition={Zoom} />
@@ -213,9 +276,7 @@ const PostDialog = (props) => {
         open={open}
         aria-labelledby="customized-dialog-title"
       >
-        <div className="z-50"> {loading && <Loading />}</div>
-
-        {uploadFile && <CircularStatic />}
+        <div className="z-50"> {loading && <Loading process={process} />}</div>
         {
           <div className="right-1/2 left-1/2 top-1/2 absolute z-50 bg-green-700 cursor-pointer">
             <Dialog
@@ -313,7 +374,8 @@ const PostDialog = (props) => {
                 <input
                   className=" hidden cursor-pointer left-0 top-1  font-medium absolute text-blue-500 text-sm "
                   type="file"
-                  accept="image/*,/video/mp4,video/x-m4v,video/*"
+                  // accept="image/*,/video/mp4,video/x-m4v,video/*"
+                  accept="video/*,audio/*,image/gif,image/jpeg,image/png,.gif,.jpeg,.jpg,.png"
                   onChange={imageFileHandler}
                   id="fileChoosen"
                   ref={hiddenFileInput}

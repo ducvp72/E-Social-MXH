@@ -5,10 +5,12 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Footer } from "./../components/post/footer";
 import InfititeLoading from "./../containers/LoadingPage/infititeLoading";
 import { SkeletonComment } from "./../skeletons/Skeletons";
+import { postApi } from "./../axiosApi/api/postApi";
+import { useSelector } from "react-redux";
 
 export const ListCommentCrs = (props) => {
-  const { comment } = props;
-
+  const { state, comment } = props;
+  const currentUser = useSelector((state) => state.auth.data);
   const [toggle, setToggle] = useState({ isShow: false, postData: {} });
   const [cmt, setCmt] = useState([]);
   const [noMore, setnoMore] = useState(true);
@@ -16,11 +18,14 @@ export const ListCommentCrs = (props) => {
   const [skt, setSkt] = useState(true);
 
   useEffect(() => {
+    // console.log("itemIn List", item);
     const value = {
-      body: comment.text,
       id: comment.realtime,
-      title: "aut amet sed",
-      userId: comment.text,
+      user: {
+        fullname: currentUser?.fullname,
+        avatar: currentUser?.avatar,
+      },
+      text: comment.text,
     };
     if (comment) {
       setCmt([value, ...cmt]);
@@ -36,14 +41,14 @@ export const ListCommentCrs = (props) => {
   }, []);
 
   const getComments = () => {
-    axios({
-      method: `GET`,
-      url: `https://jsonplaceholder.typicode.com/posts?_page=1&_limit=15`,
-    })
+    postApi
+      .getAllComments(state?.id, 1, 5)
       .then((rs) => {
-        if (rs) setCmt(rs.data);
+        if (rs) setCmt(rs.data.results);
         setToggle({ ...toggle, postData: rs.data });
         setSkt(false);
+        setnoMore(true);
+        setPage(2);
       })
       .catch((err) => {
         console.log(err);
@@ -60,12 +65,10 @@ export const ListCommentCrs = (props) => {
   };
   const handleFetchPosts = () => {
     return new Promise((resolve, reject) => {
-      axios({
-        method: `GET`,
-        url: `https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=15`,
-      })
+      postApi
+        .getAllComments(state?.id, page, 5)
         .then((rs) => {
-          if (rs) resolve(rs.data);
+          if (rs) resolve(rs.data.results);
         })
         .catch((err) => {
           console.log("errPromise", err);
@@ -76,9 +79,8 @@ export const ListCommentCrs = (props) => {
 
   const fetchData = async () => {
     const postsFromServer = await handleFetchPosts();
-    // console.log("dat", ...postsFromServer);
     setCmt([...cmt, ...postsFromServer]);
-    if (postsFromServer.length === 0 || postsFromServer.length < 15) {
+    if (postsFromServer.length === 0 || postsFromServer.length < 5) {
       setnoMore(false);
     }
     setPage(page + 1);
@@ -109,16 +111,7 @@ export const ListCommentCrs = (props) => {
           ? loopSkeleton()
           : cmt &&
             cmt.map((item) => {
-              return (
-                <div key={item.id} className="flex px-2 mb-2">
-                  <img
-                    className="rounded-full h-8 w-8 flex mt-1"
-                    src={"/assets/image/defaultAvatar.png"}
-                    alt="userimg"
-                  />
-                  <Footer key={item.id} item={item} />
-                </div>
-              );
+              return <Footer key={item.id} item={item} />;
             })}
       </InfiniteScroll>
     </div>

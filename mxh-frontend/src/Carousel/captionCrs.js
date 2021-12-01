@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 const CaptionCrs = (props) => {
-  const { item } = props;
+  const { state } = props;
   const [expand, setExpand] = useState(false);
-  const text = item?.text;
+  const text = state?.text;
   return (
     <div>
       <div className="p-4 pt-2 pb-1">

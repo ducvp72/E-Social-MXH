@@ -1,39 +1,29 @@
 import React from "react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Picker from "emoji-picker-react";
 import { useOnClickOutside } from "../../utils/handleRefresh";
 import "./style.css";
-import { v4 as uuidv4 } from "uuid";
 import { postApi } from "./../../axiosApi/api/postApi";
 import { useCookies } from "react-cookie";
 const CommentOutSide = (props) => {
-  const { setyourComment, yourcomment, item, getTwoPage } = props;
+  const { item, getTwoPage } = props;
   // console.log("itemCMt", item?.id);
   const [inputStr, setInputStr] = useState("");
-  const [comment, setComment] = useState("");
+  // const [comment, setComment] = useState("");
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
   const [cookies, ,] = useCookies(["auth"]);
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
-  // useEffect(() => {
-  //   console.log("inputStrCmt: ", inputStr);
-  //   const textInput = document.getElementById("txtArea").value;
-  // }, [inputStr]);
-
-  // useEffect(() => {
-  //   getFirstPage();
-  // }, []);
-
-  const getFirstPage = async () => {
+  const commentOutSide = async () => {
     postApi
       .userComment(cookies.auth.tokens.access.token, {
         postId: item?.id,
         text: inputStr,
       })
       .then((rs) => {
-        console.log(rs);
+        // console.log(rs);
         return;
       })
       .catch((err) => {
@@ -56,35 +46,26 @@ const CommentOutSide = (props) => {
     setInputStr(event.target.value);
   };
 
-  const handleSubmitComment = (e) => {
-    e?.preventDefault();
-    setyourComment({
-      ...yourcomment,
-      text: inputStr,
-      // realtime: Date.now(),
-      realtime: uuidv4(),
-    });
-    getFirstPage();
+  const handleSubmitComment = async (event) => {
+    await commentOutSide();
+    setTimeout(async () => {
+      await getTwoPage();
+    }, 1200);
     setInputStr("");
-    // getTwoPage();
+    event?.preventDefault();
   };
 
-  const press = (event) => {
+  const press = async (event) => {
     if (event.keyCode === 13 && !event.shiftKey) {
       // Enter was pressed without shift key
-      console.log("Input ", inputStr.length);
       if (inputStr === "") {
         return;
       } else {
-        setyourComment({
-          ...yourcomment,
-          text: event.target.value,
-
-          realtime: uuidv4(),
-        });
-        getFirstPage();
+        await commentOutSide();
+        setTimeout(async () => {
+          await getTwoPage();
+        }, 1200);
         setInputStr("");
-        // getTwoPage();
         event.preventDefault();
       }
     }
@@ -96,11 +77,11 @@ const CommentOutSide = (props) => {
       <form
         className="flex justify-between pl-0 pr-5 items-center"
         method="POST"
-        onSubmit={(event) =>
-          comment.length >= 1
-            ? handleSubmitComment(event)
-            : event.preventDefault()
-        }
+        // onSubmit={(event) =>
+        //   comment.length >= 1
+        //     ? handleSubmitComment(event)
+        //     : event.preventDefault()
+        // }
       >
         {active ? (
           <div
@@ -126,7 +107,7 @@ const CommentOutSide = (props) => {
           cols=""
           rows="1"
           className="border-2 rounded-md border-gray-200 ml-1 focus:outline-none relative break-words overflow-visible  mr-1 py-3 px-2 text-sm resize-none w-full mt-2 font-normal text-gray-base"
-          value={inputStr}
+          value={inputStr || ""}
           onChange={handleInput}
           maxLength={2200}
           placeholder="Add a comment..."

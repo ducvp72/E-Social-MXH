@@ -114,7 +114,7 @@ export default function EditPost(props) {
                   minRows={3}
                   placeholder="Text"
                   style={{ width: 550, color: "#a5a5a5" }}
-                  value={postInfo?.text}
+                  value={postInfo?.text || ""}
                   disabled
                 />
               </div>

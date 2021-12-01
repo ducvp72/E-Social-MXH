@@ -4,9 +4,11 @@ import Picker from "emoji-picker-react";
 
 import { v4 as uuidv4 } from "uuid";
 import { useOnClickOutside } from "../utils/handleRefresh";
+import { useCookies } from "react-cookie";
+import { postApi } from "./../axiosApi/api/postApi";
 const AddCommentCrs = (props) => {
-  const { setyourComment, yourcomment } = props;
-
+  const { setyourComment, yourcomment, state } = props;
+  const [cookies, ,] = useCookies(["auth"]);
   const [inputStr, setInputStr] = useState("");
   const [comment, setComment] = useState("");
   const [active, setActive] = useState(false);
@@ -15,10 +17,25 @@ const AddCommentCrs = (props) => {
 
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
-  // useEffect(() => {
-  //   console.log("inputStrCmt: ", inputStr);
-  //   const textInput = document.getElementById("txtArea").value;
-  // }, [inputStr]);
+  useEffect(() => {
+    // console.log("inputStrCmt: ", inputStr);
+    // const textInput = document.getElementById("txtArea").value;
+  }, []);
+
+  const getFirstPageCmt = async () => {
+    postApi
+      .userComment(cookies.auth.tokens.access.token, {
+        postId: state?.id,
+        text: inputStr,
+      })
+      .then((rs) => {
+        // console.log(rs);
+        return;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const onEmojiClick = (e, emojiObject) => {
     if (inputStr?.length >= 2200) {
@@ -40,9 +57,9 @@ const AddCommentCrs = (props) => {
     setyourComment({
       ...yourcomment,
       text: inputStr,
-      // realtime: Date.now(),
       realtime: uuidv4(),
     });
+    getFirstPageCmt();
     setInputStr("");
   };
 
@@ -59,6 +76,7 @@ const AddCommentCrs = (props) => {
           // realtime: Date.now(),
           realtime: uuidv4(),
         });
+        getFirstPageCmt();
         setInputStr("");
         event.preventDefault();
       }
@@ -101,7 +119,7 @@ const AddCommentCrs = (props) => {
           cols=""
           rows="1"
           className="border-2 rounded-md border-gray-200 ml-1 focus:outline-none relative break-words overflow-visible  mr-1 py-3 px-2 text-sm resize-none w-full mt-2 font-normal text-gray-base"
-          value={inputStr}
+          value={inputStr || ""}
           onChange={handleInput}
           maxLength={2200}
           placeholder="Add a comment..."

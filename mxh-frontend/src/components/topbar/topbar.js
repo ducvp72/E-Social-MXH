@@ -28,6 +28,18 @@ export const Topbar = () => {
 
   useEffect(() => {
     setSkt(true);
+    // console.log("render time line");
+    // getFirstPage();
+    children();
+  }, []);
+
+  const children = () => {
+    console.log("render di ma");
+    return;
+  };
+
+  useEffect(() => {
+    setSkt(true);
     setTimeout(() => {
       if (currentUser) setSkt(false);
     }, 1500);
@@ -49,7 +61,7 @@ export const Topbar = () => {
   const user = 1;
   return (
     <>
-      <PostDialog open={createPost} onClose={onClose} />
+      <PostDialog updatePost={children} open={createPost} onClose={onClose} />
       {loading && <Loading />}
       <header className="fixed shadow-md w-full h-16 bg-white border-b border-gray-primary mb-8 z-40">
         <div className="container mx-auto max-w-screen-lg h-full">
@@ -268,7 +280,7 @@ export const Topbar = () => {
                             )}`}
                             activeClassName="text-red-500"
                           >
-                            <span className="">Trang cá nhân</span>
+                            <span className="">Your page</span>
                           </NavLink>
 
                           <NavLink
@@ -277,13 +289,13 @@ export const Topbar = () => {
                               "."
                             )}`}
                           >
-                            <span className="">Cài đặt</span>
+                            <span className="">Settings</span>
                           </NavLink>
 
                           <div className="w-100 bg-gray-300 h-0.5"></div>
                           <div className="">
                             <span onClick={() => handlelogout()} className="">
-                              Đăng xuất
+                              Log out
                             </span>
                           </div>
                         </div>

@@ -7,8 +7,8 @@ import { v4 as uuidv4 } from "uuid";
 import { postApi } from "./../../axiosApi/api/postApi";
 import { useCookies } from "react-cookie";
 const Addcomments = (props) => {
-  const { setyourComment, yourcomment } = props;
-
+  const { setyourComment, yourcomment, item, getTwoPage } = props;
+  const [cookies, ,] = useCookies(["auth"]);
   const [inputStr, setInputStr] = useState("");
   const [comment, setComment] = useState("");
   const [active, setActive] = useState(false);
@@ -17,10 +17,20 @@ const Addcomments = (props) => {
 
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
-  // useEffect(() => {
-  //   console.log("inputStrCmt: ", inputStr);
-  //   const textInput = document.getElementById("txtArea").value;
-  // }, [inputStr]);
+  const userComment = async () => {
+    postApi
+      .userComment(cookies.auth.tokens.access.token, {
+        postId: item?.id,
+        text: inputStr,
+      })
+      .then((rs) => {
+        // console.log(rs);
+        return;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const onEmojiClick = (e, emojiObject) => {
     if (inputStr?.length >= 2200) {
@@ -37,30 +47,38 @@ const Addcomments = (props) => {
     setInputStr(event.target.value);
   };
 
-  const handleSubmitComment = (e) => {
-    e?.preventDefault();
+  const handleSubmitComment = async (e) => {
     setyourComment({
       ...yourcomment,
       text: inputStr,
-      // realtime: Date.now(),
       realtime: uuidv4(),
     });
+    await userComment();
+    setTimeout(async () => {
+      await getTwoPage();
+    }, 1200);
     setInputStr("");
+    e.preventDefault();
   };
 
-  const press = (event) => {
+  const press = async (event) => {
     if (event.keyCode === 13 && !event.shiftKey) {
       // Enter was pressed without shift key
-      console.log("Input ", inputStr.length);
       if (inputStr === "") {
         return;
       } else {
         setyourComment({
           ...yourcomment,
           text: event.target.value,
-
           realtime: uuidv4(),
         });
+        userComment();
+
+        setTimeout(async () => {
+          await getTwoPage();
+        }, 1200);
+        setInputStr("");
+
         setInputStr("");
         event.preventDefault();
       }

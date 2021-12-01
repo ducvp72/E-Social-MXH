@@ -5,59 +5,87 @@ import { Action } from "./../post/action";
 import { ListComment } from "./ListComment";
 import Caption from "./../post/caption";
 import { SkeletonImagePost } from "./../../skeletons/Skeletons";
+import moment from "moment";
+
 const PostDetail = (props) => {
-  const { setPopup, popup, item } = props;
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [userImage, setUserImage] = useState();
+  const { setPopup, popup, item, getFirstPage, getTwoPage } = props;
   const [action, setAction] = useState(false);
   const [comment, setComment] = useState({ text: "", realtime: null });
+  const [skt, setSkt] = useState(true);
 
   useEffect(() => {
-    // console.log("render");
-    // console.log("comments from child", comment);
-    // console.log("Get Comment and Key", comment);
-  });
+    cancleShow();
+    return () => clearTimeout(cancleShow);
+  }, []);
+
+  const cancleShow = () => {
+    setTimeout(() => {
+      setSkt(false);
+    }, 500);
+  };
 
   const onClose = () => {
     setAction(false);
   };
 
   const checkFile = () => {
-    if (userImage) {
-      if (
-        selectedImage.type === "image/jpeg" ||
-        selectedImage.type === "image/png" ||
-        selectedImage.type === "image/gif"
-      ) {
+    if (item) {
+      if (item?.fileTypes === "IMAGE") {
         return (
-          <img
-            alt="anh2"
-            src={userImage}
-            className="object-cover"
-            width="800px"
-            height="100%"
-          />
+          <div className="flex justify-center h-full">
+            <img
+              src={`https://mxhld.herokuapp.com/v1/file/${item?.file}`}
+              alt="userpost"
+              className="w-full object-cover "
+            />
+          </div>
         );
       }
-      if (selectedImage.type === "video/mp4") {
+      if (item?.fileTypes === "VIDEO") {
         return (
-          <video
-            style={{
-              width: "800px",
-            }}
-            className="w-full h-cus "
-            controls
+          <div
+            style={{ border: "1px solid #91a3b0" }}
+            className="flex justify-center bg-black "
           >
-            <source src={userImage} />
-          </video>
+            <video
+              style={{
+                height: "550px",
+              }}
+              className="w-full focus:outline-none"
+              controls
+            >
+              <source
+                src={`https://mxhld.herokuapp.com/v1/file/${item?.file}`}
+              />
+            </video>
+          </div>
+        );
+      }
+      if (item?.fileTypes === "AUDIO") {
+        return (
+          <div className="flex h-full justify-center items-center bg-gradient-to-r from-green-400 via-yellow-500 to-pink-500">
+            <audio className="w-4/5 focus:outline-none" controls>
+              <source
+                src={`https://mxhld.herokuapp.com/v1/file/${item?.file}`}
+              />
+            </audio>
+          </div>
         );
       }
     }
+    return;
   };
 
   return (
     <>
-      <DialogActionPost open={action} onClose={onClose}></DialogActionPost>
+      <DialogActionPost
+        item={item}
+        open={action}
+        onClose={onClose}
+        getFirstPage={getFirstPage}
+        setPopup={setPopup}
+        popup={popup}
+      ></DialogActionPost>
       <div
         className="post-show fixed w-full h-screen opacity-80 z-40 top-0 left-0 flex justify-end items-start"
         style={{ background: "#7d7d7d" }}
@@ -77,25 +105,18 @@ const PostDetail = (props) => {
       >
         <div className="grid grid-cols-4 h-full">
           <div className="col-span-2 h-full overflow-hidden">
-            <img
-              alt="anh2"
-              src="/assets/image/votui.jpg"
-              className="object-cover"
-              width="800px"
-              height="100%"
-            />
-            <SkeletonImagePost />
-            {/* {checkFile()} */}
+            {skt && <SkeletonImagePost />}
+            {checkFile()}
           </div>
           <div className="post-show col-span-2">
             <div className="flex items-center mt-2 pl-2">
               <img
                 className="rounded-full w-10 mr-3"
-                src="/assets/image/defaultAvatar.png"
+                src={`https://mxhld.herokuapp.com/v1/image/${item?.user.avatar}`}
                 alt="img"
               />
               <div className="flex-1 pr-4 flex items-center justify-between">
-                <p className="font-bold text-md">username</p>
+                <p className="font-bold text-md">{item?.user.fullname}</p>
 
                 <p
                   onClick={() => {
@@ -119,19 +140,22 @@ const PostDetail = (props) => {
                 <Caption item={item} />
               </div>
 
-              <ListComment comment={comment} />
+              <ListComment item={item} comment={comment} />
             </div>
 
             <div className="absolute w-1/2 transform top-3/4 -translate-y-6">
               <hr />
-              <Action toggleCheck={popup.isShow} />
+              <Action toggleCheck={popup.isShow} item={item} />
               <p className="ml-4 mb-2 italic text-xs text-gray-400">
-                21 hours ago
+                {moment(item?.createdAt).fromNow()}
               </p>
               <div className=" transform translate-x-4 mr-2">
                 <Addcomments
                   yourcomment={comment}
                   setyourComment={setComment}
+                  item={item}
+                  getFirstPage={getFirstPage}
+                  getTwoPage={getTwoPage}
                 />
               </div>
             </div>

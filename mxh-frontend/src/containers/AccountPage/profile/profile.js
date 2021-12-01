@@ -7,45 +7,64 @@ import { userApi } from "./../../../axiosApi/api/userApi";
 import UserPost from "./userPost";
 import { SkeletonProfile } from "../../../skeletons/Skeletons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import CarouselElement from "./../../../Carousel/index";
 import { SkeletonPostThumbnail } from "./../../../skeletons/Skeletons";
 import { postApi } from "../../../axiosApi/api/postApi";
 import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "./../../LoadingPage/infititeLoading";
 import { useCookies } from "react-cookie";
-import { v4 as uuidv4 } from "uuid";
-import { date } from "yup/lib/locale";
 
 const Profile = () => {
   const [cookies, ,] = useCookies(["auth"]);
   const [userSmr, setUSerSmr] = useState(null);
   const [userPost, setUserPost] = useState([]);
   const currentUser = useSelector((state) => state.auth.data);
-  const [skt, setSkt] = useState(true);
-  const [toggle, setToggle] = useState({ isShow: false, postData: {} });
+  const [skt, setSkt] = useState(false);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
 
-  // console.log("UserID", cookies.auth.user.id);
+  // useEffect(() => {
+  //   checkShow();
+  //   getUserPost();
+  //   return () => {
+  //     clearTimeout(checkShow);
+  //     setUSerSmr(null);
+  //     setUserPost(null);
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   if (userSmr.length !== 0) console.log("userSumary", userSmr);
+  //   if (userPost.length !== 0) console.log("userPost", userPost);
+  // }, []);
+
+  console.log("userSumary", userSmr);
+  console.log("userPost", userPost);
 
   useEffect(() => {
-    if (cookies.auth.user.id)
-      setTimeout(() => {
-        setSkt(false);
-      }, 1000);
-    getSummary();
-  }, [cookies.auth.user.id]);
-
-  useEffect(() => {
-    getUserPost();
+    checkShow();
+    return () => {
+      clearTimeout(checkShow);
+      setUSerSmr(null);
+    };
   }, []);
 
   useEffect(() => {
-    console.log("lstPostID", userPost);
-    // console.log("Summary", userSmr?.data);
-  }, [userPost]);
+    getUserPost();
+    return () => {
+      setUserPost(null);
+    };
+  }, []);
+
+  const checkShow = () => {
+    if (cookies.auth.user.id)
+      setTimeout(() => {
+        setSkt(false);
+      }, 500);
+    getSummary();
+  };
 
   const getSummary = async () => {
+    console.log("okeee");
     try {
       const userSummary = await userApi.getUserSummary(cookies.auth.user.id);
       setUSerSmr(userSummary);
@@ -54,13 +73,16 @@ const Profile = () => {
     }
   };
 
-  const getUserPost = async () => {
-    setSkt(true);
-    await postApi
-      .getUserPost(cookies.auth.user.id, 1, 5)
+  const getUserPost = () => {
+    console.log("ok");
+    // setSkt(true);
+    postApi
+      .getUserPost(cookies.auth.tokens.access.token, cookies.auth.user.id, 1, 6)
       .then((res) => {
         // console.log("lstPost", res.data.results);
         setUserPost(res.data.results);
+        setnoMore(true);
+        setPage(2);
       })
       .catch((err) => {
         console.log(err);
@@ -70,9 +92,15 @@ const Profile = () => {
   const handleFetchPosts = () => {
     return new Promise((resolve, reject) => {
       postApi
-        .getUserPost(cookies.auth.user.id, page, 5)
+        .getUserPost(
+          cookies.auth.tokens.access.token,
+          cookies.auth.user.id,
+          page,
+          6
+        )
         .then((rs) => {
           if (rs) resolve(rs.data.results);
+          // resolve(rs.data);
         })
         .catch((err) => {
           console.log("errPromise", err);
@@ -81,12 +109,10 @@ const Profile = () => {
     });
   };
 
-  // console.log("handleFetchPosts", handleFetchPosts());
-
   const fetchData = async () => {
     const postsFromServer = await handleFetchPosts();
     setUserPost([...userPost, ...postsFromServer]);
-    if (postsFromServer.length === 0 || postsFromServer.length < 5) {
+    if (postsFromServer.length === 0 || postsFromServer.length < 6) {
       setnoMore(false);
     }
     setPage(page + 1);
@@ -141,7 +167,7 @@ const Profile = () => {
                 <Statistic userSmr={userSmr?.data} />
               </div>
               <div className="h-full">
-                <Information />
+                <Information currentUser={currentUser} />
               </div>
             </div>
           </div>
@@ -173,8 +199,12 @@ const Profile = () => {
               {userPost &&
                 userPost.map((item) => {
                   return (
-                    // <UserPost key={item.id} item={item} setToggle={setToggle} />
-                    <UserPost key={item.id} item={item} />
+                    <UserPost
+                      getSummary={getSummary}
+                      getUserPost={getUserPost}
+                      key={item.id}
+                      item={item}
+                    />
                   );
                 })}
             </div>

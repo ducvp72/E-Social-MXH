@@ -10,8 +10,9 @@ import { SkeletonProfile } from "../../../skeletons/Skeletons";
 import { useCookies } from "react-cookie";
 import Swal from "sweetalert2";
 import { SkeletonPostThumbnail } from "./../../../skeletons/Skeletons";
-import { InfiniteScroll } from "react-infinite-scroll-component";
+import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "./../../LoadingPage/infititeLoading";
+import { postApi } from "./../../../axiosApi/api/postApi";
 
 const OtherProfile = () => {
   const [following, setFollowing] = useState(false);
@@ -21,20 +22,26 @@ const OtherProfile = () => {
   const [cookies, ,] = useCookies(["auth"]);
   let { username } = useParams();
   const idUser = useLocation().search;
-
+  const [userPost, setUserPost] = useState([]);
+  const [noMore, setnoMore] = useState(true);
+  const [page, setPage] = useState(2);
   const q = new URLSearchParams(idUser).get("id");
 
   useEffect(() => {
     setSkt(true);
     getUserInfo();
+    getUserPost();
+    return () => {
+      setUserInfo(null);
+      setFollowing(null);
+      setUserPost(null);
+    };
   }, [q]);
 
   const getUserInfo = () => {
     userApi
-      // .getUserNameSearch(cookies.auth.tokens.access.token, rs)
       .getUserByID(cookies.auth.tokens.access.token, q)
       .then((res) => {
-        console.log("res", res.data);
         setUserInfo(res.data);
         setFollowing(res.data.isFollow);
         setSkt(false);
@@ -43,6 +50,45 @@ const OtherProfile = () => {
         setSkt(false);
         console.log(err);
       });
+  };
+
+  const getUserPost = () => {
+    setSkt(true);
+    postApi
+      .getUserPost(cookies.auth.tokens.access.token, q, 1, 10)
+      .then((res) => {
+        // console.log("lstPost", res.data.results);
+        setUserPost(res.data.results);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  console.log("userPost", userPost);
+
+  const handleFetchPosts = () => {
+    return new Promise((resolve, reject) => {
+      postApi
+        .getUserPost(cookies.auth.tokens.access.token, q, page, 10)
+        .then((rs) => {
+          if (rs) resolve(rs.data.results);
+          // resolve(rs.data);
+        })
+        .catch((err) => {
+          console.log("errPromise", err);
+          reject(err);
+        });
+    });
+  };
+
+  const fetchData = async () => {
+    const postsFromServer = await handleFetchPosts();
+    setUserPost([...userPost, ...postsFromServer]);
+    if (postsFromServer.length === 0 || postsFromServer.length < 10) {
+      setnoMore(false);
+    }
+    setPage(page + 1);
   };
 
   const onClose = () => {
@@ -169,7 +215,7 @@ const OtherProfile = () => {
                   <Statistic userInfo={userInfo} />
                 </div>
                 <div className="h-full">
-                  <Information />
+                  <Information userInfo={userInfo} />
                 </div>
               </div>
             </div>
@@ -178,7 +224,7 @@ const OtherProfile = () => {
       )}
 
       <div className="py-2 w-full xl:w-4/6 lg:w-4/6 md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2">
-        {/* <InfiniteScroll
+        <InfiniteScroll
           dataLength={userPost?.length}
           next={fetchData}
           hasMore={noMore}
@@ -201,13 +247,11 @@ const OtherProfile = () => {
             <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
               {userPost &&
                 userPost.map((item) => {
-                  return (
-                    <UserPost key={item.id} item={item} />
-                  );
+                  return <UserPost key={item.id} otherItem={item} />;
                 })}
             </div>
           )}
-        </InfiniteScroll> */}
+        </InfiniteScroll>
       </div>
     </div>
   );

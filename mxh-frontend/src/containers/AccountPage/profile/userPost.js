@@ -1,27 +1,116 @@
 import React, { useState, useEffect } from "react";
 import CarouselElement from "./../../../Carousel/index";
-
 const UserPost = (props) => {
-  const { item } = props;
+  const { item, otherItem, getUserPost, getSummary } = props;
   const [popup, setPopup] = useState(false);
+  const [state, setState] = useState();
+
   useEffect(() => {
-    console.log("PopUp", popup);
-  }, [popup]);
+    checkState();
+    return () => {
+      setState(null);
+    };
+  }, []);
+
+  const checkState = () => {
+    if (item) {
+      setState(item);
+      // console.log("My USerpost", item);
+    } else {
+      setState(otherItem);
+      // console.log("Other Profile", otherItem);
+    }
+  };
+
   const handleShowPopup = () => {
     setPopup(true);
   };
+
+  const checkFile = () => {
+    if (state) {
+      if (state?.fileTypes === "IMAGE") {
+        return (
+          <>
+            <div
+              className="flex items-center justify-center cursor-pointer"
+              style={{ border: "1px solid #efefef" }}
+              onClick={() => setPopup({ ...popup, isShow: true })}
+            >
+              <img
+                src={`https://mxhld.herokuapp.com/v1/file/${state?.file}`}
+                alt="userpost"
+                className="w-full "
+              />
+            </div>
+          </>
+        );
+      }
+      if (state?.fileTypes === "VIDEO") {
+        return (
+          <div className="flex items-center justify-center cursor-pointer bg-black ">
+            <video
+              onClick={() => setPopup({ ...popup, isShow: true })}
+              className="w-full outline-none h-full "
+              controls
+            >
+              <source
+                src={`https://mxhld.herokuapp.com/v1/file/${state?.file}`}
+              />
+            </video>
+          </div>
+        );
+      }
+      if (state?.fileTypes === "AUDIO") {
+        return (
+          <div
+            className=" items-center justify-center cursor-pointer"
+            onClick={() => setPopup({ ...popup, isShow: true })}
+          >
+            <img
+              src="/assets/image/audio.png"
+              className="h-full p-10"
+              alt="nocaption"
+            />
+          </div>
+        );
+      }
+    }
+    return (
+      <>
+        <div
+          className=" items-center justify-center cursor-pointer"
+          onClick={() => setPopup({ ...popup, isShow: true })}
+        >
+          <img
+            src="/assets/image/no-pictures.png"
+            className="h-full p-10"
+            alt="nocaption"
+          />
+        </div>
+      </>
+    );
+  };
+
   return (
     <div>
       {popup && (
-        <CarouselElement item={item} setPopup={setPopup} popup={popup} />
+        <CarouselElement
+          otherItem={otherItem}
+          item={item}
+          setPopup={setPopup}
+          popup={popup}
+          getUserPost={getUserPost}
+          getSummary={getSummary}
+        />
       )}
       <div className="shadow-2xl cursor-pointer rounded-sm  border-white relative group">
-        <img
-          // src={`https://mxhld.herokuapp.com/v1/image/${item.images[0]}?w=500&h=500`}
-          src={"/assets/image/votui.jpg"}
-          alt="ImgPost"
-          className="rounded-sm w-full h-40 xl:h-80 sm:h-56 md-h-40 "
-        />
+        <div
+          className="flex items-center justify-center"
+          style={{ height: "250px" }}
+        >
+          {checkFile()}
+        </div>
+
         <div className=" absolute top-0 w-full h-full hidden group-hover:block transition delay-150 duration-500 ease-in-out ">
           <div className="bg-gray-900 h-full w-full top-0 left-0 opacity-50 absolute z-10 " />
           <div
@@ -46,7 +135,7 @@ const UserPost = (props) => {
                 </svg>
               </span>
               <p className="text-sm md:text-xl lg:text-xl font-medium text-white">
-                {item?.likes}
+                {state?.likes}
               </p>
             </div>
 
@@ -66,7 +155,7 @@ const UserPost = (props) => {
                 </svg>
               </span>
               <p className=" text-sm md:text-xl lg:text-xl font-medium text-white">
-                {item?.comments}
+                {state?.comments}
               </p>
             </div>
           </div>

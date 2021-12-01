@@ -9,9 +9,11 @@ export const Action = (props) => {
   const [countLike, setCountLike] = useState(item?.likes);
   const [cookies, ,] = useCookies("auth");
 
-  useEffect(() => {
-    // console.log("IsLikes", likes);
-  }, [likes, toggleCheck]);
+  // useEffect(() => {
+  //   console.log("IsLikes", likes);
+  //   console.log("CountLike", countLike);
+  //   handleFetchPosts();
+  // }, [toggleCheck]);
 
   const handleLiked = async () => {
     setLikes(!likes);
@@ -20,11 +22,13 @@ export const Action = (props) => {
   };
 
   const handleFetchPosts = () => {
+    // console.log("chay like");
     return new Promise((resolve, reject) => {
       postApi
         .likePost(cookies.auth.tokens.access.token, { postId: item?.id })
         .then((rs) => {
           // resolve(rs.data);
+          // console.log(rs.data.likes);
           return;
         })
         .catch((err) => {
@@ -38,7 +42,6 @@ export const Action = (props) => {
     if (toggleCheck === true) {
       return;
     }
-    // setToggle({ isShow: true, postData: item });
     setPopup({ ...popup, isShow: true });
   };
 
