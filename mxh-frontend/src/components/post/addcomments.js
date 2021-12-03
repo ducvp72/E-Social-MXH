@@ -121,7 +121,7 @@ const Addcomments = (props) => {
           cols=""
           rows="1"
           className="border-2 rounded-md border-gray-200 ml-1 focus:outline-none relative break-words overflow-visible  mr-1 py-3 px-2 text-sm resize-none w-full mt-2 font-normal text-gray-base"
-          value={inputStr}
+          value={inputStr || ""}
           onChange={handleInput}
           maxLength={2200}
           placeholder="Add a comment..."

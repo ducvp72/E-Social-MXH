@@ -42,9 +42,9 @@ const Routes = () => {
           <DefaultLayout>
             <Switch>
               <Route path="/user/home" exact component={Home} />
+              <Route path="/user/inbox/" exact component={Inbox} />
               <Route path="/user/:userName" exact component={Profile} />
               <Route path="/user/setting/:userName" exact component={Account} />
-              <Route path="/user/inbox/:userName" exact component={Inbox} />
               <Route path="*" exact>
                 <Redirect to="/404" />
               </Route>

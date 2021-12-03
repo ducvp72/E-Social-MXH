@@ -37,6 +37,10 @@ export default function DialogActionPost(props) {
     }
   };
 
+  if (state) {
+    console.log("states", state?.id);
+  }
+
   const handleDelete = async () => {
     try {
       onClose();

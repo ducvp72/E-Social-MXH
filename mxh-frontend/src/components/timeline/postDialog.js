@@ -74,11 +74,6 @@ const PostDialog = (props) => {
 
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
-  // useEffect(() => {
-
-  //   console.log("Proceess", process);
-  // }, [process]);
-
   const getProcess = (progressEvent) => {
     const { loaded, total } = progressEvent;
     const percent = ((loaded / total) * 100).toFixed(2);
@@ -410,7 +405,7 @@ const PostDialog = (props) => {
                 cols=""
                 rows="8"
                 className=" resize-none boder-2 mt-2 font-normal text-lg text-black focus:outline-none"
-                value={inputStr}
+                value={inputStr || ""}
                 onChange={handleInput}
                 maxLength={2200}
               />

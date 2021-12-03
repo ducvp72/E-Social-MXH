@@ -18,7 +18,7 @@ const Profile = () => {
   const [userSmr, setUSerSmr] = useState(null);
   const [userPost, setUserPost] = useState([]);
   const currentUser = useSelector((state) => state.auth.data);
-  const [skt, setSkt] = useState(false);
+  const [skt, setSkt] = useState(true);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
 
@@ -31,14 +31,6 @@ const Profile = () => {
   //     setUserPost(null);
   //   };
   // }, []);
-
-  // useEffect(() => {
-  //   if (userSmr.length !== 0) console.log("userSumary", userSmr);
-  //   if (userPost.length !== 0) console.log("userPost", userPost);
-  // }, []);
-
-  console.log("userSumary", userSmr);
-  console.log("userPost", userPost);
 
   useEffect(() => {
     checkShow();

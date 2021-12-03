@@ -62,7 +62,6 @@ export const Timeline = () => {
       setnoMore(false);
     }
     setPage(page + 1);
-    console.log("Page", page);
   };
 
   const onClose = () => {

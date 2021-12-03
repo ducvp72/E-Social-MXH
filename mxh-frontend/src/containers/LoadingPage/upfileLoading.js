@@ -59,7 +59,7 @@ export default function CircularStatic(props) {
 
   React.useEffect(() => {
     setProgress(process);
-    // console.log("Proceess2", process);
+    console.log("Proceess2", process);
   }, [process]);
 
   return <CircularProgressWithLabel value={progress} />;

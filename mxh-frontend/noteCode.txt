@@ -35,3 +35,20 @@
   //   if(post.length )
   //   setCheckPost(post.length )
   // },[checkPost])
+
+      {/* Của người khác chat */}
+        {/* <Message
+        model={{
+          message: `${value}`,
+          sentTime: "15 mins ago",
+          sender: "Emily",
+          direction: "incoming",
+          position: "single",
+        }}
+      >
+        <Avatar src={"/assets/image/defaultAvatar.png"} name={"Joe"} />
+      </Message> */}
+        {/* Của mình chat wa  */}
+        {/* {me()} */}
+        {/* Của người khác chat */}
+        {/* {you()} */}

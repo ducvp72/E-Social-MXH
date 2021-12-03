@@ -28,6 +28,7 @@ const CarouselElement = (props) => {
       clearTimeout(cancleShow);
     };
   }, []);
+
   const cancleShow = () => {
     setTimeout(() => {
       setSkt(false);
@@ -93,7 +94,15 @@ const CarouselElement = (props) => {
         );
       }
     }
-    return;
+    return (
+      <div className="flex justify-center h-full">
+        <img
+          src="/assets/image/no-pictures.png"
+          alt="userpost"
+          className="w-full object-cover p-24"
+        />
+      </div>
+    );
   };
 
   return (

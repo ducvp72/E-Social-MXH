@@ -102,7 +102,7 @@ const CommentOutSide = (props) => {
           onClick={() => setActive(!active)}
           ref={buttonRef}
         />
-        {/* <div contenteditable="true"></div> */}
+
         <textarea
           cols=""
           rows="1"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CarouselElement from "./../../../Carousel/index";
 const UserPost = (props) => {
-  const { item, otherItem, getUserPost, getSummary } = props;
+  const { item, otherItem, getUserPost, getSummary, setSkt } = props;
   const [popup, setPopup] = useState(false);
   const [state, setState] = useState();
 

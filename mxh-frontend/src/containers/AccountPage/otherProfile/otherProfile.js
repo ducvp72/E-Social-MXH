@@ -57,15 +57,14 @@ const OtherProfile = () => {
     postApi
       .getUserPost(cookies.auth.tokens.access.token, q, 1, 10)
       .then((res) => {
-        // console.log("lstPost", res.data.results);
         setUserPost(res.data.results);
+        setnoMore(true);
+        setPage(2);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
-  console.log("userPost", userPost);
 
   const handleFetchPosts = () => {
     return new Promise((resolve, reject) => {

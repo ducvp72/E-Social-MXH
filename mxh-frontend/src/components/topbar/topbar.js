@@ -11,6 +11,8 @@ import SearchText from "./autoComplete";
 import Box from "@mui/material/Box";
 import { useOnClickOutside } from "./../../utils/handleRefresh";
 import PostDialog from "./../timeline/postDialog";
+import { postApi } from "./../../axiosApi/api/postApi";
+import { Status } from "@chatscope/chat-ui-kit-react";
 export const Topbar = () => {
   const [createPost, setCreatePost] = useState(false);
   const [skt, setSkt] = useState(true);
@@ -22,20 +24,33 @@ export const Topbar = () => {
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
-
+  const [noMore, setnoMore] = useState(true);
+  const [page, setPage] = useState(2);
+  const [toggle, setToggle] = useState({ isShow: false, postData: {} });
+  const [post, setPost] = useState([]);
   // Call hook passing in the ref and a function to call on outside click
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
   useEffect(() => {
     setSkt(true);
-    // console.log("render time line");
-    // getFirstPage();
-    children();
   }, []);
 
-  const children = () => {
-    console.log("render di ma");
-    return;
+  const getFirstPage = async () => {
+    console.log("render time line");
+    postApi
+      .getMyPost(cookies.auth.tokens.access.token, 1, 5)
+      .then((rs) => {
+        if (rs) setPost(rs.data.results);
+        setToggle({ ...toggle, postData: rs.data.results });
+        // console.log("Post", post);
+        setSkt(false);
+        setnoMore(true);
+        setPage(2);
+      })
+      .catch((err) => {
+        console.log(err);
+        setSkt(false);
+      });
   };
 
   useEffect(() => {
@@ -61,7 +76,11 @@ export const Topbar = () => {
   const user = 1;
   return (
     <>
-      <PostDialog updatePost={children} open={createPost} onClose={onClose} />
+      <PostDialog
+        getFirstPage={getFirstPage}
+        open={createPost}
+        onClose={onClose}
+      />
       {loading && <Loading />}
       <header className="fixed shadow-md w-full h-16 bg-white border-b border-gray-primary mb-8 z-40">
         <div className="container mx-auto max-w-screen-lg h-full">
@@ -91,7 +110,7 @@ export const Topbar = () => {
               <div className="text-gray-700 text-center flex items-center align-items">
                 <NavLink to={`/user/home`} activeClassName="text-red-500">
                   <svg
-                    className="w-8 mr-6 cursor-pointer"
+                    className="w-8 mr-2 cursor-pointer"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -106,14 +125,15 @@ export const Topbar = () => {
                   </svg>
                 </NavLink>
                 <div className="relative">
+                  <span
+                    className="absolute cursor-pointer flex  text-white items-center justify-center  rounded-full bg-red-primary"
+                    style={{ top: "1px", marginLeft: "30px" }}
+                  >
+                    <Status status="dnd" className="cursor-pointer" size="sm" />
+                  </span>
+
                   {currentUser && (
-                    <NavLink
-                      to={`/user/inbox/${currentUser.fullname.replaceAll(
-                        " ",
-                        "."
-                      )}`}
-                      activeClassName="text-red-500"
-                    >
+                    <NavLink to="/user/inbox/" activeClassName="text-red-500">
                       <svg
                         className="w-8 mr-2 cursor-pointer"
                         xmlns="http://www.w3.org/2000/svg"
@@ -196,11 +216,7 @@ export const Topbar = () => {
                   </svg>
                 </div>
                 <div className="block relative">
-                  <div
-                    ref={buttonRef}
-                    onClick={() => setActive(!active)}
-                    className=""
-                  >
+                  <div ref={buttonRef} onClick={() => setActive(!active)}>
                     <span
                       className="absolute cursor-pointer flex text-sm1 text-white items-center justify-center h-5 w-5 rounded-full bg-red-primary"
                       style={{ top: "-5px", marginLeft: "16px" }}

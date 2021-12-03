@@ -20,7 +20,7 @@ export const User = () => {
   return (
     <>
       <Link to={`/user/${currentUser?.fullname.replaceAll(" ", ".")}`}>
-        <div className="grid grid-cols-4 gap-4 mb-6 items-center z-10 cursor-pointer">
+        <div className="grid grid-cols-4 gap-4 items-center z-10 cursor-pointer">
           <div className="flex items-center justify-between col-span-1">
             {/* {skt ? (
               <SkeletonAvatarSideBar />
