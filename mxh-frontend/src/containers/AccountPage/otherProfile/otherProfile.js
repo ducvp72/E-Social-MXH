@@ -13,6 +13,7 @@ import { SkeletonPostThumbnail } from "./../../../skeletons/Skeletons";
 import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "./../../LoadingPage/infititeLoading";
 import { postApi } from "./../../../axiosApi/api/postApi";
+import { chatApi } from "./../../../axiosApi/api/chatApi";
 
 const OtherProfile = () => {
   const [following, setFollowing] = useState(false);
@@ -37,6 +38,17 @@ const OtherProfile = () => {
       setUserPost(null);
     };
   }, [q]);
+
+  const inboxUser = async () => {
+    chatApi
+      .createConver(cookies.auth.tokens.access.token, q)
+      .then(() => {
+        return;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const getUserInfo = () => {
     userApi
@@ -175,6 +187,9 @@ const OtherProfile = () => {
                       <button
                         className="border-gray-300 font-normal p-1 rounded-sm"
                         style={{ borderWidth: "1px" }}
+                        onClick={() => {
+                          inboxUser();
+                        }}
                       >
                         Inbox
                       </button>

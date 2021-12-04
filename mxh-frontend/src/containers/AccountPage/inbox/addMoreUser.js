@@ -58,7 +58,7 @@ export default function AddMoreUser(props) {
                 onClick={() => {
                   handleClose();
                 }}
-                class="fas fa-times fa-lg "
+                className="fas fa-times fa-lg "
               ></i>
             </div>
             <div className="flex col-start-2 col-span-4 justify-center items-center gap-2">

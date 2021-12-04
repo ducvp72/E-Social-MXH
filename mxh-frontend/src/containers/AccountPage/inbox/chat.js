@@ -3,6 +3,9 @@ import ListMessage from "./listMessage";
 import { useOnClickOutside } from "./../../../utils/handleRefresh";
 import Picker from "emoji-picker-react";
 import { SideBarChatRight } from "./sideBarChatRight";
+import { useCookies } from "react-cookie";
+import { io } from "socket.io-client";
+import { chatApi } from "./../../../axiosApi/api/chatApi";
 import {
   ChatContainer,
   MessageInput,
@@ -14,13 +17,13 @@ import {
   AttachmentButton,
   SendButton,
   MessageList,
-  InputToolbox,
 } from "@chatscope/chat-ui-kit-react";
 
 const Chat = (props) => {
+  const [cookies, , removeCookie] = useCookies(["auth"]);
   const [openSr, setOpenSr] = useState(true);
   const inputRef = useRef();
-  const [msgInputValue, setMsgInputValue] = useState("");
+  const [msgInputValue, setMsgInputValue] = useState([]);
   const [messages, setMessages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [userImage, setUserImage] = useState();
@@ -30,23 +33,104 @@ const Chat = (props) => {
   const buttonRef = useRef(null);
   const modalMedia = useRef(null);
   const buttonMedia = useRef(null);
+  const [typing, setTyping] = useState(false);
+  const socket = useRef();
+  const [mess, setMess] = useState([]);
+  const [process, setProcess] = useState(0);
+  const [noMore, setnoMore] = useState(true);
+  const [page, setPage] = useState(2);
+  const [skt, setSkt] = useState(true);
+
+  useOnClickOutside(buttonRef, modalRef, () => setActive(false));
+  useOnClickOutside(buttonMedia, modalMedia, () => setMedia(false));
 
   useEffect(() => {
     document.getElementById("textAREA").focus();
   });
 
   useEffect(() => {
-    // console.log("userImage", userImage);
-    // console.log("Check", checkDisabled());
-    // console.log("selectedImage", selectedImage);
-    // return () => {
-    //   userImage && URL.revokeObjectURL(userImage);
-    //   setSelectedImage(null);
-    // };
-  }, [selectedImage, userImage]);
+    getMess();
+    return () => setMess([]);
+  }, []);
 
-  useOnClickOutside(buttonRef, modalRef, () => setActive(false));
-  useOnClickOutside(buttonMedia, modalMedia, () => setMedia(false));
+  useEffect(() => {
+    socket.current = io("https://mxhld.herokuapp.com/", {
+      pingTimeout: 1,
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            Authorization: `Bearer ${cookies.auth.tokens.access.token}`,
+          },
+        },
+      },
+    });
+
+    //#region Log Status
+    // socket.current.on("connect", () => {
+    //   console.log("Connection ok !");
+    // });
+
+    // socket.current.on("connect_error", () => {
+    //   console.log("connected error");
+    // });
+
+    // socket.current.emit("whoami", (data) => {
+    //   console.log(data);
+    // });
+    //#endregion
+
+    socket.current.on("getMessage", (data) => {
+      console.log("on", data.text);
+    });
+    socket.current.on("typing", (data) => {
+      console.log("on", "typing");
+      setTyping(true);
+    });
+    socket.current.on("untyping", (data) => {
+      console.log("on", "untyping");
+      setTyping(false);
+    });
+    socket.current.on("send-file", (data) => {
+      console.log("on", "send-file");
+    });
+    // console.log("lenght", msgInputValue.length);
+  }, [msgInputValue.length]);
+
+  const handleChatSocket = (message) => {
+    const onchat = {
+      senderId: cookies.auth.user.id,
+      receiverId: "61ab0f520011d000240f9a3d",
+      text: message,
+    };
+    socket.current.emit("sendMessage", onchat);
+  };
+
+  const focusTyping = async () => {
+    if (!typing && msgInputValue.length > 0) {
+      const onchat = {
+        senderId: cookies.auth.user.id,
+        receiverId: "61ab0f520011d000240f9a3d",
+      };
+      setTimeout(() => {
+        setTyping(true);
+      }, 100);
+      socket.current?.emit("typing", onchat);
+    }
+    if (msgInputValue.length === 1) {
+      setTimeout(async () => {
+        await unfocusTyping();
+        setTyping(false);
+      }, 100);
+    }
+  };
+
+  const unfocusTyping = async () => {
+    const onchat = {
+      senderId: cookies.auth.user.id,
+      receiverId: "61ab0f520011d000240f9a3d",
+    };
+    socket.current?.emit("untyping", onchat);
+  };
 
   const onEmojiClick = (e, emojiObject) => {
     setMsgInputValue((prevInput) => prevInput + emojiObject.emoji);
@@ -60,17 +144,68 @@ const Chat = (props) => {
     setMsgInputValue(event.target.value);
   };
 
+  const getMess = async (idConver) => {
+    chatApi
+      .getMessByIdConver(cookies.auth.tokens.access.token, idConver)
+      .then((rs) => {
+        console.log("Mess", rs.data);
+        setMess(rs.data);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  };
+
+  const getFirstPage = async () => {
+    chatApi
+      .getConverByToken(cookies.auth.tokens.access.token)
+      .then((rs) => {
+        // console.log("Conversation", rs.data);
+        setMess(rs.data);
+        setSkt(false);
+        setnoMore(true);
+        setPage(2);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  };
+
+  const handleFetchConver = () => {
+    return new Promise((resolve, reject) => {
+      chatApi
+        .getConverByToken(cookies.auth.tokens.access.token, page, 5)
+        .then((rs) => {
+          // console.log("Conversation", rs.data);
+          setMess(rs.data);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    });
+  };
+
+  const fetchData = async () => {
+    const messsFromServer = await handleFetchConver();
+    setMess([...mess, ...messsFromServer]);
+    if (messsFromServer.length === 0 || messsFromServer.length < 5) {
+      setnoMore(false);
+    }
+    setPage(page + 1);
+  };
+
   const handleSend = (message) => {
+    console.log("-----------------------------");
+    console.log("Chat", msgInputValue);
+    console.log("-----------------------------");
     let formData = new FormData();
     formData.append("text", msgInputValue);
     formData.append("file", selectedImage);
-    console.log("texts", formData.get("text"));
-    console.log("files", formData.get("file"));
-
+    // console.log("texts", formData.get("text"));
+    // console.log("files", formData.get("file"));
     if (msgInputValue.length === 0) {
       return;
     }
-
     setMessages([
       ...messages,
       {
@@ -78,6 +213,7 @@ const Chat = (props) => {
         direction: "outgoing",
       },
     ]);
+    handleChatSocket(message);
     setMsgInputValue("");
     inputRef.current.focus();
     setMedia(false);
@@ -89,7 +225,8 @@ const Chat = (props) => {
       event.preventDefault();
     }
     if (event.keyCode === 13 && !event.shiftKey && msgInputValue.length > 0) {
-      handleSend(event.target.value);
+      // handleChatSocket(msgInputValue);
+      handleSend(msgInputValue);
       event.preventDefault();
     }
   };
@@ -108,6 +245,37 @@ const Chat = (props) => {
       return false;
     }
     return true;
+  };
+
+  const sendTextOnly = (id) => {
+    chatApi
+      .createMessText(cookies.auth.tokens.access.token, id, msgInputValue)
+      .then((rs) => {
+        console.log(rs.data);
+      })
+      .catch((err) => {
+        console.lo(err);
+      });
+  };
+
+  const getProcess = (progressEvent) => {
+    const { loaded, total } = progressEvent;
+    const percent = ((loaded / total) * 100).toFixed(2);
+    setProcess(percent);
+  };
+
+  const sendMediaFile = () => {
+    let formData = new FormData();
+    formData.append("text", msgInputValue);
+    formData.append("file", selectedImage);
+    chatApi
+      .createMessText(cookies.auth.tokens.access.token, formData)
+      .then((rs) => {
+        console.log(rs.data);
+      })
+      .catch((err) => {
+        console.lo(err);
+      });
   };
 
   return (
@@ -212,7 +380,7 @@ const Chat = (props) => {
 
           <div
             as={MessageInput}
-            onSend={handleSend}
+            // onSend={handleSend}
             style={{
               flexGrow: 2,
               borderTop: 0,
@@ -232,6 +400,9 @@ const Chat = (props) => {
               type="text"
               autoComplete="off"
               onKeyDown={press}
+              // onFocus={focusTyping}
+              // onBlur={unfocusTyping}
+              onInput={focusTyping}
             />
           </div>
 
@@ -248,7 +419,6 @@ const Chat = (props) => {
               className="rounded w-7 h-7 cursor-pointer"
               src={"/assets/image/like.png"}
               alt="emokiimg"
-              onClick={() => setActive(!active)}
             />
           </div>
 
@@ -265,7 +435,6 @@ const Chat = (props) => {
               className="rounded w-8 h-8 cursor-pointer"
               src={"/assets/image/heart.png"}
               alt="emokiimg"
-              onClick={() => setActive(!active)}
             />
           </div>
 

@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { useSelector } from "react-redux";
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
-  MainContainer,
   Sidebar,
   Search,
   Status,
@@ -12,15 +10,79 @@ import {
   Avatar,
 } from "@chatscope/chat-ui-kit-react";
 import AddUserChat from "./addUser";
+import { chatApi } from "./../../../axiosApi/api/chatApi";
 
 const ListChat = () => {
   const [cookies, , removeCookie] = useCookies(["auth"]);
   const currentUser = useSelector((state) => state.auth.data);
   const [open, setOpen] = useState(false);
+  const [conver, setConver] = useState([]);
+  const [noMore, setnoMore] = useState(true);
+  const [page, setPage] = useState(2);
+  const [skt, setSkt] = useState(true);
+
+  useEffect(() => {
+    getConver();
+    return () => {
+      setConver([]);
+    };
+  }, []);
 
   const handleClose = () => {
     setOpen(!open);
   };
+
+  //
+  const getConver = async () => {
+    chatApi
+      .getConverByToken(cookies.auth.tokens.access.token)
+      .then((rs) => {
+        // console.log("Conversation", rs.data);
+        setConver(rs.data);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  };
+
+  const getFirstPage = async () => {
+    chatApi
+      .getConverByToken(cookies.auth.tokens.access.token)
+      .then((rs) => {
+        // console.log("Conversation", rs.data);
+        setConver(rs.data);
+        setSkt(false);
+        setnoMore(true);
+        setPage(2);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  };
+
+  const handleFetchConver = () => {
+    return new Promise((resolve, reject) => {
+      chatApi
+        .getConverByToken(cookies.auth.tokens.access.token, page, 5)
+        .then((rs) => {
+          // console.log("Conversation", rs.data);
+          setConver(rs.data);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    });
+  };
+
+  const fetchData = async () => {
+    const conversFromServer = await handleFetchConver();
+    setConver([...conver, ...conversFromServer]);
+    if (conversFromServer.length === 0 || conversFromServer.length < 5) {
+      setnoMore(false);
+    }
+    setPage(page + 1);
+  };
+
   return (
     <Sidebar position="left" scrollable={true}>
       <AddUserChat open={open} handleClose={handleClose} />
@@ -34,95 +96,22 @@ const ListChat = () => {
             onClick={() => {
               handleClose();
             }}
-            class="far fa-lg fa-edit cursor-pointer"
+            className="far fa-lg fa-edit cursor-pointer"
           ></i>
         </div>
       </div>
       <Search placeholder="Search..." />
       <ConversationList>
         <Conversation
-          name="Lilly"
-          lastSenderName="Lilly"
-          info="Yes i can do it for you"
-        >
-          <Avatar
-            src="/assets/image/defaultAvatar.png"
-            name="Lilly"
-            status="available"
-          />
-        </Conversation>
-
-        <Conversation
           name="Emily"
           lastSenderName="Emily"
           info="Yes i can do it for you"
-          unreadCnt={3}
+          lastActivityTime="43 min"
         >
           <Avatar
             src="/assets/image/defaultAvatar.png"
             name="Emily"
             status="available"
-          />
-        </Conversation>
-
-        <Conversation
-          name="Kai"
-          lastSenderName="Kai"
-          info="Yes i can do it for you"
-          unreadDot
-        >
-          <Avatar
-            src="/assets/image/defaultAvatar.png"
-            name="Kai"
-            status="unavailable"
-          />
-        </Conversation>
-
-        <Conversation
-          name="Akane"
-          lastSenderName="Akane"
-          info="Yes i can do it for you"
-        >
-          <Avatar
-            src="/assets/image/defaultAvatar.png"
-            name="Akane"
-            status="eager"
-          />
-        </Conversation>
-
-        <Conversation
-          name="Eliot"
-          lastSenderName="Eliot"
-          info="Yes i can do it for you"
-        >
-          <Avatar
-            src="/assets/image/defaultAvatar.png"
-            name="Eliot"
-            status="away"
-          />
-        </Conversation>
-
-        <Conversation
-          name="Zoe"
-          lastSenderName="Zoe"
-          info="Yes i can do it for you"
-        >
-          <Avatar
-            src="/assets/image/defaultAvatar.png"
-            name="Zoe"
-            status="dnd"
-          />
-        </Conversation>
-
-        <Conversation
-          name="Patrik"
-          lastSenderName="Patrik"
-          info="Yes i can do it for you"
-        >
-          <Avatar
-            src="/assets/image/defaultAvatar.png"
-            name="Patrik"
-            status="invisible"
           />
         </Conversation>
       </ConversationList>

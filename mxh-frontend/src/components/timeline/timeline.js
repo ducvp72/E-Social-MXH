@@ -25,7 +25,7 @@ export const Timeline = () => {
   }, []);
 
   const getFirstPage = async () => {
-    console.log("render time line");
+    // console.log("render time line");
     postApi
       .getMyPost(cookies.auth.tokens.access.token, 1, 5)
       .then((rs) => {

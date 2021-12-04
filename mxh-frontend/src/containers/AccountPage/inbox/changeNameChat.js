@@ -35,7 +35,7 @@ export default function ChangeNameChat(props) {
                 onClick={() => {
                   handleCloseChangeName();
                 }}
-                class="fas fa-times fa-lg "
+                className="fas fa-times fa-lg "
               ></i>
             </div>
             <div className="flex col-start-2 col-span-4 justify-center items-center gap-2">
@@ -81,6 +81,6 @@ export default function ChangeNameChat(props) {
   );
 }
 
-ChangeNameChat.propTypes = {
-  open: PropTypes.bool.isRequired,
-};
+// ChangeNameChat.propTypes = {
+//   open: PropTypes.bool.isRequired,
+// };

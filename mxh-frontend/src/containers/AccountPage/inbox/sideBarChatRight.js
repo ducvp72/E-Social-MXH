@@ -29,7 +29,7 @@ export const SideBarChatRight = () => {
           }}
           className="flex items-center gap-2 text-gray-600 cursor-pointer rounded hover:bg-gray-200 hover:opacity-80"
         >
-          <i class="fas fa-pen ml-1" />
+          <i className="fas fa-pen ml-1" />
           <p className="font-medium text-base p-2">Change the chat</p>
         </div>
       </ExpansionPanel>
@@ -43,7 +43,7 @@ export const SideBarChatRight = () => {
             className=" w-full cursor-pointer rounded  hover:bg-gray-200 hover:opacity-80"
           >
             <div className="flex items-center gap-2 text-gray-600">
-              <i class="fas fa-plus-circle ml-2"></i>
+              <i className="fas fa-plus-circle ml-2"></i>
               <p className=" font-medium text-base p-2">Add more member</p>
             </div>
           </div>
@@ -156,25 +156,25 @@ export const SideBarChatRight = () => {
       <ExpansionPanel title="Options" className="text-2xl">
         <div className=" cursor-pointer rounded  hover:bg-gray-200 hover:opacity-80">
           <div className="flex items-center gap-2 text-gray-600">
-            <i class="fas fa-trash ml-1"></i>
+            <i className="fas fa-trash ml-1"></i>
             <p className=" font-medium text-base p-2">Delete</p>
           </div>
         </div>
         <div className=" cursor-pointer rounded  hover:bg-gray-200 hover:opacity-80">
           <div className="flex items-center gap-2 text-gray-600">
-            <i class="fas fa-minus-circle ml-1"></i>
+            <i className="fas fa-minus-circle ml-1"></i>
             <p className=" font-medium text-base p-2">Block</p>
           </div>
         </div>
         <div className=" cursor-pointer rounded  hover:bg-gray-200 hover:opacity-80">
           <div className="flex items-center gap-2 text-gray-600">
-            <i class="fas fa-exclamation-triangle ml-1"></i>
+            <i className="fas fa-exclamation-triangle ml-1"></i>
             <p className=" font-medium text-base p-2">Report</p>
           </div>
         </div>
         <div className=" cursor-pointer rounded  hover:bg-gray-200 hover:opacity-80">
           <div className="flex items-center gap-2 text-gray-600">
-            <i class="fas fa-sign-out-alt ml-1" />
+            <i className="fas fa-sign-out-alt ml-1" />
             <p className=" font-medium text-base p-2">Leave Group</p>
           </div>
         </div>

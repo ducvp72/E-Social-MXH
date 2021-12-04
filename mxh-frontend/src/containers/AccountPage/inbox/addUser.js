@@ -43,9 +43,9 @@ export default function AddUserChat(props) {
     },
   ]);
 
-  useEffect(() => {
-    console.log("OnSelect", onSelect);
-  }, [onSelect]);
+  // useEffect(() => {
+  //   console.log("OnSelect", onSelect);
+  // }, [onSelect]);
 
   const renderOption = () => {
     let arr = [];
@@ -74,7 +74,7 @@ export default function AddUserChat(props) {
                 onClick={() => {
                   handleClose();
                 }}
-                class="fas fa-times fa-lg "
+                className="fas fa-times fa-lg "
               ></i>
             </div>
             <div className="flex col-start-2 col-span-4 justify-center items-center gap-2">

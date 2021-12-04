@@ -102,7 +102,7 @@ const Signup = () => {
                   id="outlined-basic"
                   label="Fullname"
                   variant="outlined"
-                  error={errors.fullname}
+                  error={!!errors.fullname}
                   helperText={
                     <ErrorMessage name="fullname">
                       {(msg) => <span style={{ color: "red" }}>{msg}</span>}
@@ -117,7 +117,7 @@ const Signup = () => {
                     variant="filled"
                     openTo="year"
                     label="Date of birth"
-                    value={dob}
+                    value={dob || ""}
                     views={["year", "month", "day"]}
                     onChange={(e) => onChangeDob(e)}
                     renderInput={(params) => <TextField {...params} />}
@@ -164,7 +164,7 @@ const Signup = () => {
                 <Field
                   as={TextField}
                   name="email"
-                  error={errors.email}
+                  error={!!errors.email}
                   placeholder="Example@gmail.com"
                   id="outlined-basic"
                   label="Email"
@@ -180,7 +180,7 @@ const Signup = () => {
                 <Field
                   as={TextField}
                   name="password"
-                  error={errors.password}
+                  error={!!errors.password}
                   type={hidden.password ? "text" : "password"}
                   id="outlined-basic"
                   label="Password"
@@ -225,7 +225,7 @@ const Signup = () => {
                   name="confirm"
                   type={hidden.confirm ? "text" : "password"}
                   id="outlined-basic"
-                  error={errors.confirm}
+                  error={!!errors.confirm}
                   label="Confirm Password"
                   variant="outlined"
                   helperText={

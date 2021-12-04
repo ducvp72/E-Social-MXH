@@ -30,6 +30,7 @@ const Routes = () => {
   return (
     <Router>
       <Switch>
+        {/* <Route path="/user/inbox/" exact component={Inbox} /> */}
         <Route path="/" exact>
           <Redirect to="/login" />
         </Route>

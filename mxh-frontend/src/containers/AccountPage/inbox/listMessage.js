@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import "./styles.css";
+import WasTyping from "./wasTyping";
 import {
   MessageList,
   TypingIndicator,
@@ -70,11 +71,154 @@ const ListMessage = (props) => {
       <div as={MessageList} className="px-5">
         {/* Mốc thời gian */}
         <MessageSeparator content="Saturday, 30 November 2019" />
+
+        {/* Only Text */}
+        <Message
+          model={{
+            message: "",
+            sentTime: "15 mins ago",
+            sender: "Eliot",
+            direction: "incoming",
+            position: "last",
+          }}
+          avatarSpacer={true}
+        >
+          <Message.CustomContent>
+            <div className=" max-w-xs">
+              {`Hello my friend! Do you want to buy sunglasses? Hello myfriend! Do you want to buy sunglasses? Hello my friend!Do youwant to buy sunglasses?`}
+            </div>
+          </Message.CustomContent>
+        </Message>
+
+        {/* Text and Avatar */}
+        <Message
+          model={{
+            message:
+              "Hello my friend!Do you want to buy sunglasses?Hello my friend!Do you want to buy sunglasses?Hello my friend!Do you want to buy sunglasses?",
+            sentTime: "15 mins ago",
+            sender: "Eliot",
+            direction: "incoming",
+            position: "last",
+          }}
+          width={"200px"}
+          className=" max-w-sm"
+        >
+          <Avatar src={"https://icotar.com/avatar/craig"} name="Joe" />
+        </Message>
+
+        {/* Only img from other */}
+        <Message
+          model={{
+            message: ``,
+            sentTime: "15 mins ago",
+            sender: "Joe",
+            direction: "incoming",
+            position: "first",
+          }}
+          // avatarSpacer={true}
+        >
+          <Avatar src={"https://icotar.com/avatar/craig"} name="Akane" />
+          <Message.ImageContent
+            src={"https://icotar.com/avatar/tt"}
+            alt="Akane avatar"
+            width={200}
+          />
+        </Message>
+
+        {/* IMG and TEXT From other */}
+        <Message
+          model={{
+            message: ``,
+            sentTime: "15 mins ago",
+            sender: "Joe",
+            direction: "incoming",
+            position: "first",
+          }}
+        >
+          <Avatar src={"https://icotar.com/avatar/craig"} name="Akane" />
+          <Message.CustomContent>
+            <Message.ImageContent
+              src={"https://icotar.com/avatar/tt"}
+              alt="Akane avatar"
+              width={200}
+            />
+            <div className=" max-w-xs ">
+              {
+                "Hello my friend!Do you want to buy sunglasses?Hello my friend!Do you want to buy sunglasses?Hello my friend!Do you want to buy sunglasses?"
+              }
+            </div>
+          </Message.CustomContent>
+        </Message>
+
+        {/* me text */}
+        <Message
+          model={{
+            message: "",
+            sentTime: "just now",
+            sender: "Akane",
+            direction: "outgoing",
+            position: "single",
+          }}
+        >
+          <Message.CustomContent>
+            <div className=" max-w-xs ">
+              {`Hello my friend! Do you want to buy sunglasses? Hello myfriend! Do you want to buy sunglasses? Hello my friend!Do youwant to buy sunglasses?`}
+            </div>
+          </Message.CustomContent>
+        </Message>
+
+        {/* me image */}
+        <Message
+          model={{
+            message: "",
+            sentTime: "just now",
+            sender: "Akane",
+            direction: "outgoing",
+            position: "single",
+          }}
+        >
+          <Message.ImageContent
+            src={"https://icotar.com/avatar/tt"}
+            alt="Akane avatar"
+            width={200}
+          />
+        </Message>
+
+        {/* me Image and text */}
+        <Message
+          model={{
+            message: "",
+            sentTime: "just now",
+            sender: "Akane",
+            direction: "outgoing",
+            position: "single",
+          }}
+        >
+          <Message.CustomContent>
+            <div className=" max-w-xs ">
+              <div className=" flex justify-end">
+                <img
+                  src={"https://icotar.com/avatar/tt"}
+                  alt="Akane avatar"
+                  width={200}
+                />
+              </div>
+              <div className="flex justify-end">
+                {/* {`Hello my friend! Do you want to buy sunglasses? Hello myfriend! Do you want to buy sunglasses? Hello my friend!Do youwant to buy sunglasses?
+              `} */}
+                a
+              </div>
+            </div>
+          </Message.CustomContent>
+        </Message>
+
         {messages.map((m, i) => (
-          <Message key={i} model={m} className="text-white" />
+          <Message key={i} model={m}></Message>
         ))}
+
+        <WasTyping />
+
         <div ref={messagesEndRef} />
-        <TypingIndicator content="Duc is typing" />
       </div>
     </div>
   );
