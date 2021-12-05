@@ -17,7 +17,7 @@ export const chatApi = {
 
   getMessByIdConver(token, idConver, page, limit) {
     return axiosApi(
-      `message/${idConver}&page=${page}&limit=${limit}`,
+      `message/${idConver}?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
       `GET`,
       null,
       null,
@@ -37,7 +37,7 @@ export const chatApi = {
 
   getConverByToken(token, page, limit) {
     return axiosApi(
-      `conversation&page=${page}&limit=${limit}`,
+      `conversation?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
       `GET`,
       null,
       null,

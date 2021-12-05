@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Statistic from "./statistic";
 import Information from "./information";
 import { Helmet } from "react-helmet-async";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import UserPost from "./userPost";
 import { SkeletonProfile } from "../../../skeletons/Skeletons";
@@ -12,6 +12,8 @@ import { postApi } from "../../../axiosApi/api/postApi";
 import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "./../../LoadingPage/infititeLoading";
 import { useCookies } from "react-cookie";
+import PostDialog from "./../../../components/timeline/postDialog";
+import { setDialogAction } from "../../../reducers/createPostDialog";
 
 const Profile = () => {
   const [cookies, ,] = useCookies(["auth"]);
@@ -21,7 +23,11 @@ const Profile = () => {
   const [skt, setSkt] = useState(true);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
-
+  const [notFound, setNotFound] = useState(false);
+  const createPost = useSelector((state) => state.dialog);
+  const [toggle, setToggle] = useState({ isShow: false, postData: {} });
+  const [post, setPost] = useState([]);
+  const dispatch = useDispatch();
   // useEffect(() => {
   //   checkShow();
   //   getUserPost();
@@ -71,13 +77,15 @@ const Profile = () => {
     postApi
       .getUserPost(cookies.auth.tokens.access.token, cookies.auth.user.id, 1, 6)
       .then((res) => {
-        // console.log("lstPost", res.data.results);
         setUserPost(res.data.results);
+        if (!res.data.totalResults) setNotFound(true);
+        setSkt(false);
         setnoMore(true);
         setPage(2);
       })
       .catch((err) => {
         console.log(err);
+        setSkt(false);
       });
   };
 
@@ -117,6 +125,27 @@ const Profile = () => {
     }
     return arr;
   };
+  const onClose = () => {
+    dispatch(setDialogAction(false));
+  };
+
+  const getFirstPage = async () => {
+    // console.log("render time line");
+    postApi
+      .getMyPost(cookies.auth.tokens.access.token, 1, 5)
+      .then((rs) => {
+        setPost(rs.data.results);
+        if (!rs.data.totalResults) setNotFound(true);
+        setToggle({ ...toggle, postData: rs.data.results });
+        setSkt(false);
+        setnoMore(true);
+        setPage(2);
+      })
+      .catch((err) => {
+        console.log(err);
+        setSkt(false);
+      });
+  };
 
   return (
     <div>
@@ -124,6 +153,13 @@ const Profile = () => {
         <title>{currentUser?.fullname}</title>
         <meta name="description" content="Helmet application" />
       </Helmet>
+      <PostDialog
+        getSummary={getSummary}
+        getUserPost={getUserPost}
+        getFirstPage={getFirstPage}
+        open={createPost.show}
+        onClose={onClose}
+      />
       {skt ? (
         <SkeletonProfile />
       ) : (
@@ -167,26 +203,28 @@ const Profile = () => {
       )}
 
       <div className="py-2 w-full xl:w-4/6 lg:w-4/6 md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2">
-        <InfiniteScroll
-          dataLength={userPost?.length}
-          next={fetchData}
-          hasMore={noMore}
-          loader={
-            <div className=" flex justify-center">
-              <InfititeLoading />
-            </div>
-          }
-          endMessage={
-            <p className="flex justify-center font-avatar text-lg">
-              <b>Opp..! You have seen it all</b>
-            </p>
-          }
-        >
-          {skt ? (
-            <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
-              {loopSkeleton()}
-            </div>
-          ) : (
+        {skt && (
+          <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
+            {loopSkeleton()}
+          </div>
+        )}
+        {userPost?.length > 0 && (
+          <InfiniteScroll
+            dataLength={userPost?.length}
+            next={fetchData}
+            scrollThreshold={0.2}
+            hasMore={noMore}
+            loader={
+              <div className=" flex justify-center mt-5">
+                <InfititeLoading />
+              </div>
+            }
+            endMessage={
+              <p className="flex justify-center font-avatar text-lg">
+                <b>Opp..! You have seen it all</b>
+              </p>
+            }
+          >
             <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
               {userPost &&
                 userPost.map((item) => {
@@ -200,8 +238,14 @@ const Profile = () => {
                   );
                 })}
             </div>
-          )}
-        </InfiniteScroll>
+          </InfiniteScroll>
+        )}
+
+        {notFound && (
+          <div className="flex justify-center items-center">
+            <p className="">You have no post</p>
+          </div>
+        )}
       </div>
     </div>
   );

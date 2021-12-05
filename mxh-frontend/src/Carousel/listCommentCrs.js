@@ -16,6 +16,7 @@ export const ListCommentCrs = (props) => {
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     // console.log("itemIn List", item);
@@ -44,7 +45,8 @@ export const ListCommentCrs = (props) => {
     postApi
       .getAllComments(state?.id, 1, 5)
       .then((rs) => {
-        if (rs) setCmt(rs.data.results);
+        setCmt(rs.data.results);
+        if (!rs.data.totalResults) setNotFound(true);
         setToggle({ ...toggle, postData: rs.data });
         setSkt(false);
         setnoMore(true);
@@ -86,34 +88,37 @@ export const ListCommentCrs = (props) => {
     setPage(page + 1);
   };
 
-  // console.log("PostApi...", post);
-  // console.log("Cmt length", cmt.length);
   return (
     <div>
-      {/* <p className=""> here {comment ? comment?.text : null}</p> */}
-      <InfiniteScroll
-        scrollableTarget="scrollableDiv"
-        dataLength={cmt?.length}
-        next={fetchData}
-        hasMore={noMore}
-        loader={
-          <div className=" flex justify-center">
-            <InfititeLoading />
-          </div>
-        }
-        endMessage={
-          <p className="flex justify-center font-avatar text-lg">
-            <b>Opp..! You have seen it all</b>
-          </p>
-        }
-      >
-        {skt
-          ? loopSkeleton()
-          : cmt &&
+      {skt && loopSkeleton()}
+      {cmt.length > 0 && (
+        <InfiniteScroll
+          scrollableTarget="scrollableDiv"
+          dataLength={cmt?.length}
+          next={fetchData}
+          hasMore={noMore}
+          loader={
+            <div className=" flex justify-center">
+              <InfititeLoading />
+            </div>
+          }
+          endMessage={
+            <p className="flex justify-center font-avatar text-lg">
+              <b>Opp..! You have seen it all</b>
+            </p>
+          }
+        >
+          {cmt &&
             cmt.map((item) => {
               return <Footer key={item.id} item={item} />;
             })}
-      </InfiniteScroll>
+        </InfiniteScroll>
+      )}
+      {notFound && (
+        <div className="flex justify-center items-center">
+          <p className="">You have no Comments</p>
+        </div>
+      )}
     </div>
   );
 };

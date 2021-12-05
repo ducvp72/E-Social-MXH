@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Post } from "./../post/post";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import PostDialog from "./postDialog";
 import { SkeletonPost } from "../../skeletons/Skeletons";
 import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "../../containers/LoadingPage/infititeLoading";
 import { useCookies } from "react-cookie";
 import { postApi } from "./../../axiosApi/api/postApi";
+import { setDialogAction } from "../../reducers/createPostDialog";
 
 export const Timeline = () => {
   const [toggle, setToggle] = useState({ isShow: false, postData: {} });
-  const [createPost, setCreatePost] = useState(false);
+  // const [createPost, setCreatePost] = useState(false);
+  const createPost = useSelector((state) => state.dialog);
+  const dispatch = useDispatch();
   const [post, setPost] = useState([]);
+  const [notFound, setNotFound] = useState(false);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);
@@ -29,9 +33,9 @@ export const Timeline = () => {
     postApi
       .getMyPost(cookies.auth.tokens.access.token, 1, 5)
       .then((rs) => {
-        if (rs) setPost(rs.data.results);
+        setPost(rs.data.results);
+        if (!rs.data.totalResults) setNotFound(true);
         setToggle({ ...toggle, postData: rs.data.results });
-        // console.log("Post", post);
         setSkt(false);
         setnoMore(true);
         setPage(2);
@@ -47,7 +51,7 @@ export const Timeline = () => {
       postApi
         .getMyPost(cookies.auth.tokens.access.token, page, 5)
         .then((rs) => {
-          if (rs) resolve(rs.data.results);
+          resolve(rs.data.results);
         })
         .catch((err) => {
           console.log("errPromise", err);
@@ -65,7 +69,7 @@ export const Timeline = () => {
   };
 
   const onClose = () => {
-    setCreatePost(false);
+    dispatch(setDialogAction(false));
   };
   const loopSkeleton = () => {
     let arr = [];
@@ -79,11 +83,17 @@ export const Timeline = () => {
     <div className="md:col-span-2 sm:col-start-1 sm:col-end-7 md:py-16 md:px-0 lg:px-12 xl:p-16  py-16">
       <PostDialog
         getFirstPage={getFirstPage}
-        open={createPost}
+        open={createPost.show}
         onClose={onClose}
       />
       <div className="rounded border border-gray-primary mb-5 md:mr-16 sm:mr-1 lg:mr-0 shadow-md">
-        <div className=" flex" onClick={() => setCreatePost(!createPost)}>
+        <div
+          className=" flex"
+          onClick={() => {
+            console.log("e");
+            dispatch(setDialogAction(true));
+          }}
+        >
           <input
             className="bg-gray-200 font-avatar text-mygrey text-md hover:bg-gray-300 font-mono m-3 rounded-full cursor-pointer appearance-none  w-full py-2 px-4  focus:outline-none focus:bg-white"
             type="text"
@@ -93,44 +103,42 @@ export const Timeline = () => {
             }
             name="post"
             disabled
-            onClick={() => () => setCreatePost(!createPost)}
+            onClick={() => () => dispatch(setDialogAction(true))}
           />
         </div>
       </div>
-      {/* {<SkeletonPost />} */}
+      {skt && loopSkeleton()}
 
-      {/* {post.length >= 1 ? ( */}
-      <InfiniteScroll
-        refreshFunction
-        dataLength={post?.length}
-        next={fetchData}
-        hasMore={noMore}
-        loader={
-          <div className=" flex justify-center">
-            <InfititeLoading />
-          </div>
-        }
-        endMessage={
-          <p className="flex justify-center font-avatar text-lg">
-            <b>Opp..! No post more !</b>
-          </p>
-        }
-      >
-        {skt
-          ? loopSkeleton()
-          : post &&
+      {post?.length > 0 && (
+        <InfiniteScroll
+          refreshFunction
+          dataLength={post?.length}
+          next={fetchData}
+          hasMore={noMore}
+          loader={
+            <div className=" flex justify-center">
+              <InfititeLoading />
+            </div>
+          }
+          endMessage={
+            <p className="flex justify-center font-avatar text-lg">
+              <b>Opp..! No post more !</b>
+            </p>
+          }
+        >
+          {post &&
             post.map((item) => {
               return (
                 <Post getFirstPage={getFirstPage} key={item.id} item={item} />
               );
             })}
-      </InfiniteScroll>
-      {/* ) */}
-      {/* : (
+        </InfiniteScroll>
+      )}
+      {notFound && (
         <div className="flex justify-center items-center">
           <p className="">You have no post</p>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

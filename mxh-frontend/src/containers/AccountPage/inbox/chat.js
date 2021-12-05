@@ -18,13 +18,12 @@ import {
   SendButton,
   MessageList,
 } from "@chatscope/chat-ui-kit-react";
+import { date } from "yup";
 
 const Chat = (props) => {
   const [cookies, , removeCookie] = useCookies(["auth"]);
   const [openSr, setOpenSr] = useState(true);
   const inputRef = useRef();
-  const [msgInputValue, setMsgInputValue] = useState([]);
-  const [messages, setMessages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [userImage, setUserImage] = useState();
   const [active, setActive] = useState(false);
@@ -35,66 +34,20 @@ const Chat = (props) => {
   const buttonMedia = useRef(null);
   const [typing, setTyping] = useState(false);
   const socket = useRef();
-  const [mess, setMess] = useState([]);
   const [process, setProcess] = useState(0);
-  const [noMore, setnoMore] = useState(true);
-  const [page, setPage] = useState(2);
-  const [skt, setSkt] = useState(true);
+  const [msgInputValue, setMsgInputValue] = useState([]);
+  const [messages, setMessages] = useState({});
 
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
   useOnClickOutside(buttonMedia, modalMedia, () => setMedia(false));
 
-  useEffect(() => {
-    document.getElementById("textAREA").focus();
-  });
+  // useEffect(() => {
+  //   document.getElementById("textAREA").focus();
+  // });
 
   useEffect(() => {
-    getMess();
-    return () => setMess([]);
+    return () => setMessages([]);
   }, []);
-
-  useEffect(() => {
-    socket.current = io("https://mxhld.herokuapp.com/", {
-      pingTimeout: 1,
-      transportOptions: {
-        polling: {
-          extraHeaders: {
-            Authorization: `Bearer ${cookies.auth.tokens.access.token}`,
-          },
-        },
-      },
-    });
-
-    //#region Log Status
-    // socket.current.on("connect", () => {
-    //   console.log("Connection ok !");
-    // });
-
-    // socket.current.on("connect_error", () => {
-    //   console.log("connected error");
-    // });
-
-    // socket.current.emit("whoami", (data) => {
-    //   console.log(data);
-    // });
-    //#endregion
-
-    socket.current.on("getMessage", (data) => {
-      console.log("on", data.text);
-    });
-    socket.current.on("typing", (data) => {
-      console.log("on", "typing");
-      setTyping(true);
-    });
-    socket.current.on("untyping", (data) => {
-      console.log("on", "untyping");
-      setTyping(false);
-    });
-    socket.current.on("send-file", (data) => {
-      console.log("on", "send-file");
-    });
-    // console.log("lenght", msgInputValue.length);
-  }, [msgInputValue.length]);
 
   const handleChatSocket = (message) => {
     const onchat = {
@@ -144,76 +97,48 @@ const Chat = (props) => {
     setMsgInputValue(event.target.value);
   };
 
-  const getMess = async (idConver) => {
-    chatApi
-      .getMessByIdConver(cookies.auth.tokens.access.token, idConver)
-      .then((rs) => {
-        console.log("Mess", rs.data);
-        setMess(rs.data);
-      })
-      .then((err) => {
-        console.log(err);
-      });
-  };
-
-  const getFirstPage = async () => {
-    chatApi
-      .getConverByToken(cookies.auth.tokens.access.token)
-      .then((rs) => {
-        // console.log("Conversation", rs.data);
-        setMess(rs.data);
-        setSkt(false);
-        setnoMore(true);
-        setPage(2);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
-  };
-
-  const handleFetchConver = () => {
-    return new Promise((resolve, reject) => {
-      chatApi
-        .getConverByToken(cookies.auth.tokens.access.token, page, 5)
-        .then((rs) => {
-          // console.log("Conversation", rs.data);
-          setMess(rs.data);
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
-    });
-  };
-
-  const fetchData = async () => {
-    const messsFromServer = await handleFetchConver();
-    setMess([...mess, ...messsFromServer]);
-    if (messsFromServer.length === 0 || messsFromServer.length < 5) {
-      setnoMore(false);
-    }
-    setPage(page + 1);
-  };
+  // const getMess = async (idConver) => {
+  //   chatApi
+  //     .getMessByIdConver(
+  //       cookies.auth.tokens.access.token,
+  //       "61a86e9b7b73519cfa85890b",
+  //       1,
+  //       5
+  //     )
+  //     .then((rs) => {
+  //       console.log("Mess", rs.data);
+  //       setMess(rs.data);
+  //     })
+  //     .then((err) => {
+  //       console.log(err);
+  //     });
+  // };
 
   const handleSend = (message) => {
-    console.log("-----------------------------");
-    console.log("Chat", msgInputValue);
-    console.log("-----------------------------");
-    let formData = new FormData();
-    formData.append("text", msgInputValue);
-    formData.append("file", selectedImage);
+    // console.log("-----------------------------");
+    // console.log("Chat", msgInputValue);
+    // console.log("-----------------------------");
+    // let formData = new FormData();
+    // formData.append("text", message);
+    // formData.append("file", selectedImage);
+
     // console.log("texts", formData.get("text"));
     // console.log("files", formData.get("file"));
     if (msgInputValue.length === 0) {
       return;
     }
-    setMessages([
-      ...messages,
-      {
-        message,
-        direction: "outgoing",
-      },
-    ]);
-    handleChatSocket(message);
+    // if (selectedImage != null && msgInputValue.length > 0 )
+    sendMediaFile();
+    // setMessages({
+    //   ...messages,
+    //   content: message,
+    //   conversationId: "61a86e9b7b73519cfa85890b",
+    //   createdAt: Date.now(),
+    //   id: Date.now(),
+    //   sender: cookies.auth.user.id,
+    // });
+
+    // handleChatSocket(message);
     setMsgInputValue("");
     inputRef.current.focus();
     setMedia(false);
@@ -252,9 +177,19 @@ const Chat = (props) => {
       .createMessText(cookies.auth.tokens.access.token, id, msgInputValue)
       .then((rs) => {
         console.log(rs.data);
+        const data = rs.data;
+        setMessages({
+          ...messages,
+          content: data?.content,
+          conversationId: "61a86e9b7b73519cfa85890b",
+          createdAt: Date.now(),
+          id: data?.id,
+          sender: cookies.auth.user.id,
+          typeMessage: data?.typeMessage,
+        });
       })
       .catch((err) => {
-        console.lo(err);
+        console.log(err);
       });
   };
 
@@ -266,15 +201,26 @@ const Chat = (props) => {
 
   const sendMediaFile = () => {
     let formData = new FormData();
-    formData.append("text", msgInputValue);
+    // formData.append("text", msgInputValue);
     formData.append("file", selectedImage);
+    formData.append("conversationId", "61a86e9b7b73519cfa85890b");
     chatApi
-      .createMessText(cookies.auth.tokens.access.token, formData)
+      .createMessMedia(cookies.auth.tokens.access.token, formData)
       .then((rs) => {
         console.log(rs.data);
+        const data = rs.data;
+        setMessages({
+          ...messages,
+          content: data?.content,
+          conversationId: "61a86e9b7b73519cfa85890b",
+          createdAt: Date.now(),
+          id: data?.id,
+          sender: cookies.auth.user.id,
+          typeMessage: data?.typeMessage,
+        });
       })
       .catch((err) => {
-        console.lo(err);
+        console.log(err);
       });
   };
 
@@ -302,6 +248,7 @@ const Chat = (props) => {
           </ConversationHeader.Actions>
         </ConversationHeader>
 
+        {/* List chat here */}
         <div as={MessageList}>
           <ListMessage messages={messages} />
         </div>
@@ -380,7 +327,6 @@ const Chat = (props) => {
 
           <div
             as={MessageInput}
-            // onSend={handleSend}
             style={{
               flexGrow: 2,
               borderTop: 0,

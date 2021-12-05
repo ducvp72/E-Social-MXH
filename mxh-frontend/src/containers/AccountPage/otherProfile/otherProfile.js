@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { userApi } from "./../../../axiosApi/api/userApi";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useHistory } from "react-router-dom";
 import Statistic from "./../profile/statistic";
 import Information from "./../profile/information";
 import DialogAction from "./../profile/dialog";
@@ -23,6 +23,7 @@ const OtherProfile = () => {
   const [cookies, ,] = useCookies(["auth"]);
   let { username } = useParams();
   const idUser = useLocation().search;
+  const history = useHistory();
   const [userPost, setUserPost] = useState([]);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
@@ -43,9 +44,12 @@ const OtherProfile = () => {
     chatApi
       .createConver(cookies.auth.tokens.access.token, q)
       .then(() => {
+        console.log("redirect");
+        history.push(`/user/inbox/${q}`);
         return;
       })
       .catch((err) => {
+        history.push(`/user/inbox/${q}`);
         console.log(err);
       });
   };

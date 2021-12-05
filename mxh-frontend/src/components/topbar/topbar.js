@@ -13,8 +13,10 @@ import { useOnClickOutside } from "./../../utils/handleRefresh";
 import PostDialog from "./../timeline/postDialog";
 import { postApi } from "./../../axiosApi/api/postApi";
 import { Status } from "@chatscope/chat-ui-kit-react";
+import { setDialogAction } from "../../reducers/createPostDialog";
+
 export const Topbar = () => {
-  const [createPost, setCreatePost] = useState(false);
+  // const [createPost, setCreatePost] = useState(false);
   const [skt, setSkt] = useState(true);
   const [cookies, , removeCookie] = useCookies(["auth"]);
   const [loading] = useState(false);
@@ -24,34 +26,12 @@ export const Topbar = () => {
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
-  const [noMore, setnoMore] = useState(true);
-  const [page, setPage] = useState(2);
-  const [toggle, setToggle] = useState({ isShow: false, postData: {} });
-  const [post, setPost] = useState([]);
   // Call hook passing in the ref and a function to call on outside click
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
   useEffect(() => {
     setSkt(true);
   }, []);
-
-  const getFirstPage = async () => {
-    // console.log("render time line");
-    postApi
-      .getMyPost(cookies.auth.tokens.access.token, 1, 5)
-      .then((rs) => {
-        if (rs) setPost(rs.data.results);
-        setToggle({ ...toggle, postData: rs.data.results });
-        // console.log("Post", post);
-        setSkt(false);
-        setnoMore(true);
-        setPage(2);
-      })
-      .catch((err) => {
-        console.log(err);
-        setSkt(false);
-      });
-  };
 
   useEffect(() => {
     setSkt(true);
@@ -69,18 +49,13 @@ export const Topbar = () => {
     }
   };
 
-  const onClose = () => {
-    setCreatePost(false);
-  };
+  // const onClose = () => {
+  //   setCreatePost(false);
+  // };
 
   const user = 1;
   return (
     <>
-      <PostDialog
-        getFirstPage={getFirstPage}
-        open={createPost}
-        onClose={onClose}
-      />
       {loading && <Loading />}
       <header className="fixed shadow-md w-full h-16 bg-white border-b border-gray-primary mb-8 z-40">
         <div className="container mx-auto max-w-screen-lg h-full">
@@ -155,7 +130,7 @@ export const Topbar = () => {
                   )}
                 </div>
                 <div
-                  onClick={() => setCreatePost(!createPost)}
+                  onClick={() => dispatch(setDialogAction(true))}
                   className="relative"
                 >
                   <svg

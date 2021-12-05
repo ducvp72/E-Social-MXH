@@ -14,7 +14,7 @@ export const ListComment = (props) => {
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);
-
+  const [notFound, setNotFound] = useState(false);
   // const [totalComment, setTotalComment] = useState(2);
 
   // useEffect(() => {
@@ -49,7 +49,7 @@ export const ListComment = (props) => {
       .getAllComments(item?.id, 1, 5)
       .then((rs) => {
         if (rs) setCmt(rs.data.results);
-        // setToggle({ ...toggle, postData: rs.data });
+        if (!rs.data.totalResults) setNotFound(true);
         setSkt(false);
         setnoMore(true);
         setPage(2);
@@ -93,34 +93,36 @@ export const ListComment = (props) => {
 
   return (
     <div>
-      <InfiniteScroll
-        scrollableTarget="scrollableDiv"
-        dataLength={cmt?.length}
-        next={fetchData}
-        hasMore={noMore}
-        loader={
-          <div className=" flex justify-center">
-            <InfititeLoading />
-          </div>
-        }
-        endMessage={
-          <p className="flex justify-center font-avatar text-lg">
-            <b>Opp..! You have seen it all</b>
-          </p>
-        }
-      >
-        {skt
-          ? loopSkeleton()
-          : cmt &&
+      {skt && loopSkeleton()}
+      {cmt.length > 0 && (
+        <InfiniteScroll
+          scrollableTarget="scrollableDiv"
+          dataLength={cmt?.length}
+          next={fetchData}
+          hasMore={noMore}
+          loader={
+            <div className=" flex justify-center">
+              <InfititeLoading />
+            </div>
+          }
+          endMessage={
+            <p className="flex justify-center font-avatar text-lg">
+              <b>Opp..! You have seen it all</b>
+            </p>
+          }
+        >
+          {cmt &&
             cmt.map((item) => {
               return <Footer key={item.id} item={item} />;
             })}
-      </InfiniteScroll>
-      {/* {cmt &&
-        cmt.map((item) => {
-          return <Footer key={item.id} item={item} />;
-        })}
-      <p onClick={() => setTotalComment(totalComment + 2)}>Xem them</p> */}
+        </InfiniteScroll>
+      )}
+
+      {notFound && (
+        <div className="flex justify-center items-center">
+          <p className="">You have no Comments</p>
+        </div>
+      )}
     </div>
   );
 };

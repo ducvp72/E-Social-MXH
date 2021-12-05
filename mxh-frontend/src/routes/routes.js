@@ -43,7 +43,8 @@ const Routes = () => {
           <DefaultLayout>
             <Switch>
               <Route path="/user/home" exact component={Home} />
-              <Route path="/user/inbox/" exact component={Inbox} />
+              <Route path="/user/inbox/:userId" exact component={Inbox} />
+              <Route path="/user/inbox" exact component={Inbox} />
               <Route path="/user/:userName" exact component={Profile} />
               <Route path="/user/setting/:userName" exact component={Account} />
               <Route path="*" exact>
@@ -52,20 +53,29 @@ const Routes = () => {
             </Switch>
           </DefaultLayout>
         </UserAuthRoute>
-        <QuestAuthRoute path="/profile">
+        <UserAuthRoute path="/profile">
           <DefaultLayout>
             <Switch>
-              <Route path="/" exact>
-                <Redirect to="/login" />
-              </Route>
               <Route path="/profile/:username" exact component={OtherProfile} />
               <Route path="*" exact>
                 <Redirect to="/404" />
               </Route>
             </Switch>
           </DefaultLayout>
-        </QuestAuthRoute>
-        <SearchAuth path="/search">
+        </UserAuthRoute>
+        {/* <QuestAuthRoute path="/profile">
+          <DefaultLayout>
+            <Switch>
+              <Route path="/" exact>
+                <Redirect to="/login" />
+              </Route>
+              <Route path="*" exact>
+                <Redirect to="/404" />
+              </Route>
+            </Switch>
+          </DefaultLayout>
+        </QuestAuthRoute> */}
+        <UserAuthRoute path="/search">
           <SearchLayout>
             <Switch>
               <Route path="/search/top" exact component={ListUserSearch} />
@@ -74,7 +84,7 @@ const Routes = () => {
               </Route>
             </Switch>
           </SearchLayout>
-        </SearchAuth>
+        </UserAuthRoute>
         <AdminAuthRoute path="/admin">
           <Switch>
             <Route path="/admin" component={AdminController} />

@@ -58,7 +58,7 @@ const BootstrapDialogTitle = (props) => {
 };
 
 const PostDialog = (props) => {
-  const { onClose, open, getFirstPage } = props;
+  const { onClose, open, getFirstPage, getSummary, getUserPost } = props;
   const [inputStr, setInputStr] = useState([]);
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
@@ -167,9 +167,14 @@ const PostDialog = (props) => {
         autoClose: 1500,
         hideProgressBar: true,
       });
-      // handleCloseConfirm();
+      if (getUserPost) {
+        await getUserPost();
+        setTimeout(() => {
+          getSummary();
+        }, 1000);
+      }
       setInputStr(null);
-      // delelteCurrentImage();
+
       onClose();
     } catch (error) {
       setLoading(false);
@@ -196,7 +201,12 @@ const PostDialog = (props) => {
         autoClose: 1500,
         hideProgressBar: true,
       });
-      // handleCloseConfirm();
+      if (getUserPost) {
+        await getUserPost();
+        setTimeout(() => {
+          getSummary();
+        }, 1000);
+      }
       setInputStr(null);
       delelteCurrentImage();
       onClose();

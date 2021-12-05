@@ -164,3 +164,15 @@ export const SkeletionImagePostOutSide = () => {
     </div>
   );
 };
+
+export const SkeletonConver = () => {
+  return (
+    <div className=" flex gap-2">
+      <Skeleton circle={true} width={45} height={45} />
+      <div className="mt-1">
+        <Skeleton width={200} height={15} borderRadius={20} />
+        <Skeleton width={200} height={15} borderRadius={20} />
+      </div>
+    </div>
+  );
+};

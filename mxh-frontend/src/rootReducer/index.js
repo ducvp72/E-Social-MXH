@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage";
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import { authReducer } from "../reducers/authReducer";
 import { myPostReducer } from "../reducers/postReducer";
+import { createPostDialogReducer } from "./../reducers/createPostDialog";
 const rootPersistConfig = {
   key: "root",
   storage: storage,
@@ -21,6 +22,7 @@ const authPersistConfig = {
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   post: myPostReducer,
+  dialog: createPostDialogReducer,
   // testReducer,
   //Them reducer
 });

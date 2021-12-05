@@ -1,6 +1,10 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./styles.css";
 import WasTyping from "./wasTyping";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { chatApi } from "./../../../axiosApi/api/chatApi";
+import { useCookies } from "react-cookie";
+import InfititeLoading from "./../../LoadingPage/infititeLoading";
 import {
   MessageList,
   TypingIndicator,
@@ -9,217 +13,185 @@ import {
   Avatar,
 } from "@chatscope/chat-ui-kit-react";
 
+const ChatElement = (props) => {
+  const { data } = props;
+  return (
+    <>
+      <Message
+        model={{
+          message: "",
+          sentTime: "15 mins ago",
+          sender: "Eliot",
+          // direction: "incoming",
+          direction: "outgoing",
+          position: "last",
+        }}
+        // avatarSpacer={true}
+      >
+        {/* Gui lien tuc thi tat avatar */}
+        <Avatar src={"/assets/image/defaultAvatar.png"} name="Joe" />
+        <Message.CustomContent>
+          {/* Neu la from thi la justify-end */}
+          <div className=" flex justify-end">
+            {data?.typeMessage === "IMAGE" && (
+              <img
+                src={`https://mxhld.herokuapp.com/v1/file/${data?.content}`}
+                alt="Akane avatar"
+                width={200}
+              />
+            )}
+            {data?.typeMessage === "VIDEO" && (
+              <video
+                style={{
+                  width: "400px",
+                  height: "400px",
+                }}
+                // className="z-30"
+                controls
+              >
+                <source
+                  src={`https://mxhld.herokuapp.com/v1/file/${data?.content}`}
+                />
+              </video>
+            )}
+            {data?.typeMessage === "AUDIO" && (
+              <audio controls>
+                <source
+                  src={`https://mxhld.herokuapp.com/v1/file/${data?.content}`}
+                />
+              </audio>
+            )}
+          </div>
+          {data?.typeMessage === "TEXT" && (
+            <div className=" max-w-xs">{data?.content}</div>
+          )}
+        </Message.CustomContent>
+      </Message>
+    </>
+  );
+};
+
 const ListMessage = (props) => {
   const { messages } = props;
   const messagesEndRef = useRef(null);
 
+  const [cookies, , removeCookie] = useCookies(["auth"]);
+  const [page, setPage] = useState(2);
+  const [noMore, setnoMore] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [listMess, setListMess] = useState([]);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
+    getFirstPageMess();
+  }, []);
+
+  useEffect(() => {
+    console.log("child", messages);
+  }, [messages]);
+
+  useEffect(() => {
+    setListMess([messages, ...listMess]);
     scrollToBottom();
   }, [messages]);
 
-  const me = () => {
-    let arr = [];
-    for (let i = 0; i <= 2; i++) {
-      arr = [
-        ...arr,
-        <Message
-          key={i}
-          model={{
-            message: `${i}`,
-            sentTime: "15 mins ago",
-            sender: "localSender",
-            direction: "outgoing",
-            position: "single",
-          }}
-        />,
-      ];
-    }
-    return arr;
+  const getFirstPageMess = async () => {
+    console.log("render");
+    chatApi
+      .getMessByIdConver(
+        cookies.auth.tokens.access.token,
+        "61a86e9b7b73519cfa85890b",
+        1,
+        10
+      )
+      .then((rs) => {
+        setListMess(rs.data.results);
+        setnoMore(true);
+        setPage(2);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
   };
 
-  const you = () => {
-    let arr = [];
-    for (let i = 0; i <= 5; i++) {
-      arr = [
-        ...arr,
-        <Message
-          model={{
-            message: `${i}  khong co`,
-            sentTime: "15 mins ago",
-            sender: "Joe",
-            direction: "incoming",
-            position: "first",
-          }}
-          avatarSpacer
-        />,
-      ];
+  const handleFetchMess = () => {
+    return new Promise((resolve, reject) => {
+      chatApi
+        .getMessByIdConver(
+          cookies.auth.tokens.access.token,
+          "61a86e9b7b73519cfa85890b",
+          page,
+          10
+        )
+        .then((rs) => {
+          // console.log("Conversation", rs.data);
+          resolve(rs.data.results);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    });
+  };
+
+  const fetchData = async () => {
+    const messFromServer = await handleFetchMess();
+    setListMess([...listMess, ...messFromServer]);
+    if (messFromServer.length === 0 || messFromServer.length < 10) {
+      setnoMore(false);
     }
-    return arr;
+    setPage(page + 1);
   };
 
   return (
     <div
-      className="overflow-y-auto post-show"
+      className="post-show px-5 pb-2"
+      id="scrollableDiv"
       style={{
-        height: "525px",
+        overflow: "auto",
+        display: "flex",
+        flexDirection: "column-reverse",
+        height: 520,
       }}
     >
-      <div as={MessageList} className="px-5">
-        {/* Mốc thời gian */}
-        <MessageSeparator content="Saturday, 30 November 2019" />
+      <div ref={messagesEndRef} />
+      <InfiniteScroll
+        dataLength={listMess?.length}
+        next={fetchData}
+        style={{ display: "flex", flexDirection: "column-reverse" }}
+        inverse={true}
+        scrollThreshold={0.1}
+        hasMore={noMore}
+        loader={
+          <div className=" flex justify-center">
+            <InfititeLoading />
+          </div>
+        }
+        scrollableTarget="scrollableDiv"
+      >
+        {listMess.map((data) => {
+          return (
+            <>
+              <ChatElement data={data} key={data?.id} />
+            </>
+          );
+        })}
+      </InfiniteScroll>
 
-        {/* Only Text */}
-        <Message
-          model={{
-            message: "",
-            sentTime: "15 mins ago",
-            sender: "Eliot",
-            direction: "incoming",
-            position: "last",
-          }}
-          avatarSpacer={true}
-        >
-          <Message.CustomContent>
-            <div className=" max-w-xs">
-              {`Hello my friend! Do you want to buy sunglasses? Hello myfriend! Do you want to buy sunglasses? Hello my friend!Do youwant to buy sunglasses?`}
-            </div>
-          </Message.CustomContent>
-        </Message>
+      {notFound && (
+        <div className="flex justify-center items-center">
+          <p className=""></p>
+        </div>
+      )}
 
-        {/* Text and Avatar */}
-        <Message
-          model={{
-            message:
-              "Hello my friend!Do you want to buy sunglasses?Hello my friend!Do you want to buy sunglasses?Hello my friend!Do you want to buy sunglasses?",
-            sentTime: "15 mins ago",
-            sender: "Eliot",
-            direction: "incoming",
-            position: "last",
-          }}
-          width={"200px"}
-          className=" max-w-sm"
-        >
-          <Avatar src={"https://icotar.com/avatar/craig"} name="Joe" />
-        </Message>
+      {/* {messages.map((m, i) => (
+        <Message key={i} model={m}></Message>
+      ))} */}
 
-        {/* Only img from other */}
-        <Message
-          model={{
-            message: ``,
-            sentTime: "15 mins ago",
-            sender: "Joe",
-            direction: "incoming",
-            position: "first",
-          }}
-          // avatarSpacer={true}
-        >
-          <Avatar src={"https://icotar.com/avatar/craig"} name="Akane" />
-          <Message.ImageContent
-            src={"https://icotar.com/avatar/tt"}
-            alt="Akane avatar"
-            width={200}
-          />
-        </Message>
+      {/* <MessageSeparator content="Saturday, 30 November 2019" /> */}
 
-        {/* IMG and TEXT From other */}
-        <Message
-          model={{
-            message: ``,
-            sentTime: "15 mins ago",
-            sender: "Joe",
-            direction: "incoming",
-            position: "first",
-          }}
-        >
-          <Avatar src={"https://icotar.com/avatar/craig"} name="Akane" />
-          <Message.CustomContent>
-            <Message.ImageContent
-              src={"https://icotar.com/avatar/tt"}
-              alt="Akane avatar"
-              width={200}
-            />
-            <div className=" max-w-xs ">
-              {
-                "Hello my friend!Do you want to buy sunglasses?Hello my friend!Do you want to buy sunglasses?Hello my friend!Do you want to buy sunglasses?"
-              }
-            </div>
-          </Message.CustomContent>
-        </Message>
-
-        {/* me text */}
-        <Message
-          model={{
-            message: "",
-            sentTime: "just now",
-            sender: "Akane",
-            direction: "outgoing",
-            position: "single",
-          }}
-        >
-          <Message.CustomContent>
-            <div className=" max-w-xs ">
-              {`Hello my friend! Do you want to buy sunglasses? Hello myfriend! Do you want to buy sunglasses? Hello my friend!Do youwant to buy sunglasses?`}
-            </div>
-          </Message.CustomContent>
-        </Message>
-
-        {/* me image */}
-        <Message
-          model={{
-            message: "",
-            sentTime: "just now",
-            sender: "Akane",
-            direction: "outgoing",
-            position: "single",
-          }}
-        >
-          <Message.ImageContent
-            src={"https://icotar.com/avatar/tt"}
-            alt="Akane avatar"
-            width={200}
-          />
-        </Message>
-
-        {/* me Image and text */}
-        <Message
-          model={{
-            message: "",
-            sentTime: "just now",
-            sender: "Akane",
-            direction: "outgoing",
-            position: "single",
-          }}
-        >
-          <Message.CustomContent>
-            <div className=" max-w-xs ">
-              <div className=" flex justify-end">
-                <img
-                  src={"https://icotar.com/avatar/tt"}
-                  alt="Akane avatar"
-                  width={200}
-                />
-              </div>
-              <div className="flex justify-end">
-                {/* {`Hello my friend! Do you want to buy sunglasses? Hello myfriend! Do you want to buy sunglasses? Hello my friend!Do youwant to buy sunglasses?
-              `} */}
-                a
-              </div>
-            </div>
-          </Message.CustomContent>
-        </Message>
-
-        {messages.map((m, i) => (
-          <Message key={i} model={m}></Message>
-        ))}
-
-        <WasTyping />
-
-        <div ref={messagesEndRef} />
-      </div>
+      {/* <WasTyping /> */}
     </div>
   );
 };
