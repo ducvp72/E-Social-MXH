@@ -14,10 +14,12 @@ const ListUserSearch = () => {
   const search = useLocation().search;
   const [cookies, ,] = useCookies("auth");
   const [status, setStatus] = useState(7);
+  const [notFound, setNotFound] = useState(false);
+  const q = new URLSearchParams(search).get("q");
   useEffect(() => {
     if (status) {
       // console.log("statusFromchildren", status);
-      const q = new URLSearchParams(search).get("q");
+
       callListApi(q);
     }
     return () => {
@@ -26,13 +28,14 @@ const ListUserSearch = () => {
   }, [search, status]);
 
   const callListApi = async (q) => {
-    setSkt(true);
     await userApi
       .getUserName(cookies.auth.tokens.access.token, q, 1, 5)
       .then((rs) => {
-        if (rs) setUsers(rs.data.results);
-        // console.log("users", users);
+        setUsers(rs.data.results);
+        if (!rs.data.totalResults) setNotFound(true);
         setSkt(false);
+        setnoMore(true);
+        setPage(2);
       })
       .catch((err) => {
         console.log(err);
@@ -45,7 +48,7 @@ const ListUserSearch = () => {
       userApi
         .getUserName(cookies.auth.tokens.access.token, q, page, 5)
         .then((rs) => {
-          if (rs) resolve(rs.data.results);
+          resolve(rs.data.results);
         })
         .catch((err) => {
           console.log("errPromise", err);
@@ -62,7 +65,7 @@ const ListUserSearch = () => {
     }
     setPage(page + 1);
   };
-  // console.log("PostApi...", users);
+
   const loopSkeleton = () => {
     let arr = [];
     for (let i = 0; i <= 10; i++) {
@@ -74,11 +77,8 @@ const ListUserSearch = () => {
     <div className="  mt-14 bg-white md:col-span-2 mb-10 px-5 ">
       <div className="flex">
         <div className="grid grid-cols-1 w-full ">
-          {users?.length === 0 ? (
-            <div className="flex w-full justify-center">
-              <p className=" font-normal ">Not find Result</p>
-            </div>
-          ) : (
+          {skt && loopSkeleton()}
+          {users?.length > 0 && (
             <InfiniteScroll
               dataLength={users?.length}
               next={fetchData}
@@ -94,19 +94,24 @@ const ListUserSearch = () => {
                 </p>
               }
             >
-              {skt
-                ? loopSkeleton()
-                : users &&
-                  users.map((item) => {
-                    return (
-                      <UserThumbnail
-                        key={item.id}
-                        item={item}
-                        updateStatus={setStatus}
-                      />
-                    );
-                  })}
+              {users &&
+                users.map((item) => {
+                  return (
+                    <UserThumbnail
+                      key={item.id}
+                      item={item}
+                      updateStatus={setStatus}
+                      callListApi={callListApi}
+                      q={q}
+                    />
+                  );
+                })}
             </InfiniteScroll>
+          )}
+          {notFound && (
+            <div className="flex w-full justify-center">
+              <p className=" font-normal ">Not find Result</p>
+            </div>
           )}
         </div>
       </div>

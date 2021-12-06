@@ -27,7 +27,7 @@ export const chatApi = {
 
   createConver(token, idUser) {
     return axiosApi(
-      `conversation/create-private`,
+      `conversation/private`,
       `POST`,
       { userId: idUser },
       null,

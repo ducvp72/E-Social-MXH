@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Sidebar,
   Search,
@@ -15,81 +15,97 @@ import { SkeletonConver } from "../../../skeletons/Skeletons";
 import InfititeLoading from "../../LoadingPage/infititeLoading";
 import InfiniteScroll from "react-infinite-scroll-component";
 import moment from "moment";
+import { Link, useParams } from "react-router-dom";
+import { actGetMyConver } from "../../../reducers/converReducer";
+import { history } from "./../../../routes/browserRouter";
+import { useHistory } from "react-router";
 
-const SkeletonConversation = () => {
-  let arr = [];
-  for (let i = 0; i <= 10; i++) {
-    arr = [
-      ...arr,
-      <Conversation key={i}>
-        <Conversation.Content>
-          <div>
-            <SkeletonConver />
-          </div>
-        </Conversation.Content>
-      </Conversation>,
-    ];
-  }
-  return arr;
-};
+// const SkeletonConversation = () => {
+//   let arr = [];
+//   for (let i = 0; i <= 10; i++) {
+//     arr = [
+//       ...arr,
+//       <Conversation key={i}>
+//         <Conversation.Content>
+//           <div>
+//             <SkeletonConver />
+//           </div>
+//         </Conversation.Content>
+//       </Conversation>,
+//     ];
+//   }
+//   return arr;
+// };
 
-const ListConver = () => {
+const ListConver = (props) => {
   const [cookies, , removeCookie] = useCookies(["auth"]);
   const currentUser = useSelector((state) => state.auth.data);
+  const currentConver = useSelector((state) => state.myconver.data);
   const [open, setOpen] = useState(false);
-  const [conver, setConver] = useState([]);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);
   const [notFound, setNotFound] = useState(false);
-
-  useEffect(() => {
-    getFirstPageConver();
-    return () => {
-      setConver([]);
-    };
-  }, []);
+  const { userId } = useParams();
+  // console.log("userID", userId);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  // useEffect(() => {
+  //   console.log("Convers", currentConver?.results);
+  // }, []);
 
   const handleClose = () => {
     setOpen(!open);
   };
 
   const getFirstPageConver = async () => {
-    chatApi
-      .getConverByToken(cookies.auth.tokens.access.token, 1, 5)
-      .then((rs) => {
-        // console.log("Conversation", rs.data.results);
-        setConver(rs.data.results);
-        if (!rs.data.totalResults) setNotFound(true);
-        setSkt(false);
-        setnoMore(true);
-        setPage(2);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
+    // setConver(currentConver?.results);
+    if (!currentConver?.totalResults) setNotFound(true);
+    setSkt(false);
+    setnoMore(true);
+    setPage(2);
   };
 
-  const handleFetchConver = () => {
-    return new Promise((resolve, reject) => {
-      chatApi
-        .getConverByToken(cookies.auth.tokens.access.token, page, 5)
-        .then((rs) => {
-          // console.log("Conversation", rs.data);
-          setConver(rs.data);
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
-    });
-  };
+  // const getFirstPageConver = async () => {
+  //   chatApi
+  //     .getConverByToken(cookies.auth.tokens.access.token, 1, 10)
+  //     .then((rs) => {
+  //       // console.log("Conversation", rs.data.results);
+  //       setConver(rs.data.results);
+  //       if (!rs.data.totalResults) setNotFound(true);
+  //       setSkt(false);
+  //       setnoMore(true);
+  //       setPage(2);
+  //     })
+  //     .catch((err) => {
+  //       console.log("err", err);
+  //     });
+  // };
+
+  // const handleFetchConver = () => {
+  //   return new Promise((resolve, reject) => {
+  //     chatApi
+  //       .getConverByToken(cookies.auth.tokens.access.token, page, 10)
+  //       .then((rs) => {
+  //         // console.log("Conversation", rs.data);
+  //         setConver(rs.data);
+  //         dispatch(actGetMyConver(cookies.auth.tokens.access.token, page, 10));
+
+  //       })
+  //       .catch((err) => {
+  //         console.log("err", err);
+  //       });
+  //   });
+  // };
 
   const fetchData = async () => {
-    const conversFromServer = await handleFetchConver();
-    setConver([...conver, ...conversFromServer]);
-    if (conversFromServer.length === 0 || conversFromServer.length < 5) {
-      setnoMore(false);
-    }
+    dispatch(actGetMyConver(cookies.auth.tokens.access.token, page, 10));
+    // if (
+    //   currentConver?.results.length === 0 ||
+    //   currentConver?.results.length < 10
+    // ) {
+    //   setnoMore(true);
+    // }
     setPage(page + 1);
   };
 
@@ -113,12 +129,12 @@ const ListConver = () => {
       <Search placeholder="Search..." />
       <ConversationList>
         <div as="Conversation" id="scrollableDivChat">
-          {skt && SkeletonConversation()}
-          {conver?.length > 0 && (
+          {/* {skt && SkeletonConversation()} */}
+          {(currentConver?.results || []).length > 0 && (
             <InfiniteScroll
               scrollableTarget="scrollableDivChat"
               refreshFunction
-              dataLength={conver?.length || 0}
+              dataLength={currentConver?.results.length || 0}
               next={fetchData}
               hasMore={noMore}
               loader={
@@ -132,33 +148,40 @@ const ListConver = () => {
                 </p>
               }
             >
-              {conver &&
-                conver?.map((item) => {
+              {currentConver &&
+                currentConver?.results.map((item) => {
                   return (
-                    <Conversation
-                      key={item.id}
-                      lastActivityTime={moment(
-                        item?.lastMessage?.createdAt
-                      ).fromNow()}
-                    >
-                      <Avatar
-                        src={`https://mxhld.herokuapp.com/v1/image/${item?.avatar}`}
-                        name={item?.fullname}
-                        status="available"
-                      />
-                      <Conversation.Content
-                        name={item?.fullname}
-                        info={item?.lastMessage?.content}
-                      />
-                      <Conversation.Operations
-                        onClick={() => alert("option")}
-                      />
-                    </Conversation>
+                    <Link to={`/user/inbox/${item.userId}`}>
+                      <Conversation
+                        key={item.id}
+                        lastActivityTime={moment(
+                          item?.lastMessage?.createdAt
+                        ).fromNow()}
+                        className={
+                          item.userId === userId
+                            ? "bg-blue-100 hover:bg-blue-100 "
+                            : ""
+                        }
+                      >
+                        <Avatar
+                          src={`https://mxhld.herokuapp.com/v1/image/${item?.avatar}`}
+                          name={item?.fullname}
+                          status="available"
+                        />
+                        <Conversation.Content
+                          name={item?.fullname}
+                          info={item?.lastMessage?.content?.text}
+                        />
+                        <Conversation.Operations
+                          onClick={() => alert("option")}
+                        />
+                      </Conversation>
+                    </Link>
                   );
                 })}
             </InfiniteScroll>
           )}
-          {notFound && (
+          {!currentConver?.totalResults && (
             <div className="flex justify-center items-center">
               <p className="">You have no conversations</p>
             </div>

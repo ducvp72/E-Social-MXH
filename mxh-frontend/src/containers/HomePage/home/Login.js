@@ -20,7 +20,7 @@ const Login = () => {
   };
 
   useEffect(() => {
-    console.log(location.pathname);
+    // console.log(location.pathname);
     document.title = "Login to Vn-Social";
     switch (location.pathname) {
       case "/login":

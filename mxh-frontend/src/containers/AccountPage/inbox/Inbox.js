@@ -1,16 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useParams } from "react-router-dom";
-import { useCookies } from "react-cookie";
-import { useSelector } from "react-redux";
 import Chat from "./chat";
 import ListConver from "./listConver";
 import { MainContainer } from "@chatscope/chat-ui-kit-react";
 
 const Inbox = () => {
-  let { userId } = useParams();
-  const currentUser = useSelector((state) => state.auth.data);
-  const [cookies, , removeCookie] = useCookies(["auth"]);
   const [openSr, setOpenSr] = useState(true);
 
   return (

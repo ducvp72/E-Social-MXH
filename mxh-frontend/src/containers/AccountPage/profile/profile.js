@@ -62,7 +62,6 @@ const Profile = () => {
   };
 
   const getSummary = async () => {
-    console.log("okeee");
     try {
       const userSummary = await userApi.getUserSummary(cookies.auth.user.id);
       setUSerSmr(userSummary);
@@ -72,7 +71,6 @@ const Profile = () => {
   };
 
   const getUserPost = () => {
-    console.log("ok");
     // setSkt(true);
     postApi
       .getUserPost(cookies.auth.tokens.access.token, cookies.auth.user.id, 1, 6)

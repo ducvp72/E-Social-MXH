@@ -33,10 +33,10 @@ export const Timeline = () => {
     postApi
       .getMyPost(cookies.auth.tokens.access.token, 1, 5)
       .then((rs) => {
+        setSkt(false);
         setPost(rs.data.results);
         if (!rs.data.totalResults) setNotFound(true);
         setToggle({ ...toggle, postData: rs.data.results });
-        setSkt(false);
         setnoMore(true);
         setPage(2);
       })

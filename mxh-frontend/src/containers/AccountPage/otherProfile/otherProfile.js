@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { userApi } from "./../../../axiosApi/api/userApi";
-import { useParams, useLocation, useHistory } from "react-router-dom";
+import { useParams, useLocation, useHistory, Link } from "react-router-dom";
 import Statistic from "./../profile/statistic";
 import Information from "./../profile/information";
 import DialogAction from "./../profile/dialog";
@@ -14,6 +14,11 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import InfititeLoading from "./../../LoadingPage/infititeLoading";
 import { postApi } from "./../../../axiosApi/api/postApi";
 import { chatApi } from "./../../../axiosApi/api/chatApi";
+import Skeleton from "react-loading-skeleton";
+import { useDispatch } from "react-redux";
+import { actGetMyConver } from "../../../reducers/converReducer";
+import Loading from "../../LoadingPage/index";
+import { toast, ToastContainer, Zoom } from "react-toastify";
 
 const OtherProfile = () => {
   const [following, setFollowing] = useState(false);
@@ -27,10 +32,12 @@ const OtherProfile = () => {
   const [userPost, setUserPost] = useState([]);
   const [noMore, setnoMore] = useState(true);
   const [page, setPage] = useState(2);
+  const [notFound, setNotFound] = useState(false);
   const q = new URLSearchParams(idUser).get("id");
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    setSkt(true);
     getUserInfo();
     getUserPost();
     return () => {
@@ -41,15 +48,24 @@ const OtherProfile = () => {
   }, [q]);
 
   const inboxUser = async () => {
+    setLoading(true);
     chatApi
       .createConver(cookies.auth.tokens.access.token, q)
-      .then(() => {
-        console.log("redirect");
+      .then((res) => {
+        setLoading(false);
+        console.log(res);
+        dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
+        // toast.success("Creating successfully conversation with new friend !", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        //   autoClose: 2000,
+        //   hideProgressBar: true,
+        //   theme: "colored",
+        // });
         history.push(`/user/inbox/${q}`);
         return;
       })
       .catch((err) => {
-        history.push(`/user/inbox/${q}`);
+        setLoading(false);
         console.log(err);
       });
   };
@@ -58,9 +74,9 @@ const OtherProfile = () => {
     userApi
       .getUserByID(cookies.auth.tokens.access.token, q)
       .then((res) => {
+        setSkt(false);
         setUserInfo(res.data);
         setFollowing(res.data.isFollow);
-        setSkt(false);
       })
       .catch((err) => {
         setSkt(false);
@@ -69,16 +85,19 @@ const OtherProfile = () => {
   };
 
   const getUserPost = () => {
-    setSkt(true);
     postApi
       .getUserPost(cookies.auth.tokens.access.token, q, 1, 10)
       .then((res) => {
+        setSkt(false);
+        console.log(res);
         setUserPost(res.data.results);
+        if (!res.data.totalResults) setNotFound(true);
         setnoMore(true);
         setPage(2);
       })
       .catch((err) => {
         console.log(err);
+        setSkt(false);
       });
   };
 
@@ -87,8 +106,7 @@ const OtherProfile = () => {
       postApi
         .getUserPost(cookies.auth.tokens.access.token, q, page, 10)
         .then((rs) => {
-          if (rs) resolve(rs.data.results);
-          // resolve(rs.data);
+          resolve(rs.data.results);
         })
         .catch((err) => {
           console.log("errPromise", err);
@@ -151,6 +169,8 @@ const OtherProfile = () => {
 
   return (
     <div>
+      {/* <ToastContainer transition={Zoom} />
+      {loading && <Loading />} */}
       <Helmet>
         <title>{`${username.replaceAll(".", " ")} | Vn-Social`}</title>
         <meta name="description" content="Helmet application" />
@@ -184,19 +204,26 @@ const OtherProfile = () => {
                     className="font-sans font-light text-3xl hover:text-blue-500 cursor-pointer"
                     style={{ color: "#818181" }}
                   >
-                    {userInfo ? userInfo?.fullname : "Undefined Fullname"}
+                    {userInfo?.fullname || (
+                      <div className="mt-2">
+                        <Skeleton width={150} height={20} />
+                      </div>
+                    )}
                   </h1>
                   {following ? (
                     <>
-                      <button
-                        className="border-gray-300 font-normal p-1 rounded-sm"
-                        style={{ borderWidth: "1px" }}
-                        onClick={() => {
-                          inboxUser();
-                        }}
-                      >
-                        Inbox
-                      </button>
+                      <Link to={`/user/inbox/${q}`}>
+                        <button
+                          className="border-gray-300 font-normal p-1 rounded-sm"
+                          style={{ borderWidth: "1px" }}
+                          onClick={() => {
+                            inboxUser();
+                          }}
+                        >
+                          Inbox
+                        </button>
+                      </Link>
+
                       <button
                         onClick={() => {
                           handleUnFollow();
@@ -237,39 +264,47 @@ const OtherProfile = () => {
                 </div>
               </div>
             </div>
-          </div>{" "}
+          </div>
         </>
       )}
 
       <div className="py-2 w-full xl:w-4/6 lg:w-4/6 md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2">
-        <InfiniteScroll
-          dataLength={userPost?.length}
-          next={fetchData}
-          hasMore={noMore}
-          loader={
-            <div className=" flex justify-center">
-              <InfititeLoading />
-            </div>
-          }
-          endMessage={
-            <p className="flex justify-center font-avatar text-lg">
-              <b>Opp..! You have seen it all</b>
-            </p>
-          }
-        >
-          {skt ? (
-            <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
-              {loopSkeleton()}
-            </div>
-          ) : (
+        {skt && (
+          <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
+            {loopSkeleton()}
+          </div>
+        )}
+
+        {userPost?.length > 0 && (
+          <InfiniteScroll
+            dataLength={userPost?.length}
+            next={fetchData}
+            hasMore={noMore}
+            scrollThreshold={0.2}
+            loader={
+              <div className=" flex justify-center mt-5">
+                <InfititeLoading />
+              </div>
+            }
+            endMessage={
+              <p className="flex justify-center font-avatar text-lg">
+                <b>Opp..! You have seen it all</b>
+              </p>
+            }
+          >
             <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
               {userPost &&
                 userPost.map((item) => {
                   return <UserPost key={item.id} otherItem={item} />;
                 })}
             </div>
-          )}
-        </InfiniteScroll>
+          </InfiniteScroll>
+        )}
+        {notFound && (
+          <div className="flex justify-center items-center">
+            <p className="">No post found</p>
+          </div>
+        )}
       </div>
     </div>
   );

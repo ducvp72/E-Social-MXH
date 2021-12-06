@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import "./css/style.css";
 import Routes from "./routes/routes";
 import { createAxiosResponseInterceptor } from "./utils/handleRefresh";

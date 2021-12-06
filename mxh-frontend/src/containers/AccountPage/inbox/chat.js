@@ -14,14 +14,14 @@ import {
   EllipsisButton,
   VideoCallButton,
   VoiceCallButton,
-  AttachmentButton,
   SendButton,
   MessageList,
 } from "@chatscope/chat-ui-kit-react";
-import { date } from "yup";
+import Loading from "../../LoadingPage/index";
+import { useParams } from "react-router-dom";
 
 const Chat = (props) => {
-  const [cookies, , removeCookie] = useCookies(["auth"]);
+  const [cookies, ,] = useCookies(["auth"]);
   const [openSr, setOpenSr] = useState(true);
   const inputRef = useRef();
   const [selectedImage, setSelectedImage] = useState(null);
@@ -37,22 +37,113 @@ const Chat = (props) => {
   const [process, setProcess] = useState(0);
   const [msgInputValue, setMsgInputValue] = useState([]);
   const [messages, setMessages] = useState({});
-
+  const [loading, setLoading] = useState(false);
+  const [messData, setMessData] = useState("");
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
   useOnClickOutside(buttonMedia, modalMedia, () => setMedia(false));
+  let { userId } = useParams();
 
-  // useEffect(() => {
-  //   document.getElementById("textAREA").focus();
-  // });
+  useEffect(() => {
+    document.getElementById("textAREA").focus();
+  });
+
+  useEffect(() => {
+    socket.current = io("https://mxhld.herokuapp.com/", {
+      // transports: ["websocket", "polling"],
+      pingTimeout: 60000,
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            Authorization: `Bearer ${cookies.auth.tokens.access.token}`,
+          },
+        },
+      },
+    });
+
+    //#region Log Status
+    socket.current.on("connect", () => {
+      console.log("Connection ok !");
+    });
+
+    // socket.current.on("connect_error", () => {
+    //   console.log("connected error");
+    //   // socket.current.io.opts.transportOptions.polling.extraHeaders.Authorization = `Bearer ${cookies.auth.tokens.access.token}`;
+    //   // socket.current.connect();
+    // });
+
+    // socket.current.emit("whoami", (data) => {
+    //   console.log(data);
+    // });
+    //#endregion
+
+    socket.current.on("getMessage", (data) => {
+      console.log("on", data.text);
+      setMessages({
+        ...messages,
+        content: data.content,
+        conversationId: messData,
+        incomming: true,
+        createdAt: Date.now(),
+        id: Date.now(),
+        sender: data.senderId,
+        typeMessage: "TEXT",
+      });
+    });
+
+    socket.current.on("getMedia", (data) => {
+      console.log("on", data.text);
+      setMessages({
+        ...messages,
+        content: data.content,
+        incomming: true,
+        conversationId: messData,
+        createdAt: Date.now(),
+        id: Date.now(),
+        sender: data.senderId,
+        typeMessage: data.typeMessage,
+      });
+    });
+
+    socket.current.on("typing", (data) => {
+      console.log("on", "typing");
+      setTyping(true);
+    });
+
+    socket.current.on("untyping", (data) => {
+      console.log("on", "untyping");
+      setTyping(false);
+    });
+
+    socket.current.on("send-file", (data) => {
+      console.log("on", "send-file");
+    });
+  }, []);
+
+  useEffect(() => {
+    getConverByUserId();
+  }, [userId]);
 
   useEffect(() => {
     return () => setMessages([]);
   }, []);
 
+  const getConverByUserId = async () => {
+    chatApi
+      .createConver(cookies.auth.tokens.access.token, userId)
+      .then((rs) => {
+        console.log("RS", rs.data);
+        setMessData(rs.data.id);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const handleChatSocket = (message) => {
+    console.log("socket handle");
     const onchat = {
       senderId: cookies.auth.user.id,
-      receiverId: "61ab0f520011d000240f9a3d",
+      receiverId: userId,
       text: message,
     };
     socket.current.emit("sendMessage", onchat);
@@ -97,60 +188,42 @@ const Chat = (props) => {
     setMsgInputValue(event.target.value);
   };
 
-  // const getMess = async (idConver) => {
-  //   chatApi
-  //     .getMessByIdConver(
-  //       cookies.auth.tokens.access.token,
-  //       "61a86e9b7b73519cfa85890b",
-  //       1,
-  //       5
-  //     )
-  //     .then((rs) => {
-  //       console.log("Mess", rs.data);
-  //       setMess(rs.data);
-  //     })
-  //     .then((err) => {
-  //       console.log(err);
-  //     });
-  // };
-
-  const handleSend = (message) => {
-    // console.log("-----------------------------");
-    // console.log("Chat", msgInputValue);
-    // console.log("-----------------------------");
-    // let formData = new FormData();
-    // formData.append("text", message);
-    // formData.append("file", selectedImage);
-
-    // console.log("texts", formData.get("text"));
-    // console.log("files", formData.get("file"));
-    if (msgInputValue.length === 0) {
-      return;
-    }
-    // if (selectedImage != null && msgInputValue.length > 0 )
-    sendMediaFile();
-    // setMessages({
-    //   ...messages,
-    //   content: message,
-    //   conversationId: "61a86e9b7b73519cfa85890b",
-    //   createdAt: Date.now(),
-    //   id: Date.now(),
-    //   sender: cookies.auth.user.id,
-    // });
-
-    // handleChatSocket(message);
+  const reset = () => {
     setMsgInputValue("");
     inputRef.current.focus();
     setMedia(false);
     setSelectedImage(null);
   };
 
+  const handleSend = (message) => {
+    if (msgInputValue.length === 0 && selectedImage === null) {
+      console.log("Return");
+      reset();
+      return;
+    }
+    if (msgInputValue.length > 0) {
+      // console.log("Text");
+      sendTextOnly();
+      reset();
+    }
+    if (selectedImage != null) {
+      setLoading(true);
+      // console.log("File");
+      sendMediaFile();
+      reset();
+    }
+  };
+
   const press = async (event) => {
     if (event.keyCode === 13 && !event.shiftKey && msgInputValue.length === 0) {
+      console.log("Return");
       event.preventDefault();
     }
-    if (event.keyCode === 13 && !event.shiftKey && msgInputValue.length > 0) {
-      // handleChatSocket(msgInputValue);
+    if (
+      event.keyCode === 13 &&
+      !event.shiftKey &&
+      (msgInputValue.length > 0 || selectedImage !== null)
+    ) {
       handleSend(msgInputValue);
       event.preventDefault();
     }
@@ -160,9 +233,9 @@ const Chat = (props) => {
     const file = event.target.files[0];
     setSelectedImage(file);
     // setUserImage(window.URL.createObjectURL(event.target.files[0]));
-    setUserImage(
-      (window.URL || window.webkitURL).createObjectURL(event.target.files[0])
-    );
+    // setUserImage(
+    //   (window.URL || window.webkitURL).createObjectURL(event.target.files[0])
+    // );
   };
 
   const checkDisabled = (inputText, fileMedia) => {
@@ -172,16 +245,18 @@ const Chat = (props) => {
     return true;
   };
 
-  const sendTextOnly = (id) => {
+  const sendTextOnly = async () => {
     chatApi
-      .createMessText(cookies.auth.tokens.access.token, id, msgInputValue)
+      .createMessText(cookies.auth.tokens.access.token, messData, msgInputValue)
       .then((rs) => {
+        handleChatSocket(msgInputValue);
         console.log(rs.data);
         const data = rs.data;
         setMessages({
           ...messages,
           content: data?.content,
-          conversationId: "61a86e9b7b73519cfa85890b",
+          conversationId: messData,
+          incomming: false,
           createdAt: Date.now(),
           id: data?.id,
           sender: cookies.auth.user.id,
@@ -199,20 +274,22 @@ const Chat = (props) => {
     setProcess(percent);
   };
 
-  const sendMediaFile = () => {
+  const sendMediaFile = async () => {
     let formData = new FormData();
     // formData.append("text", msgInputValue);
     formData.append("file", selectedImage);
-    formData.append("conversationId", "61a86e9b7b73519cfa85890b");
+    formData.append("conversationId", messData);
     chatApi
-      .createMessMedia(cookies.auth.tokens.access.token, formData)
+      .createMessMedia(cookies.auth.tokens.access.token, formData, getProcess)
       .then((rs) => {
+        setLoading(false);
         console.log(rs.data);
         const data = rs.data;
         setMessages({
           ...messages,
           content: data?.content,
-          conversationId: "61a86e9b7b73519cfa85890b",
+          conversationId: messData,
+          incomming: false,
           createdAt: Date.now(),
           id: data?.id,
           sender: cookies.auth.user.id,
@@ -226,6 +303,7 @@ const Chat = (props) => {
 
   return (
     <>
+      <div className="z-50"> {loading && <Loading process={process} />}</div>
       <ChatContainer>
         <ConversationHeader>
           <ConversationHeader.Back />
@@ -250,7 +328,7 @@ const Chat = (props) => {
 
         {/* List chat here */}
         <div as={MessageList}>
-          <ListMessage messages={messages} />
+          <ListMessage messages={messages} messData={messData} />
         </div>
 
         <div
@@ -290,7 +368,7 @@ const Chat = (props) => {
           {media && (
             <div
               // ref={modalMedia}
-              as={AttachmentButton}
+              // as={AttachmentButton}
               style={{
                 fontSize: "1.2em",
                 paddingLeft: "0.2em",
@@ -320,7 +398,10 @@ const Chat = (props) => {
               className="rounded w-7 h-7 cursor-pointer"
               src={"/assets/image/attach.png"}
               alt="emokiimg"
-              onClick={() => setMedia(!media)}
+              onClick={() => {
+                setSelectedImage(null);
+                setMedia(!media);
+              }}
               // ref={buttonMedia}
             />
           </div>

@@ -3,8 +3,9 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import { authReducer } from "../reducers/authReducer";
-import { myPostReducer } from "../reducers/postReducer";
+
 import { createPostDialogReducer } from "./../reducers/createPostDialog";
+import { converReducer } from "./../reducers/converReducer";
 const rootPersistConfig = {
   key: "root",
   storage: storage,
@@ -19,12 +20,17 @@ const authPersistConfig = {
   whiteList: ["auth"],
 };
 
+const converPersistConfig = {
+  key: "conver",
+  storage: storage,
+  stateReconciler: autoMergeLevel2,
+  whiteList: ["conver"],
+};
+
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
-  post: myPostReducer,
+  myconver: persistReducer(converPersistConfig, converReducer),
   dialog: createPostDialogReducer,
-  // testReducer,
-  //Them reducer
 });
 
 export default persistReducer(rootPersistConfig, rootReducer);

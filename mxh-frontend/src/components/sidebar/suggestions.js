@@ -16,7 +16,7 @@ export const Suggestions = () => {
     return arr;
   };
   return (
-    <div className="rounded flex flex-col z-10">
+    <div className="rounded flex flex-col z-10 mt-2">
       {/* <div className="text-sm flex items-center align-items justify-between mb-2">
         <p className="font-bold text-gray-base">Suggestions for you</p>
       </div> */}

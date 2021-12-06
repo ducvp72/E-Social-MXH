@@ -16,6 +16,7 @@ import { useDispatch } from "react-redux";
 import Loading from "../../LoadingPage";
 import Swal from "sweetalert2";
 import { userApi } from "./../../../axiosApi/api/userApi";
+import { actGetMyConver } from "../../../reducers/converReducer";
 const useStyles = makeStyles(() => ({
   label: {
     fontSize: "20px",
@@ -38,6 +39,9 @@ const Signin = (props) => {
 
   useEffect(() => {
     setIsSave(cookies.rm_psw ? true : false);
+    return () => {
+      setIsSave("");
+    };
   }, []);
 
   const initValue = cookies.rm_psw || { email: "", password: "" };
@@ -49,15 +53,15 @@ const Signin = (props) => {
     try {
       const resData = await userApi.signIn(data);
       dispatch(actLoginSuccess(resData.data.user));
+      //get 10 conver list first
+      dispatch(actGetMyConver(resData.data.tokens.access.token, 1, 10));
       setLoading(false);
       setCookie("auth", resData.data, { path: "/" });
+      console.log("user", cookies.tokens.access.token);
       if (resData.data.user.role === "user") {
-        // console.log("user");
-
         history.replace("/user/home");
       } else {
         console.log("admin");
-
         history.replace("/admin");
       }
     } catch (err) {

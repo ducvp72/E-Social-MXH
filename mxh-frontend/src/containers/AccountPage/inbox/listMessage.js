@@ -5,6 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { chatApi } from "./../../../axiosApi/api/chatApi";
 import { useCookies } from "react-cookie";
 import InfititeLoading from "./../../LoadingPage/infititeLoading";
+import { useParams } from "react-router-dom";
 import {
   MessageList,
   TypingIndicator,
@@ -15,15 +16,19 @@ import {
 
 const ChatElement = (props) => {
   const { data } = props;
+  const [cookies, ,] = useCookies("auth");
+  console.log("userID", cookies.auth.user.id);
+  console.log("SenderId", data);
   return (
     <>
       <Message
         model={{
           message: "",
-          sentTime: "15 mins ago",
-          sender: "Eliot",
-          // direction: "incoming",
-          direction: "outgoing",
+          sentTime: "",
+          sender: "",
+          direction: `${
+            data?.sender !== cookies.auth.user.id ? "incoming" : "outgoing"
+          }`,
           position: "last",
         }}
         // avatarSpacer={true}
@@ -34,36 +39,57 @@ const ChatElement = (props) => {
           {/* Neu la from thi la justify-end */}
           <div className=" flex justify-end">
             {data?.typeMessage === "IMAGE" && (
-              <img
-                src={`https://mxhld.herokuapp.com/v1/file/${data?.content}`}
-                alt="Akane avatar"
-                width={200}
-              />
+              <>
+                <img
+                  src={`https://mxhld.herokuapp.com/v1/file/${data?.content.file}`}
+                  alt="Akane avatar"
+                  width={200}
+                />
+                {data?.content.text === "TEXT" && (
+                  <div className=" max-w-xs">{data?.content.text}</div>
+                )}
+              </>
             )}
             {data?.typeMessage === "VIDEO" && (
-              <video
-                style={{
-                  width: "400px",
-                  height: "400px",
-                }}
-                // className="z-30"
-                controls
-              >
-                <source
-                  src={`https://mxhld.herokuapp.com/v1/file/${data?.content}`}
-                />
-              </video>
+              <>
+                <video
+                  style={{
+                    width: "400px",
+                    height: "400px",
+                  }}
+                  // className="z-30"
+                  controls
+                >
+                  <source
+                    src={`https://mxhld.herokuapp.com/v1/file/${data?.content.file}`}
+                  />
+                </video>
+                {data?.content.text === "TEXT" && (
+                  <div className=" max-w-xs">{data?.content.text}</div>
+                )}
+              </>
             )}
             {data?.typeMessage === "AUDIO" && (
-              <audio controls>
-                <source
-                  src={`https://mxhld.herokuapp.com/v1/file/${data?.content}`}
-                />
-              </audio>
+              <>
+                <audio controls>
+                  <source
+                    src={`https://mxhld.herokuapp.com/v1/file/${data?.content.file}`}
+                  />
+                </audio>
+                {data?.content.text === "TEXT" && (
+                  <div className=" max-w-xs">{data?.content.text}</div>
+                )}
+              </>
             )}
           </div>
+
+          {data?.typeMessage === "RECALL" && (
+            <>
+              <div className=" max-w-xs">RECALL</div>
+            </>
+          )}
           {data?.typeMessage === "TEXT" && (
-            <div className=" max-w-xs">{data?.content}</div>
+            <div className=" max-w-xs">{data?.content.text}</div>
           )}
         </Message.CustomContent>
       </Message>
@@ -72,25 +98,24 @@ const ChatElement = (props) => {
 };
 
 const ListMessage = (props) => {
-  const { messages } = props;
+  const { messages, messData } = props;
   const messagesEndRef = useRef(null);
-
   const [cookies, , removeCookie] = useCookies(["auth"]);
   const [page, setPage] = useState(2);
   const [noMore, setnoMore] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [listMess, setListMess] = useState([]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    getFirstPageMess();
-  }, []);
-
-  useEffect(() => {
-    console.log("child", messages);
-  }, [messages]);
+    if (messData) {
+      console.log("child", messData);
+      getFirstPageMess();
+    }
+  }, [messData]);
 
   useEffect(() => {
     setListMess([messages, ...listMess]);
@@ -98,15 +123,10 @@ const ListMessage = (props) => {
   }, [messages]);
 
   const getFirstPageMess = async () => {
-    console.log("render");
     chatApi
-      .getMessByIdConver(
-        cookies.auth.tokens.access.token,
-        "61a86e9b7b73519cfa85890b",
-        1,
-        10
-      )
+      .getMessByIdConver(cookies.auth.tokens.access.token, messData, 1, 20)
       .then((rs) => {
+        console.log("ALL chat", rs.data);
         setListMess(rs.data.results);
         setnoMore(true);
         setPage(2);
@@ -119,14 +139,8 @@ const ListMessage = (props) => {
   const handleFetchMess = () => {
     return new Promise((resolve, reject) => {
       chatApi
-        .getMessByIdConver(
-          cookies.auth.tokens.access.token,
-          "61a86e9b7b73519cfa85890b",
-          page,
-          10
-        )
+        .getMessByIdConver(cookies.auth.tokens.access.token, messData, page, 20)
         .then((rs) => {
-          // console.log("Conversation", rs.data);
           resolve(rs.data.results);
         })
         .catch((err) => {
@@ -138,7 +152,7 @@ const ListMessage = (props) => {
   const fetchData = async () => {
     const messFromServer = await handleFetchMess();
     setListMess([...listMess, ...messFromServer]);
-    if (messFromServer.length === 0 || messFromServer.length < 10) {
+    if (messFromServer.length === 0 || messFromServer.length < 20) {
       setnoMore(false);
     }
     setPage(page + 1);
@@ -170,10 +184,10 @@ const ListMessage = (props) => {
         }
         scrollableTarget="scrollableDiv"
       >
-        {listMess.map((data) => {
+        {listMess.map((data, i) => {
           return (
             <>
-              <ChatElement data={data} key={data?.id} />
+              <ChatElement key={i} data={data} />
             </>
           );
         })}

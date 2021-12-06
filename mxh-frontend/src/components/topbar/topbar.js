@@ -14,6 +14,7 @@ import PostDialog from "./../timeline/postDialog";
 import { postApi } from "./../../axiosApi/api/postApi";
 import { Status } from "@chatscope/chat-ui-kit-react";
 import { setDialogAction } from "../../reducers/createPostDialog";
+import { actLogoutConver } from "./../../reducers/converReducer";
 
 export const Topbar = () => {
   // const [createPost, setCreatePost] = useState(false);
@@ -43,6 +44,7 @@ export const Topbar = () => {
   const handlelogout = () => {
     try {
       dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
+      dispatch(actLogoutConver());
       removeCookie("auth", { path: "/" });
     } catch (err) {
       console.log(err);
