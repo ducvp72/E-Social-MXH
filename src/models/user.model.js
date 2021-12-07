@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 // eslint-disable-next-line no-unused-vars
-const { parse } = require('date-format-parse');
 const { toJSON, paginate } = require('./plugins');
 const { roles } = require('../config/roles');
 // eslint-disable-next-line no-unused-vars
@@ -63,10 +62,7 @@ const userSchema = mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: '619628b9793b0c809f103df0',
-    },
-    previousAvatar: {
-      type: [String],
+      default: '61a86e9b7b73519cfa85890b',
     },
     story: {
       type: String,
