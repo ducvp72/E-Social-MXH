@@ -1,20 +1,17 @@
-import { SuggestionsProfiles } from "./suggestionsProfiles";
 import "./styles.css";
-import { useState, useEffect } from "react";
-import { NIL } from "uuid";
+import { useState } from "react";
+
 export const Suggestions = () => {
   const [openNew, setOpenNew] = useState(false);
   const [select, setSelect] = useState(null);
-  // useEffect(() => {
-  //   alert(select);
-  // }, [select]);
-  const loopCpn = () => {
-    let arr = [];
-    for (let i = 0; i <= 5; i++) {
-      arr = [...arr, <SuggestionsProfiles key={i} />];
-    }
-    return arr;
-  };
+
+  // const loopCpn = () => {
+  //   let arr = [];
+  //   for (let i = 0; i <= 5; i++) {
+  //     arr = [...arr, <SuggestionsProfiles key={i} />];
+  //   }
+  //   return arr;
+  // };
   return (
     <div className="rounded flex flex-col z-10 mt-2">
       {/* <div className="text-sm flex items-center align-items justify-between mb-2">

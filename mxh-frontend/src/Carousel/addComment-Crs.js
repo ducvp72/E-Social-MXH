@@ -1,7 +1,6 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
-
 import { v4 as uuidv4 } from "uuid";
 import { useOnClickOutside } from "../utils/handleRefresh";
 import { useCookies } from "react-cookie";
@@ -10,7 +9,7 @@ const AddCommentCrs = (props) => {
   const { setyourComment, yourcomment, state } = props;
   const [cookies, ,] = useCookies(["auth"]);
   const [inputStr, setInputStr] = useState("");
-  const [comment, setComment] = useState("");
+  const [comment] = useState("");
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
@@ -114,7 +113,7 @@ const AddCommentCrs = (props) => {
           onClick={() => setActive(!active)}
           ref={buttonRef}
         />
-        {/* <div contenteditable="true"></div> */}
+
         <textarea
           cols=""
           rows="1"

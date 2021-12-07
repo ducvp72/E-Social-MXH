@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Dialog from "@mui/material/Dialog";
 
-import { useCookies } from "react-cookie";
-import { toast, ToastContainer, Zoom } from "react-toastify";
 import { Multiselect } from "multiselect-react-dropdown";
 export default function AddMoreUser(props) {
   const { open, handleClose } = props;
-  const [cookies, ,] = useCookies("auth");
-  const [listUser, setListUser] = useState([
+  const [listUser] = useState([
     {
       cat: "1",
       key: "Group 1",

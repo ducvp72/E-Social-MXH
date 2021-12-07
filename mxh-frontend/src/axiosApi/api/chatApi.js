@@ -59,4 +59,11 @@ export const chatApi = {
       token
     );
   },
+
+  likeMess(token, idConver) {
+    return axiosApi(`message/like/${idConver}`, "POST", null, null, token);
+  },
+  loveMess(token, idConver) {
+    return axiosApi(`message/love/${idConver}`, "POST", null, null, token);
+  },
 };

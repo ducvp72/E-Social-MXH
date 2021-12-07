@@ -10,8 +10,6 @@ import { SkeletonAvatarTopbar } from "../../skeletons/Skeletons";
 import SearchText from "./autoComplete";
 import Box from "@mui/material/Box";
 import { useOnClickOutside } from "./../../utils/handleRefresh";
-import PostDialog from "./../timeline/postDialog";
-import { postApi } from "./../../axiosApi/api/postApi";
 import { Status } from "@chatscope/chat-ui-kit-react";
 import { setDialogAction } from "../../reducers/createPostDialog";
 import { actLogoutConver } from "./../../reducers/converReducer";

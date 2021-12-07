@@ -5,11 +5,7 @@ import AddCommentCrs from "./addComment-Crs";
 import { ActionCrs } from "./actionCrs";
 import CaptionCrs from "./captionCrs";
 import { ListCommentCrs } from "./listCommentCrs";
-// import { SkeletonImagePost } from "./../../skeletons/Skeletons";
-import {
-  SkeletonImagePostProfile,
-  SkeletonHeader,
-} from "../skeletons/Skeletons";
+import { SkeletonImagePostProfile } from "../skeletons/Skeletons";
 import moment from "moment";
 import DialogActionPost from "./../components/post/dialogAction";
 

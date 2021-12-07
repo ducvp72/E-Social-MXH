@@ -15,14 +15,8 @@ export const ListComment = (props) => {
   const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  // const [totalComment, setTotalComment] = useState(2);
-
-  // useEffect(() => {
-  //   getComments(totalComment);
-  // }, [totalComment]);
 
   useEffect(() => {
-    // console.log("itemIn List", item);
     const value = {
       id: comment.realtime,
       user: {

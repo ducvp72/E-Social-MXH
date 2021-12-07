@@ -3,9 +3,10 @@ import { Helmet } from "react-helmet-async";
 import Chat from "./chat";
 import ListConver from "./listConver";
 import { MainContainer } from "@chatscope/chat-ui-kit-react";
+import { SideBarChatRight } from "./sideBarChatRight";
 
 const Inbox = () => {
-  const [openSr, setOpenSr] = useState(true);
+  const [openSr, setOpenSr] = useState(false);
 
   return (
     <div className=" absolute w-full top-16 overflow-y-hidden">
@@ -23,6 +24,7 @@ const Inbox = () => {
           <MainContainer responsive>
             <ListConver />
             <Chat setOpenSr={setOpenSr} openSr={openSr} />
+            {openSr && <SideBarChatRight />}
           </MainContainer>
         </div>
       </div>

@@ -13,9 +13,7 @@ import { postApi } from "./../../axiosApi/api/postApi";
 export const Post = (props) => {
   const { item, getFirstPage } = props;
   const [popup, setPopup] = useState({ isShow: false, postData: {} });
-  const currentUser = useSelector((state) => state.auth.data);
   const [twoCmt, setTwoComt] = useState([]);
-  const [comment, setComment] = useState({ text: "", realtime: null });
   const [update, setUpdate] = useState(7);
 
   useEffect(() => {

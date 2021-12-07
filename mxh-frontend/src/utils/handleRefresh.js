@@ -7,7 +7,6 @@ export const createAxiosResponseInterceptor = () => {
   const interceptor = axios.interceptors.response.use(
     (response) => {
       console.log("interceptor", response);
-
       return response.data;
     },
     (error) => {
@@ -17,11 +16,6 @@ export const createAxiosResponseInterceptor = () => {
         return Promise.reject(error);
       }
 
-      /*
-       * When response code is 401, try to refresh the token.
-       * Eject the interceptor so it doesn't loop in case
-       * token refresh causes the 401 response
-       */
       axios.interceptors.response.eject(interceptor);
 
       return axios

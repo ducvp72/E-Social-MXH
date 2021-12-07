@@ -3,20 +3,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export const User = () => {
-  const [skt, setSkt] = useState(true);
   const currentUser = useSelector((state) => state.auth.data);
-  // useEffect(() => {
-  //   setSkt(true);
-  //   showAvatarTimeout();
-  //   return () => clearTimeout(showAvatarTimeout);
-  // }, [currentUser]);
-
-  const showAvatarTimeout = () => {
-    setTimeout(() => {
-      if (currentUser) setSkt(false);
-    }, 1500);
-  };
-
   return (
     <>
       <Link to={`/user/${currentUser?.fullname.replaceAll(" ", ".")}`}>

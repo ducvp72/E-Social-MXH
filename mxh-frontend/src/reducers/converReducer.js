@@ -2,7 +2,10 @@ import { chatApi } from "./../axiosApi/api/chatApi";
 import { REHYDRATE } from "redux-persist";
 
 const initialState = {
-  data: null,
+  data: [],
+  totalPages: 0,
+  totalResults: 0,
+  loading: true,
   error: null,
 };
 
@@ -19,19 +22,31 @@ export const converReducer = (
     // }
 
     case "GET_SUCCES_CONVER": {
-      state.data = payload;
+      state.data = payload.results;
+      state.totalPages = payload.totalPages;
+      state.totalResults = payload.totalResults;
+      state.loading = false;
       state.error = null;
       return { ...state };
     }
 
+    case "ADD_MORE": {
+      console.log("Payload", ...payload);
+      console.log("State", ...state.data);
+      state.data = [...state.data, ...payload];
+      return { ...state };
+    }
+
     case "LOG_OUT_CONVER": {
-      state.data = null;
+      state.data = [];
+      state.totalPages = 0;
+      state.totalResults = 0;
       state.error = null;
       return { ...state };
     }
 
     case "GET_FAIL": {
-      state.data = null;
+      state.data = [];
       return { ...state };
     }
 
@@ -54,6 +69,23 @@ export const actGetMyConver = (token, firstPage, limit) => {
       })
       .catch((error) => {
         console.log("getConver", error);
+      });
+  };
+};
+
+export const actLoadMore = (token, firstPage, limit) => {
+  return (dispatch) => {
+    chatApi
+      .getConverByToken(token, firstPage, limit)
+      .then((result) => {
+        // console.log("ReduxMore", result.data.results);
+        dispatch({
+          type: "ADD_MORE",
+          payload: result.data.results,
+        });
+      })
+      .catch((error) => {
+        console.log("getMoreConver", error);
       });
   };
 };

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 const baseURL = process.env.REACT_APP_BACKEND_URL;
 
 const axiosApi = (
@@ -15,7 +15,8 @@ const axiosApi = (
     params: params ? params : null,
     headers: token
       ? {
-          Authorization: `Bearer ${token}`, // cach 1 cai
+          Authorization: `Bearer ${token}`,
+          "Access-Control-Allow-Origin": "*",
         }
       : null,
   });
