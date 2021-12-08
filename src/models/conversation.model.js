@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { toJSON, paginate } = require('./plugins');
+const { toJSON, paginateConver } = require('./plugins');
 
 const { Schema } = mongoose;
 
@@ -28,7 +28,7 @@ const conversationSchema = new Schema(
 );
 
 conversationSchema.plugin(toJSON);
-conversationSchema.plugin(paginate);
+conversationSchema.plugin(paginateConver);
 
 /**
  * @typedef conversation

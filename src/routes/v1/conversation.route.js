@@ -6,14 +6,14 @@ const router = express.Router();
 const validate = require('../../middlewares/validate');
 const auth = require('../../middlewares/auth');
 
-router.get('user/:userId', auth(''), validate(conversationValidation.getUser), conversationController.getUser);
+router.get('/', auth(''), validate(conversationValidation.getUser), conversationController.getUser);
 router.post(
   '/create-private',
   auth(''),
   validate(conversationValidation.createPrivate),
   conversationController.createPrivate
 );
-router.get(
+router.post(
   '/private',
   auth(''),
   validate(conversationValidation.createPrivate),
@@ -26,5 +26,6 @@ router.put(
   validate(conversationValidation.addMemberToGroup),
   conversationController.addMemberToGroup
 );
+router.put('/out-group', auth(''), validate(conversationValidation.outGroup), conversationController.outGroup);
 
 module.exports = router;

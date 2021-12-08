@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const { toJSON, paginate } = require('./plugins');
-
+const { toJSON, paginateP } = require('./plugins');
+const { files } = require('../config/file');
 const { Schema } = mongoose;
 
 const postSchema = new Schema(
@@ -15,9 +15,13 @@ const postSchema = new Schema(
       required: true,
       trim: true,
     },
+    fileTypes: {
+      type: String,
+      enum: files,
+      required: true,
+    },
     file: { type: Schema.Types.ObjectId, ref: 'File' },
     likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    comment: { type: Schema.Types.ObjectId, ref: 'Comment' },
   },
   {
     timestamps: true,
@@ -25,7 +29,7 @@ const postSchema = new Schema(
 );
 
 postSchema.plugin(toJSON);
-postSchema.plugin(paginate);
+postSchema.plugin(paginateP);
 /**
  * @typedef Post
  */

@@ -2,8 +2,11 @@ const Joi = require('joi');
 const { objectId } = require('./custom.validation');
 
 const getUser = {
-  body: Joi.object().keys({
-    userId: Joi.string().custom(objectId).required(),
+  query: Joi.object().keys({
+    sortBy: Joi.string(),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
+    populate: Joi.string(),
   }),
 };
 
@@ -20,6 +23,12 @@ const createGroup = {
 const addMemberToGroup = {
   body: Joi.object().keys({
     userId: Joi.string().custom(objectId).required(),
+    conversationId: Joi.string().custom(objectId).required(),
+  }),
+};
+const outGroup = {
+  body: Joi.object().keys({
+    conversationId: Joi.string().custom(objectId).required(),
   }),
 };
 module.exports = {
@@ -27,4 +36,5 @@ module.exports = {
   createPrivate,
   createGroup,
   addMemberToGroup,
+  outGroup,
 };

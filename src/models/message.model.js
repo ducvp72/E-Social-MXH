@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { toJSON, paginate } = require('./plugins');
+const { toJSONM, paginate } = require('./plugins');
 const { files } = require('../config/file');
 
 const { Schema } = mongoose;
@@ -22,8 +22,12 @@ const messageSchema = new Schema(
       required: true,
     },
     content: {
-      type: String,
-      required: true,
+      text:{
+        type: String,
+      },
+      file:{
+        type: String,
+      }
     },
   },
   {
@@ -31,7 +35,7 @@ const messageSchema = new Schema(
   }
 );
 
-messageSchema.plugin(toJSON);
+messageSchema.plugin(toJSONM);
 messageSchema.plugin(paginate);
 
 /**

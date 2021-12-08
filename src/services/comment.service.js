@@ -2,9 +2,21 @@ const httpStatus = require('http-status');
 const { Comment } = require('../models');
 const ApiError = require('../utils/ApiError');
 
-const createInitComment = async () => {
-  const newComment = new Comment({});
+const createComment = async (userId, postId, text) => {
+  const newComment = new Comment({
+    user: userId,
+    postId,
+    text,
+  });
   const comment = await newComment.save();
+  return comment;
+};
+const deleteComment = async (commentId) => {
+  try {
+    await Comment.deleteOne({ _id: commentId });
+  } catch (err) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
+  }
   return comment;
 };
 const getComment = async (commentId) => {
@@ -63,9 +75,10 @@ const queryComment = async (filter, options) => {
 };
 
 module.exports = {
-  createInitComment,
+  createComment,
   getComment,
   likeC,
   hasLikeC,
   queryComment,
+  deleteComment,
 };

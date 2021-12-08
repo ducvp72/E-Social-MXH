@@ -9,5 +9,4 @@ module.exports.Notification = require('./notification.model');
 module.exports.Message = require('./message.model');
 module.exports.Admin = require('./admin.model');
 module.exports.Conversation = require('./conversation.model');
-module.exports.File = require('./file.model');
 

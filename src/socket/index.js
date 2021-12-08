@@ -1,6 +1,5 @@
 const socketio = require('socket.io');
 const http = require('http');
-const passport = require('passport');
 const app = require('../app');
 const logger = require('../config/logger');
 const config = require('../config/config');
@@ -13,7 +12,11 @@ server.listen(config.port, () => {
 let users = [];
 
 const addUser = (userId, socketId) => {
-  !users.some((user) => user.userId === userId) && users.push({ userId, socketId });
+  !users.some((user) => user.userId === userId) &&
+    users.push({
+      userId,
+      socketId,
+    });
 };
 
 const removeUser = (socketId) => {
@@ -25,12 +28,8 @@ const getUser = (userId) => {
 };
 const io = socketio(server, {
   cors: {
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST'],
-    allowedHeaders: [
-      'Access-Control-Allow-Headers',
-      'Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization',
-    ],
+    origin: ['http://localhost:3000', 'http://localhost:5500','http://vn-mxh.surge.sh/'],
+    methods: ['GET', 'POST','PUT','OPTIONS'],
   },
 });
 
@@ -39,26 +38,83 @@ io.use(wrapMiddlewareForSocketIo(auth('')));
 io.on('connection', (socket) => {
   // eslint-disable-next-line no-console
   logger.info(`Socket connection: ${socket.id}`);
+
+  addUser(socket.request.user.id, socket.id);
   socket.on('whoami', (cb) => {
     cb(socket.request.user);
   });
-  socket.on('addUser', (userId) => {
-    addUser(userId, socket.id);
-    io.emit('getUsers', users);
+  socket.on('radio', function (blob) {
+    // can choose to broadcast it to whoever you want
+    socket.broadcast.emit('voice', blob);
   });
+
   // send and get message
   socket.on('sendMessage', ({ senderId, receiverId, text }) => {
     const user = getUser(receiverId);
-    io.to(user.socketId).emit('getMessage', {
-      senderId,
-      text,
-    });
+    if (user) {
+      io.to(user.socketId).emit('getMessage', {
+        senderId,
+        text,
+      });
+    }
+  });
+  socket.on('sendMedia', ({ senderId, receiverId, typeMessage, text, file }) => {
+    if (senderId && receiverId) {
+      const user = getUser(receiverId);
+      io.to(user.socketId).emit('getMedia', {
+        senderId,
+        typeMessage,
+        text,
+        file
+      });
+    }
+  });
+  socket.on('sendIcon', ({ senderId, receiverId, typeMessage}) => {
+    if (senderId && receiverId) {
+      const user = getUser(receiverId);
+      io.to(user.socketId).emit('getIcon', {
+        senderId,
+        typeMessage,
+      });
+    }
+  });
+  socket.on('upload', ({ senderId, receiverId, percent }) => {
+    if (senderId && receiverId) {
+      const user = getUser(receiverId);
+      io.to(user.socketId).emit('upload', {
+        senderId,
+        percent,
+      });
+    }
+  });
+  socket.on('typing', ({ senderId, receiverId }) => {
+    if (receiverId && senderId) {
+      const user = getUser(receiverId);
+      io.to(user.socketId).emit('typing', { senderId });
+    }
+  });
+  socket.on('untyping', ({ senderId, receiverId }) => {
+    if (receiverId && senderId) {
+      const user = getUser(receiverId);
+      io.to(user.socketId).emit('untyping', { senderId });
+    }
+  });
+  socket.on('send-file', ({ senderId, receiverId }) => {
+    if (receiverId && senderId) {
+      const user = getUser(receiverId);
+      io.to(user.socketId).emit('send-file', { senderId });
+    }
+  });
+  socket.on('unsend-file', ({ senderId, receiverId }) => {
+    if (receiverId && senderId) {
+      const user = getUser(receiverId);
+      io.to(user.socketId).emit('unsend-file', { senderId });
+    }
   });
   socket.on('disconnect', () => {
     // eslint-disable-next-line no-console
     logger.info(`Socket end ${socket.id}`);
     removeUser(socket.id);
-    io.emit('getUsers', users);
   });
 });
 // take userId and socketId from user

@@ -3,6 +3,9 @@ const fileTypes = {
   AUDIO: 'AUDIO',
   VIDEO: 'VIDEO',
   TEXT: 'TEXT',
+  RECALL: 'RECALL',
+  LIKE: 'LIKE',
+  LOVE: 'LOVE',
 };
 
 const files = Object.keys(fileTypes);

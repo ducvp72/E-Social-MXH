@@ -15,6 +15,8 @@ const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
+//SET MAX EVENTEMITTER;
+require('events').EventEmitter.prototype._maxListeners = 100;
 // initialize exoress
 const app = express();
 
@@ -52,7 +54,6 @@ passport.use('jwt', jwtStrategy);
 if (config.env === 'production') {
   app.use('/v1/auth', authLimiter);
 }
-
 // v1 api routes
 app.use('/v1', routes);
 

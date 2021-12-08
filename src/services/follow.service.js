@@ -114,9 +114,21 @@ const countFollow = async (userId) => {
   });
   return countFollowR;
 };
+const getUserFollowing = async (userId) => {
+  let users;
+  await Follow.findOne({
+    user: userId,
+  }).then((newFollow) => {
+    if (newFollow) {
+      users = newFollow.following;
+    }
+  });
+  return users;
+};
 module.exports = {
   follow,
   hasFollow,
   istExistedFollow,
   countFollow,
+  getUserFollowing,
 };

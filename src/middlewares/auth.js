@@ -8,10 +8,10 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
     return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
   }
   req.user = user;
-  const userIsVerified = user.isEmailVerified;
-  if (userIsVerified === false) {
-    return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Please verify'));
-  }
+  // const userIsVerified = user.isEmailVerified;
+  // if (userIsVerified === false) {
+  //   return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Please verify'));
+  // }
   const userIsBlocked = user.isBlocked;
   if (userIsBlocked === true) {
     return reject(new ApiError(httpStatus.UNAUTHORIZED, 'You have been blocked by Admin'));

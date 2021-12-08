@@ -5,6 +5,7 @@ module.exports.tokenService = require('./token.service');
 module.exports.userService = require('./user.service');
 module.exports.profileService = require('./profile.service');
 module.exports.imageService = require('./image.service');
+module.exports.fileService = require('./file.service');
 module.exports.postService = require('./post.service');
 module.exports.commentService = require('./comment.service');
 module.exports.followService = require('./follow.service');

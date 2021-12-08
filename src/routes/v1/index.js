@@ -8,6 +8,7 @@ const profileRoute = require('./profile.route');
 const imageRoute = require('./image.route');
 const postRoute = require('./post.route');
 const videoRoute = require('./video.route');
+const fileRoute = require('./file.route');
 const audioRoute = require('./audio.route');
 const commentRoute = require('./comment.route');
 const followRoute = require('./follow.route');
@@ -46,6 +47,10 @@ const defaultRoutes = [
   {
     path: '/audio',
     route: audioRoute,
+  },
+  {
+    path: '/file',
+    route: fileRoute,
   },
   {
     path: '/comment',

@@ -101,7 +101,6 @@ const existUserById = async (userId) => {
 };
 const searchUserByName = async (searchString, options) => {
   let userR;
-  console.log(`${searchString}ok `);
   if (!searchString) {
     await User.find({}, 'name')
       .limit(options.limit)

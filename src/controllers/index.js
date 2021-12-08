@@ -12,3 +12,4 @@ module.exports.adminController = require('./admin.controller');
 module.exports.findController = require('./find.controller');
 module.exports.messageController = require('./message.controller');
 module.exports.conversationController = require('./conversation.controller');
+module.exports.fileController = require('./file.controller');

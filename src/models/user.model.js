@@ -63,10 +63,7 @@ const userSchema = mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: '619628b9793b0c809f103df0',
-    },
-    previousAvatar: {
-      type: [String],
+      default: '61a86e9b7b73519cfa85890b',
     },
     story: {
       type: String,

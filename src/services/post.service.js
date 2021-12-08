@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
-const { imageService, userService } = require('./index');
+const { imageService, userService, fileService } = require('./index');
 const { imageTypes } = require('../config/file');
-const { Post, Comment } = require('../models');
+const { Post, Comment, File } = require('../models');
 const ApiError = require('../utils/ApiError');
 const commentService = require('./comment.service');
 
@@ -66,11 +66,10 @@ const createPostVideo = async (file, user, text) => {
   return postN;
 };
 const createPostT = async (user, text) => {
-  const comment = await commentService.createInitComment();
   const newPost = new Post({
     owner: user._id,
     text,
-    comment: comment.id,
+    fileTypes: 'TEXT',
   });
   let postN;
   await newPost
@@ -83,24 +82,20 @@ const createPostT = async (user, text) => {
     });
   return postN;
 };
-const createPostFile = async (file,user, text) => {
-  fileService.uploadFile(file, user, file.type);
-  const comment = await commentService.createInitComment();
+const createPostFile = async (file, user, text) => {
+  const fileTypes = file.contentType.split('/')[0].toUpperCase() || 'TEXT';
   const newPost = new Post({
     owner: user._id,
     text,
-    comment: comment.id,
+    fileTypes,
+    file: file.id,
   });
-  let postN;
-  await newPost
-    .save()
-    .then((post) => {
-      postN = post;
-    })
-    .catch((err) => {
-      throw new ApiError(httpStatus.BAD_REQUEST, err);
-    });
-  return postN;
+  try {
+    const post = await newPost.save();
+    return post;
+  } catch (err) {
+    throw new ApiError(httpStatus.BAD_REQUEST, err);
+  }
 };
 const like = async (user, id) => {
   let postR;
@@ -128,11 +123,11 @@ const like = async (user, id) => {
   return postR;
 };
 
-const hasLike = async (user, id) => {
+const hasLike = async (userId, id) => {
   let isLike = true;
   await Post.findOne({
     _id: id,
-    likes: { $in: user._id },
+    likes: { $in: userId },
   })
     .then((newPost) => {
       if (!newPost) isLike = false;
@@ -141,26 +136,6 @@ const hasLike = async (user, id) => {
       throw new ApiError(httpStatus.NOT_FOUND, err);
     });
   return isLike;
-};
-const addComment = async (userId, postId, text) => {
-  let postR;
-  const post = await Post.findById(postId);
-  if (!post) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Not found Post');
-  }
-  await Comment.findByIdAndUpdate(
-    post.comment,
-    {
-      $push: {
-        comments: { text, user: userId },
-      },
-    },
-    { new: true, useFindAndModify: false }
-  ).then((newPost) => {
-    if (!newPost) throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
-    postR = newPost;
-  });
-  return postR;
 };
 const queryPosts = async (filter, options) => {
   const posts = await Post.paginate(filter, options);
@@ -186,19 +161,16 @@ const deletePostById = async (userId, postId) => {
   if (post.owner != userId) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'The post are only created by the owner');
   }
-
+  await fileService.deleteFile(post.file);
   await Post.deleteOne({ _id: postId });
 };
 const countComments = async (postId) => {
-  const post = await Post.findOne({ _id: postId });
-  if (!post) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
+  try {
+    const commentCount = await Comment.countDocuments({ postId });
+    return commentCount;
+  } catch (err) {
+    return 0;
   }
-  const comment = await Comment.findOne({ _id: post.comment });
-  if (!comment) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Comment not found');
-  }
-  return comment.comments.length;
 };
 const countLikes = async (postId) => {
   const post = await Post.findOne({ _id: postId });
@@ -206,6 +178,14 @@ const countLikes = async (postId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
   }
   return post.likes.length;
+};
+const getPostById = async (postId) => {
+  try {
+    const post = await Post.findOne({ _id: postId });
+    return post;
+  } catch (err) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
+  }
 };
 module.exports = {
   createPostImage,
@@ -215,10 +195,10 @@ module.exports = {
   createPostT,
   like,
   hasLike,
-  addComment,
   queryPosts,
   countPosts,
   deletePostById,
   countComments,
   countLikes,
+  getPostById,
 };

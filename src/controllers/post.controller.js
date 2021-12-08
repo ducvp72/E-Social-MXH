@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const pick = require('../utils/pick');
-const { postService, commentService } = require('../services');
+const { postService, commentService, followService } = require('../services');
 
 const createPostImage = catchAsync(async (req, res) => {
   const Post = await postService.createPostImage(req.file, req.user, req.body.text);
@@ -20,7 +20,7 @@ const createPostText = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(Post);
 });
 const createPostFile = catchAsync(async (req, res) => {
-  const Post = await postService.createPostFile(req.file,req.user, req.body.text);
+  const Post = await postService.createPostFile(req.file, req.user, req.body.text);
   res.status(httpStatus.OK).send(Post);
 });
 const like = catchAsync(async (req, res) => {
@@ -32,7 +32,7 @@ const hasLike = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(Post);
 });
 const comment = catchAsync(async (req, res) => {
-  const Comment = await postService.addComment(req.user.id, req.body.postId, req.body.text);
+  const Comment = await commentService.createComment(req.user.id, req.body.postId, req.body.text);
   res.status(httpStatus.OK).send(Comment);
 });
 const likeComment = catchAsync(async (req, res) => {
@@ -40,20 +40,26 @@ const likeComment = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(Comment);
 });
 const getPosts = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['fullname', 'email', 'role']);
-  req.query = { populate: 'owner' };
+  const filter = pick(req.query, ['owner']);
   const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate', 'choose']);
+  options.populate = 'owner';
   const result = await postService.queryPosts(filter, options);
+
   const results = [];
   const { page, limit, totalPages, totalResults } = result;
   // eslint-disable-next-line no-restricted-syntax
   for (const post of result.results) {
     const newUser = {};
-    const { id, images, video, audio, owner, text, createdAt } = post;
+    const { id, file, owner, fileTypes, text, createdAt } = post;
     // eslint-disable-next-line no-await-in-loop
-    const {fullname, avatar} = owner;
+    const { fullname, avatar } = owner;
     const userId = owner.id;
-    const user ={userId, fullname,avatar};
+    const user = {
+      userId,
+      fullname,
+      avatar,
+    };
+    const hasLike = await postService.hasLike(req.user.id, id);
     const comments = await postService.countComments(id);
     const likes = post.likes.length;
     // eslint-disable-next-line no-await-in-loop
@@ -63,9 +69,64 @@ const getPosts = catchAsync(async (req, res) => {
         id,
         user,
         text,
-        images,
-        video,
-        audio,
+        file,
+        fileTypes,
+        likes,
+        hasLike,
+        comments,
+        reporters,
+        createdAt,
+      })
+    );
+  }
+  res.send({
+    results,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  });
+});
+const getMyPosts = catchAsync(async (req, res) => {
+  const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+  options.populate = 'owner';
+  const usersHasFollowed = await followService.getUserFollowing(req.user.id);
+  usersHasFollowed.push(req.user.id);
+  const result = await postService.queryPosts(
+    {
+      owner: {
+        $in: usersHasFollowed,
+      },
+    },
+    options
+  );
+  const results = [];
+  const { page, limit, totalPages, totalResults } = result;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const post of result.results) {
+    const newUser = {};
+    const { id, file, owner, fileTypes, text, createdAt } = post;
+    // eslint-disable-next-line no-await-in-loop
+    const { fullname, avatar } = owner;
+    const userId = owner.id;
+    const user = {
+      userId,
+      fullname,
+      avatar,
+    };
+    const hasLike = await postService.hasLike(req.user.id, id);
+    const comments = await postService.countComments(id);
+    const likes = post.likes.length;
+    // eslint-disable-next-line no-await-in-loop
+    const reporters = 0;
+    results.push(
+      Object.assign(newUser, {
+        id,
+        user,
+        text,
+        file,
+        fileTypes,
+        hasLike,
         likes,
         comments,
         reporters,
@@ -73,7 +134,13 @@ const getPosts = catchAsync(async (req, res) => {
       })
     );
   }
-  res.send({ results, page, limit, totalPages, totalResults });
+  res.send({
+    results,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  });
 });
 const deletePost = catchAsync(async (req, res) => {
   await postService.deletePostById(req.user.id, req.body.postId);
@@ -90,5 +157,6 @@ module.exports = {
   getPosts,
   deletePost,
   createPostText,
-  createPostFile
+  createPostFile,
+  getMyPosts,
 };

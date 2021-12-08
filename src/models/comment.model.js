@@ -1,23 +1,23 @@
 const mongoose = require('mongoose');
-const { toJSON, paginate } = require('./plugins');
+const { toJSON, paginateC } = require('./plugins');
 
 const { Schema } = mongoose;
 
 const commentSchema = new Schema(
   {
-    comments: [
-      {
-        user: {
-          type: Schema.Types.ObjectId,
-          ref: 'User',
-        },
-        text: {
-          type: String,
-          required: true,
-          trim: true,
-        },
-      },
-    ],
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    text: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    postId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Post',
+    },
     likes: [
       {
         type: Schema.Types.ObjectId,
@@ -31,7 +31,7 @@ const commentSchema = new Schema(
 );
 
 commentSchema.plugin(toJSON);
-commentSchema.plugin(paginate);
+commentSchema.plugin(paginateC);
 /**
  * @typedef Comment
  */
