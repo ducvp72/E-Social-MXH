@@ -95,15 +95,16 @@ const ListUserSearch = () => {
               }
             >
               {users &&
-                users.map((item) => {
+                users.map((item, index) => {
                   return (
-                    <UserThumbnail
-                      key={item.id}
-                      item={item}
-                      updateStatus={setStatus}
-                      callListApi={callListApi}
-                      q={q}
-                    />
+                    <div key={index}>
+                      <UserThumbnail
+                        item={item}
+                        updateStatus={setStatus}
+                        callListApi={callListApi}
+                        q={q}
+                      />
+                    </div>
                   );
                 })}
             </InfiniteScroll>

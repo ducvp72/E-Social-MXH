@@ -36,27 +36,49 @@ const SkeletonConversation = () => {
 const ListConver = (props) => {
   const [cookies, ,] = useCookies(["auth"]);
   const currentUser = useSelector((state) => state.auth.data);
-  const currentConver = useSelector((state) => state.myconver.data);
-  const totalFromRedux = useSelector((state) => state.myconver.totalPages);
-  const resultsFromRedux = useSelector((state) => state.myconver.totalResults);
-  const loadingRedux = useSelector((state) => state.myconver.loading);
+  const currentConvers = useSelector((state) => state.myconver);
   const [open, setOpen] = useState(false);
   const [noMore, setnoMore] = useState(true);
-  const [page, setPage] = useState(2);
   const [skt, setSkt] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const { userId } = useParams();
+  const [page, setPage] = useState(2);
   const dispatch = useDispatch();
 
-  useEffect(() => {}, []);
-
   useEffect(() => {
-    console.log("CurrentConver", totalFromRedux);
-    console.log("resultsFromRedux", resultsFromRedux);
-    console.log("loadingRedux", resultsFromRedux);
-    if (resultsFromRedux === 0) setNotFound(true);
-    setSkt(false);
+    if (currentConvers?.data.length > 0) {
+      // setSkt(false);
+      checkResults();
+    } else {
+      ifNull();
+    }
+    return () => {
+      clearTimeout(ifNull());
+    };
   }, []);
+
+  const dataFrom = async () => {
+    const check = currentConvers?.totalResults;
+    return check;
+  };
+
+  const ifNull = async () => {
+    setTimeout(() => {
+      setSkt(false);
+      setNotFound(true);
+    }, 500);
+  };
+
+  const checkResults = async () => {
+    const flag = await dataFrom();
+    if (flag > 0) {
+      setNotFound(false);
+      setSkt(false);
+    }
+    if (flag === 0) {
+      setNotFound(true);
+    }
+  };
 
   const handleClose = () => {
     setOpen(!open);
@@ -64,20 +86,21 @@ const ListConver = (props) => {
 
   const fetchData = async () => {
     console.log("Fetch");
-    dispatch(actLoadMore(cookies.auth.tokens.access.token, page, 10));
-    // if (currentConver?.length === 0 || currentConver?.length < 10)
-    if (totalFromRedux >= page) {
+
+    dispatch(
+      actLoadMore(
+        cookies.auth.tokens.access.token,
+        currentConvers?.pageNext,
+        10
+      )
+    );
+    console.log("NextFetch", currentConvers);
+    if (currentConvers?.next.length === 0 || currentConvers?.next < 10) {
+      // if (totalFromRedux >= page)
       setnoMore(false);
     }
-    setPage(page + 1);
+    // setPage(page + 1);
   };
-  console.log("noMore", noMore);
-
-  // const sktLoad = () => {
-  //   if (resultsFromRedux === 0) {
-  //     setSkt(false);
-  //   }
-  // };
 
   return (
     <Sidebar position="left" scrollable={true}>
@@ -106,11 +129,11 @@ const ListConver = (props) => {
           >
             {skt && SkeletonConversation()}
 
-            {(currentConver || []).length > 0 && (
+            {(currentConvers?.data || []).length > 0 && (
               <InfiniteScroll
                 scrollableTarget="scrollableDiv"
                 refreshFunction
-                dataLength={currentConver?.length || 0}
+                dataLength={currentConvers?.data.length || 0}
                 next={fetchData}
                 hasMore={noMore}
                 loader={
@@ -124,13 +147,13 @@ const ListConver = (props) => {
                   </div>
                 }
                 endMessage={
-                  <p className="flex justify-center font-avatar text-lg">
+                  <p className="flex justify-center font-avatar text-base">
                     <b>Opp..! No Conversations more !</b>
                   </p>
                 }
               >
-                {currentConver &&
-                  currentConver?.map((item, index) => {
+                {currentConvers?.data &&
+                  currentConvers?.data.map((item, index) => {
                     return (
                       <div key={index}>
                         <Link to={`/user/inbox/${item.userId}`}>
@@ -153,9 +176,7 @@ const ListConver = (props) => {
                               name={item?.fullname}
                               info={item?.lastMessage?.content?.text}
                             />
-                            <Conversation.Operations
-                              onClick={() => alert("option")}
-                            />
+                            <Conversation.Operations />
                           </Conversation>
                         </Link>
                       </div>
@@ -163,6 +184,13 @@ const ListConver = (props) => {
                   })}
               </InfiniteScroll>
             )}
+
+            {/* {!notFound && (
+              <div className="flex justify-center items-center">
+                <p className="">Loading....</p>
+              </div>
+            )} */}
+
             {notFound && (
               <div className="flex justify-center items-center">
                 <p className="">You have no conversations</p>

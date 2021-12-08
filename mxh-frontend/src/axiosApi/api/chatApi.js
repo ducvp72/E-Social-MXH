@@ -66,4 +66,14 @@ export const chatApi = {
   loveMess(token, idConver) {
     return axiosApi(`message/love/${idConver}`, "POST", null, null, token);
   },
+
+  recallMess(token, idConver, idMess) {
+    return axiosApi(
+      `message`,
+      "PUT",
+      { conversationId: idConver, messageId: idMess },
+      null,
+      token
+    );
+  },
 };

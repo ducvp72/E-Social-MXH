@@ -148,7 +148,7 @@ const Chat = (props) => {
     chatApi
       .createConver(cookies.auth.tokens.access.token, userId)
       .then((rs) => {
-        console.log("RS", rs.data);
+        // console.log("RS", rs.data);
         setMessData(rs.data);
       })
       .catch((err) => {
@@ -296,14 +296,14 @@ const Chat = (props) => {
       });
   };
 
-  const handleChatSocketMedia = (content) => {
+  const handleChatSocketMedia = (data) => {
     console.log("socket handle Media");
     const onchat = {
       senderId: cookies.auth.user.id,
       receiverId: userId,
-      text: content.text,
-      file: content.file,
-      typeMessage: content.typeMessage,
+      text: data.content.text,
+      file: data.content.file,
+      typeMessage: data.typeMessage,
     };
     socket.current.emit("sendMedia", onchat);
   };
@@ -324,13 +324,11 @@ const Chat = (props) => {
     let formData = new FormData();
     formData.append("file", selectedImage);
     formData.append("conversationId", messData?.id);
-    console.log("tren1", formData.get("file"));
-    console.log("tren2", formData.get("conversationId"));
     chatApi
       .createMessMedia(cookies.auth.tokens.access.token, formData, getProcess)
       .then((rs) => {
         setLoading(false);
-        // console.log(rs.data);
+        console.log("RS", rs.data);
         const data = rs.data;
         setMessages({
           ...messages,
@@ -342,7 +340,7 @@ const Chat = (props) => {
           sender: cookies.auth.user.id,
           typeMessage: data?.typeMessage,
         });
-        handleChatSocketMedia(data.content);
+        handleChatSocketMedia(data);
       })
       .catch((err) => {
         setLoading(false);
@@ -388,23 +386,7 @@ const Chat = (props) => {
     <>
       {userId ? (
         <>
-          {/* <div className="z-50">{loading && <Loading process={process} />}</div> */}
-          {loading ? (
-            <>
-              <div className=" bg-transparent post-show opacity-50 fixed w-full h-screen z-40 top-0 left-0 flex justify-end items-start">
-                <div className=" flex justify-center items-center justify-items-center rounded-full bg-none "></div>
-              </div>
-              <div className="fixed  z-50 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
-                <div className="lds-ring flex items-center justify-center">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </div>
-              </div>
-            </>
-          ) : null}
-
+          <div className="z-50">{loading && <Loading process={process} />}</div>
           <ChatContainer>
             {/* List chat here */}
             <div as={MessageList}>
@@ -412,8 +394,10 @@ const Chat = (props) => {
                 typing={typing}
                 messages={messages}
                 messData={messData?.id}
+                setMessData={setMessData}
                 setOpenSr={setOpenSr}
                 openSr={openSr}
+                socket={socket}
               />
             </div>
 

@@ -3,6 +3,8 @@ import { REHYDRATE } from "redux-persist";
 
 const initialState = {
   data: [],
+  next: [],
+  pageNext: 2,
   totalPages: 0,
   totalResults: 0,
   loading: true,
@@ -23,6 +25,8 @@ export const converReducer = (
 
     case "GET_SUCCES_CONVER": {
       state.data = payload.results;
+      state.next = [];
+      state.pageNext = 2;
       state.totalPages = payload.totalPages;
       state.totalResults = payload.totalResults;
       state.loading = false;
@@ -31,14 +35,21 @@ export const converReducer = (
     }
 
     case "ADD_MORE": {
-      console.log("Payload", ...payload);
-      console.log("State", ...state.data);
-      state.data = [...state.data, ...payload];
+      // console.log("Payload", ...payload);
+      // console.log("State", ...state.data)
+      state.next = payload.results;
+      state.data = [...state.data, ...state.next];
+      if (state.next.length === 0 || state.next.length <= 10) {
+        state.loading = false;
+      }
+      state.pageNext = state.pageNext + 1;
       return { ...state };
     }
 
     case "LOG_OUT_CONVER": {
       state.data = [];
+      state.next = [];
+      state.pageNext = 0;
       state.totalPages = 0;
       state.totalResults = 0;
       state.error = null;
@@ -81,7 +92,7 @@ export const actLoadMore = (token, firstPage, limit) => {
         // console.log("ReduxMore", result.data.results);
         dispatch({
           type: "ADD_MORE",
-          payload: result.data.results,
+          payload: result.data,
         });
       })
       .catch((error) => {
