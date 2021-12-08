@@ -58,14 +58,23 @@ io.on('connection', (socket) => {
       });
     }
   });
-  socket.on('sendMedia', ({ senderId, receiverId, typeMessage, text,file }) => {
+  socket.on('sendMedia', ({ senderId, receiverId, typeMessage, text, file }) => {
     if (senderId && receiverId) {
       const user = getUser(receiverId);
       io.to(user.socketId).emit('getMedia', {
         senderId,
         typeMessage,
         text,
-        file
+        file,
+      });
+    }
+  });
+  socket.on('sendIcon', ({ senderId, receiverId, typeMessage}) => {
+    if (senderId && receiverId) {
+      const user = getUser(receiverId);
+      io.to(user.socketId).emit('getIcon', {
+        senderId,
+        typeMessage,
       });
     }
   });
