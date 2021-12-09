@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const { Message, Conversation } = require('../models');
 const { fileTypes } = require('../config/file');
-const {fileService} = require('./')
+const { fileService } = require('.');
 
 const createMessageText = async (userId, conversationId, text) => {
   const newMessage = new Message({
@@ -11,10 +11,11 @@ const createMessageText = async (userId, conversationId, text) => {
     typeMessage: fileTypes.TEXT,
     content: {
       text,
-    }
+    },
   });
   try {
     const message = await newMessage.save();
+    await Conversation.updateOne({ _id: conversationId }, { updatedAt: new Date() });
     return message;
   } catch (err) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
@@ -28,6 +29,7 @@ const likeIcon = async (userId, conversationId) => {
   });
   try {
     const message = await newMessage.save();
+    await Conversation.updateOne({ _id: conversationId }, { updatedAt: new Date() });
     return message;
   } catch (err) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
@@ -41,12 +43,13 @@ const loveIcon = async (userId, conversationId) => {
   });
   try {
     const message = await newMessage.save();
+    await Conversation.updateOne({ _id: conversationId }, { updatedAt: new Date() });
     return message;
   } catch (err) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
   }
 };
-const createMessageMedia = async (file, userId, conversationId,text) => {
+const createMessageMedia = async (file, userId, conversationId, text) => {
   const fileTypes = file.contentType.split('/')[0].toUpperCase();
   const newMessage = new Message({
     conversationId,
@@ -55,10 +58,11 @@ const createMessageMedia = async (file, userId, conversationId,text) => {
     content: {
       text,
       file: file.id,
-    }
+    },
   });
   try {
     const message = await newMessage.save();
+    await Conversation.updateOne({ _id: conversationId }, { updatedAt: new Date() });
     return message;
   } catch (err) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
@@ -101,21 +105,24 @@ const getLastMessageFromConversation = async (userId, conversationId) => {
     // throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
   }
 };
-const recallMessagesFromConversation = async(userId,conversationId,messageId)=>{
-      const message = await Message.findById(messageId);
-      if(!message) throw new ApiError(httpStatus.BAD_REQUEST,'Not found'); 
-     if(message.sender != userId) throw new ApiError(httpStatus.FORBIDDEN,'Must be owner');
-     if(message.typeMessage=='RECALL') throw new ApiError(httpStatus.BAD_REQUEST,'Message has been recalled');
-   try {
-     const newMessage = await Message.findByIdAndUpdate(messageId,{content:{text:"",file:""},typeMessage:'RECALL'}, { new: true, useFindAndModify: false })
-     if(message.content.file) await fileService.deleteFile(message.content.file);
-   
+const recallMessagesFromConversation = async (userId, conversationId, messageId) => {
+  const message = await Message.findById(messageId);
+  if (!message) throw new ApiError(httpStatus.BAD_REQUEST, 'Not found');
+  if (message.sender != userId) throw new ApiError(httpStatus.FORBIDDEN, 'Must be owner');
+  if (message.typeMessage == 'RECALL') throw new ApiError(httpStatus.BAD_REQUEST, 'Message has been recalled');
+  try {
+    const newMessage = await Message.findByIdAndUpdate(
+      messageId,
+      { content: { text: '', file: '' }, typeMessage: 'RECALL' },
+      { new: true, useFindAndModify: false }
+    );
+    if (message.content.file) await fileService.deleteFile(message.content.file);
+    await Conversation.updateOne({ _id: conversationId }, { updatedAt: new Date() });
     return newMessage;
   } catch (err) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
   }
-  
-}
+};
 
 module.exports = {
   createMessageText,

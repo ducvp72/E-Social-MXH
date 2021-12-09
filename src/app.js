@@ -1,10 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
-const xss = require('xss-clean');
 const favicon = require('serve-favicon');
 const path = require('path');
-const mongoSanitize = require('express-mongo-sanitize');
-const compression = require('compression');
 const cors = require('cors');
 const passport = require('passport');
 const httpStatus = require('http-status');
@@ -16,7 +13,7 @@ const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
 //SET MAX EVENTEMITTER;
-require('events').EventEmitter.prototype._maxListeners = 100;
+//require('events').EventEmitter.prototype._maxListeners = 100;
 // initialize exoress
 const app = express();
 
@@ -33,13 +30,6 @@ app.use(express.json());
 app.use(favicon(path.join('public', 'favicon.ico')));
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
-
-// sanitize request data
-app.use(xss());
-app.use(mongoSanitize());
-
-// gzip compression
-app.use(compression());
 
 // enable cors
 

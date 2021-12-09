@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 // eslint-disable-next-line no-unused-vars
-const { parse } = require('date-format-parse');
 const { toJSON, paginate } = require('./plugins');
 const { roles } = require('../config/roles');
 // eslint-disable-next-line no-unused-vars
