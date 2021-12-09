@@ -49,16 +49,17 @@ io.on('connection', (socket) => {
   });
 
   // send and get message
-  socket.on('sendMessage', ({ senderId, receiverId, text }) => {
+  socket.on('sendMessage', ({ senderId, receiverId, text, messageId }) => {
     const user = getUser(receiverId);
     if (user) {
       io.to(user.socketId).emit('getMessage', {
         senderId,
         text,
+        messageId,
       });
     }
   });
-  socket.on('sendMedia', ({ senderId, receiverId, typeMessage, text, file }) => {
+  socket.on('sendMedia', ({ senderId, receiverId, typeMessage, text, file, messageId }) => {
     if (senderId && receiverId) {
       const user = getUser(receiverId);
       io.to(user.socketId).emit('getMedia', {
@@ -66,17 +67,40 @@ io.on('connection', (socket) => {
         typeMessage,
         text,
         file,
+        messageId,
       });
     }
   });
-  socket.on('sendIcon', ({ senderId, receiverId, typeMessage}) => {
+  socket.on('sendIcon', ({ senderId, receiverId, typeMessage, messageId }) => {
     if (senderId && receiverId) {
       const user = getUser(receiverId);
       io.to(user.socketId).emit('getIcon', {
         senderId,
         typeMessage,
+        messageId,
       });
     }
+  });
+  socket.on('sendRecall', ({ senderId, receiverId, messageId }) => {
+    if (senderId && receiverId) {
+      const user = getUser(receiverId);
+      io.to(user.socketId).emit('getRecall', {
+        senderId,
+        messageId,
+      });
+    }
+  });
+  socket.on('online', ({ users }) => {
+    const listOnline = [];
+    if (typeof users === 'object') {
+      for (const user of users) {
+        const u = getUser(user);
+        if (u) listOnline.push(true);
+        else listOnline.push(false);
+      }
+      socket.emit('online', listOnline);
+    }
+    // eslint-disable-next-line no-restricted-syntax
   });
   socket.on('upload', ({ senderId, receiverId, percent }) => {
     if (senderId && receiverId) {
