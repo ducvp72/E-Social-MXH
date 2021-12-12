@@ -15,9 +15,12 @@ import {
 import Loading from "../../LoadingPage/index";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import ListMessBox from "./listMessBox";
+import { actAddMessage } from "../../../reducers/messageReducer";
+import LoadingMedia from "./../../LoadingPage/indexMedia";
 
-const Chat = (props) => {
-  const { setOpenSr, openSr } = props;
+const ChatBox = (props) => {
+  const { setOpenSr, openSr, socket } = props;
   const [cookies, ,] = useCookies(["auth"]);
   const inputRef = useRef();
   const [selectedImage, setSelectedImage] = useState(null);
@@ -28,39 +31,29 @@ const Chat = (props) => {
   const modalMedia = useRef(null);
   const buttonMedia = useRef(null);
   const [typing, setTyping] = useState(false);
-  const socket = useRef();
   const [process, setProcess] = useState(0);
   const [msgInputValue, setMsgInputValue] = useState([]);
-  const [messages, setMessages] = useState({});
   const [loading, setLoading] = useState(false);
+
+  //Biến dùng đẻ set Nội dung tin nhắn và thêm vào mảng tin nhắn hiện có
+  const [messages, setMessages] = useState({});
+
+  //Biến dùng đề tạo tin nhăn => luu len DB
   const [messData, setMessData] = useState("");
+
+  //Danh sach doan chat theo id lay tu redux
+  const currentMessage = useSelector((state) => state.messConver);
+
   const [recallMess, setRecallMess] = useState(null);
   const dispatch = useDispatch();
   let { userId } = useParams();
-  const [idCheck, setIdCheck] = useState(userId);
-  const currentMessage = useSelector((state) => state.messConver);
 
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
   useOnClickOutside(buttonMedia, modalMedia, () => setMedia(false));
 
   useEffect(() => {
-    setIdCheck(userId);
-    console.log("userId", idCheck);
-  }, [userId]);
-
-  useEffect(() => {
+    if (!socket.current) return;
     console.count("socket connect");
-    socket.current = io("https://socket-mxhld.herokuapp.com/", {
-      // transports: ["websocket", "polling"],
-      // pingTimeout: 60000,
-      transportOptions: {
-        polling: {
-          extraHeaders: {
-            Authorization: `Bearer ${cookies.auth.tokens.access.token}`,
-          },
-        },
-      },
-    });
 
     // #region Log Status
     socket.current.on("connect", () => {
@@ -74,18 +67,16 @@ const Chat = (props) => {
       console.log(err);
     });
 
-    // socket.current.emit("whoami", (data) => {
-    //   console.log(data);
-    // });
-    //#endregion
-
+    // Nhận tin nhắn
     socket.current.on("getMessage", async (data) => {
       dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
       console.log("onSender", data.senderId);
-      // console.log("userId", idCheck);
-      if (idCheck === data.senderId) {
-        setMessages({
-          ...messages,
+      console.log("userId", userId);
+      console.log(userId !== data.senderId);
+
+      if (userId !== data.senderId) return;
+      dispatch(
+        actAddMessage({
           content: {
             text: data.text,
           },
@@ -95,21 +86,20 @@ const Chat = (props) => {
           id: data?.messageId,
           sender: data.senderId,
           typeMessage: "TEXT",
-        });
-      } else {
-        return;
-      }
+        })
+      );
     });
 
+    // Nhận hình ảnh hoặc ảnh kèm tin nhắn
     socket.current.on("getMedia", (data) => {
       console.log("on", data.text, " ", data.file);
-      if (idCheck === data.senderId) {
-        if (data.text === "") {
-          console.log("1");
-          setMessages({
-            ...messages,
+      if (userId !== data.senderId) return;
+      if (data.text === "") {
+        console.log("1");
+        dispatch(
+          actAddMessage({
             content: {
-              text: "hghgh",
+              text: "",
               file: data.file,
             },
             incomming: true,
@@ -118,11 +108,12 @@ const Chat = (props) => {
             id: data.messageId,
             sender: data.senderId,
             typeMessage: data.typeMessage,
-          });
-        } else {
-          console.log("2");
-          setMessages({
-            ...messages,
+          })
+        );
+      } else {
+        console.log("2");
+        dispatch(
+          actAddMessage({
             content: {
               text: data.text,
               file: data.file,
@@ -133,11 +124,11 @@ const Chat = (props) => {
             id: data.messageId,
             sender: data.senderId,
             typeMessage: data.typeMessage,
-          });
-        }
+          })
+        );
       }
     });
-
+    //Thu hồi tin nhẵn
     socket.current.on("getRecall", (data) => {
       console.log("on", "getRecall");
       setMessages({
@@ -152,11 +143,12 @@ const Chat = (props) => {
       });
     });
 
+    //Nhận Icon
     socket.current.on("getIcon", (data) => {
       console.log("on", data.typeMessage);
-      if (idCheck === data.senderId) {
-        setMessages({
-          ...messages,
+
+      dispatch(
+        actAddMessage({
           content: null,
           incomming: true,
           conversationId: messData?.id,
@@ -164,33 +156,39 @@ const Chat = (props) => {
           id: data?.messageId,
           sender: data.senderId,
           typeMessage: data.typeMessage,
-        });
-      }
+        })
+      );
     });
-
+    // Đang gõ
     socket.current.on("typing", (data) => {
       console.log("on", "typing");
       // console.log(idCheck, "+", data.senderId);
-      if (idCheck === data.senderId) {
+      if (userId === data.senderId) {
         setTyping(true);
       }
     });
-
+    //Hết gõ
     socket.current.on("untyping", (data) => {
-      if (idCheck === data.senderId) {
+      if (userId === data.senderId) {
         setTyping(false);
       }
     });
 
-    socket.current.on("send-file", (data) => {
-      console.log("on", "send-file");
-    });
-
+    //Hiển thị recall tin nhắn theo ID
     socket.current.on("getRecall", (item) => {
       console.log("onIT", item);
       setRecallMess(item.messageId);
     });
-  }, []);
+
+    return () => {
+      console.log(socket.current);
+      socket.current.off("getMessage");
+      socket.current.off("getMedia");
+      socket.current.off("typing");
+      socket.current.off("untyping");
+      socket.current.off("getIcon");
+    };
+  }, [userId, socket]);
 
   useEffect(() => {
     if (userId) {
@@ -342,17 +340,17 @@ const Chat = (props) => {
       .then((rs) => {
         handleChatSocket(msgInputValue, messData?.id);
         // console.log(rs.data);
-        const data = rs.data;
-        setMessages({
-          ...messages,
-          content: data?.content,
-          conversationId: messData?.id,
-          incomming: false,
-          createdAt: Date.now(),
-          id: data?.id,
-          sender: cookies.auth.user.id,
-          typeMessage: data?.typeMessage,
-        });
+        dispatch(
+          actAddMessage({
+            content: rs.data?.content,
+            conversationId: messData?.id,
+            incomming: false,
+            createdAt: Date.now(),
+            id: rs?.data?.id,
+            sender: cookies.auth.user.id,
+            typeMessage: rs?.data?.typeMessage,
+          })
+        );
       })
       .catch((err) => {
         console.log(err);
@@ -391,19 +389,18 @@ const Chat = (props) => {
       .createMessMedia(cookies.auth.tokens.access.token, formData, getProcess)
       .then((rs) => {
         setLoading(false);
-        // console.log("RS", rs.data);
-        const data = rs.data;
-        setMessages({
-          ...messages,
-          content: data.content,
+        console.log("ImgSend", rs.data.content);
+        const value = {
+          content: rs.data.content,
           conversationId: messData?.id,
           incomming: false,
           createdAt: Date.now(),
-          id: data?.id,
+          id: rs.data?.id,
           sender: cookies.auth.user.id,
-          typeMessage: data?.typeMessage,
-        });
-        handleChatSocketMedia(data);
+          typeMessage: rs.data?.typeMessage,
+        };
+        dispatch(actAddMessage(value));
+        handleChatSocketMedia(value);
       })
       .catch((err) => {
         setLoading(false);
@@ -416,30 +413,32 @@ const Chat = (props) => {
       chatApi
         .likeMess(cookies.auth.tokens.access.token, messData?.id)
         .then((data) => {
-          setMessages({
-            ...messages,
-            conversationId: messData?.id,
-            incomming: false,
-            createdAt: Date.now(),
-            id: data?.id,
-            sender: cookies.auth.user.id,
-            typeMessage: "LIKE",
-          });
+          dispatch(
+            actAddMessage({
+              conversationId: messData?.id,
+              incomming: false,
+              createdAt: Date.now(),
+              id: data?.id,
+              sender: cookies.auth.user.id,
+              typeMessage: "LIKE",
+            })
+          );
           handleChatSocketIcon("LIKE");
         });
     } else {
       chatApi
         .loveMess(cookies.auth.tokens.access.token, messData?.id)
         .then((data) => {
-          setMessages({
-            ...messages,
-            conversationId: messData?.id,
-            incomming: false,
-            createdAt: Date.now(),
-            id: data?.id,
-            sender: cookies.auth.user.id,
-            typeMessage: "LOVE",
-          });
+          dispatch(
+            actAddMessage({
+              conversationId: messData?.id,
+              incomming: false,
+              createdAt: Date.now(),
+              id: data?.id,
+              sender: cookies.auth.user.id,
+              typeMessage: "LOVE",
+            })
+          );
           handleChatSocketIcon("LOVE");
         });
     }
@@ -449,11 +448,13 @@ const Chat = (props) => {
     <>
       {userId ? (
         <>
-          <div className="z-50">{loading && <Loading process={process} />}</div>
+          <div className="z-50">
+            {/* {loading && <LoadingMedia process={process} />} */}
+          </div>
           <ChatContainer>
             {/* List chat here */}
             <div as={MessageList}>
-              <ListMessage
+              <ListMessBox
                 typing={typing}
                 messages={messages}
                 messData={messData?.id}
@@ -462,7 +463,6 @@ const Chat = (props) => {
                 openSr={openSr}
                 socket={socket}
                 recallMess={recallMess}
-                currentMessage={currentMessage.data}
               />
             </div>
 
@@ -647,4 +647,4 @@ const Chat = (props) => {
     </>
   );
 };
-export default Chat;
+export default ChatBox;

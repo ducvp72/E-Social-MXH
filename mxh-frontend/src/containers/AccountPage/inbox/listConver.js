@@ -35,7 +35,8 @@ const SkeletonConversation = () => {
   return arr;
 };
 
-const ListConver = () => {
+const ListConver = (props) => {
+  const { socket } = props;
   const [cookies, ,] = useCookies(["auth"]);
   const currentUser = useSelector((state) => state.auth.data);
   const currentConvers = useSelector((state) => state.myconver);
@@ -44,35 +45,23 @@ const ListConver = () => {
   const [skt, setSkt] = useState(true);
   const { userId } = useParams();
   const dispatch = useDispatch();
-  const socket = useRef();
   const [online, setOnline] = useState([]);
 
   useEffect(() => {
-    socket.current = io("https://socket-mxhld.herokuapp.com/", {
-      // transports: ["websocket", "polling"],
-      // pingTimeout: 60000,
-      transportOptions: {
-        polling: {
-          extraHeaders: {
-            Authorization: `Bearer ${cookies.auth.tokens.access.token}`,
-          },
-        },
-      },
-    });
-    socket.current.on("online", (users) => {
-      // console.log("ArrUser", users);
+    socket?.current?.on("online", (users) => {
+      console.log("ArrUser", users);
       setOnline(users);
     });
 
-    socket.current.on("error", (err) => {
+    socket?.current?.on("error", (err) => {
       console.log(err);
     });
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     // console.log("LIST", currentConvers);
     let result = currentConvers?.data.map((a) => a.userId);
-    socket.current.emit("online", { users: result });
+    socket.current?.emit("online", { users: result });
   }, [currentConvers]);
 
   useEffect(() => {
@@ -111,6 +100,7 @@ const ListConver = () => {
   };
 
   const fetchData = async () => {
+    console.log("NextFetch");
     dispatch(
       actLoadMore(
         cookies.auth.tokens.access.token,
@@ -126,7 +116,7 @@ const ListConver = () => {
   };
 
   const getIdConverRedux = (converId) => {
-    dispatch(actGetMess(cookies.auth.tokens.access.token, converId, 1, 20));
+    dispatch(actGetMess(cookies.auth.tokens.access.token, converId));
   };
 
   return (

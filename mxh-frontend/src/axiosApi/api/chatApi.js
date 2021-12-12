@@ -15,15 +15,25 @@ export const chatApi = {
     return axiosFrmMulti(`message/media`, `POST`, data, null, token, call);
   },
 
-  getMessByIdConver(token, idConver, page, limit) {
+  getMessByIdConver(token, idConver) {
     return axiosApi(
-      `message/${idConver}?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
+      `message/${idConver}?sortBy=createdAt`,
       `GET`,
       null,
       null,
       token
     );
   },
+
+  // getMessByIdConver(token, idConver, page, limit) {
+  //   return axiosApi(
+  //     `message/${idConver}?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
+  //     `GET`,
+  //     null,
+  //     null,
+  //     token
+  //   );
+  // },
 
   createConver(token, idUser) {
     return axiosApi(
