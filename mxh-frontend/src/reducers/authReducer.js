@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Cookies } from "react-cookie";
 import { userApi } from "./../axiosApi/api/userApi";
-import { actGetMyConver } from "./converReducer";
 const initialState = {
   data: null,
   error: null,
@@ -102,6 +101,23 @@ export const actUpdateUser = (token) => {
       });
   };
 };
+
+// export const actGetUserInfo =(userId)=>{
+//   return (dispatch) => {
+//     userApi
+//       .getAuthentication(token)
+//       .then((result) => {
+//         //get data by authentication to update state User in redux stored
+//         dispatch({
+//           type: "UPDATE_USER",
+//           payload: result.data,
+//         });
+//       })
+//       .catch((error) => {
+//         console.log("Error update account", error.response);
+//       });
+//   };
+// }
 
 export const actLoginRequest = () => {
   return {

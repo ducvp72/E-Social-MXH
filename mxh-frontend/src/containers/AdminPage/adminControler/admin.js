@@ -1,7 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import "antd/dist/antd.css";
 import {
   BrowserRouter as Router,
   Route,

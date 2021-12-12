@@ -23,13 +23,11 @@ export const Timeline = () => {
   const [cookies, ,] = useCookies("auth");
 
   useEffect(() => {
-    setSkt(true);
     getFirstPage();
     return () => setPost(null);
   }, []);
 
   const getFirstPage = async () => {
-    // console.log("render time line");
     postApi
       .getMyPost(cookies.auth.tokens.access.token, 1, 5)
       .then((rs) => {
@@ -42,6 +40,7 @@ export const Timeline = () => {
       })
       .catch((err) => {
         console.log(err);
+        if (err) setNotFound(true);
         setSkt(false);
       });
   };
@@ -62,7 +61,7 @@ export const Timeline = () => {
   const fetchData = async () => {
     const postsFromServer = await handleFetchPosts();
     setPost([...post, ...postsFromServer]);
-    if (postsFromServer.length === 0 || postsFromServer.length < 5) {
+    if (postsFromServer.length < 5) {
       setnoMore(false);
     }
     setPage(page + 1);
@@ -90,7 +89,6 @@ export const Timeline = () => {
         <div
           className=" flex"
           onClick={() => {
-            console.log("e");
             dispatch(setDialogAction(true));
           }}
         >

@@ -37,17 +37,13 @@ export const chatApi = {
 
   getConverByToken(token, page, limit) {
     return axiosApi(
-      `conversation?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
+      `conversation?page=${page}&limit=${limit}&sortBy=updatedAt:desc`,
       `GET`,
       null,
       null,
       token
     );
   },
-
-  //   getConverByToken(token) {
-  //     return axiosApi(`conversation`, `GET`, null, null, token);
-  //   },
 
   //Same as "getMessByIdCover"
   getMessPrivate(token, idUser, page, limit) {

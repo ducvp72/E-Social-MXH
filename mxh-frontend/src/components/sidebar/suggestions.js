@@ -1,19 +1,30 @@
 import "./styles.css";
-import { useState } from "react";
-import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
+import { SuggestionsProfiles } from "./suggestionsProfiles";
+import { SkeletonSuggest } from "./../../skeletons/Skeletons";
+import { userApi } from "./../../axiosApi/api/userApi";
+import { useCookies } from "react-cookie";
 
 export const Suggestions = () => {
+  const [cookies, ,] = useCookies(["auth"]);
   const [openNew, setOpenNew] = useState(false);
   const [select, setSelect] = useState(null);
   const [open, setOpen] = useState(false);
-  // const loopCpn = () => {
-  //   let arr = [];
-  //   for (let i = 0; i <= 5; i++) {
-  //     arr = [...arr, <SuggestionsProfiles key={i} />];
-  //   }
-  //   return arr;
-  // };
+  const [skt, setSkt] = useState(true);
+  const [suggests, setSuggest] = useState([]);
+
+  useEffect(() => {
+    callListApi();
+  }, []);
+
+  const loopSkt = () => {
+    let arr = [];
+    for (let i = 0; i <= 5; i++) {
+      arr = [...arr, <SkeletonSuggest key={i} />];
+    }
+    return arr;
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -23,11 +34,22 @@ export const Suggestions = () => {
     setSelect(choose);
     setOpen(true);
   };
+
+  const callListApi = async () => {
+    await userApi
+      .getUserName(cookies.auth.tokens.access.token, "d", 1, 5)
+      .then((rs) => {
+        setSuggest(rs.data.results);
+        setSkt(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setSkt(false);
+      });
+  };
+
   return (
     <div className="rounded flex flex-col z-10 mt-2">
-      {/* <div className="text-sm flex items-center align-items justify-between mb-2">
-        <p className="font-bold text-gray-base">Suggestions for you</p>
-      </div> */}
       <div className="flex">
         <div
           onClick={() => {
@@ -38,7 +60,10 @@ export const Suggestions = () => {
           <div className="flex justify-center my-1 cursor-pointer items-center ">
             <p className=" text-white">Click see news</p>
           </div>
-          <div className="hidden group-hover:block">
+          <div
+            className=" absolute group-hover:block hidden w-full
+           bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 "
+          >
             <ul className="p-2">
               <li
                 onClick={() => choosing("https://vietnamnet.vn/")}
@@ -115,10 +140,26 @@ export const Suggestions = () => {
         </div>
         {/* </div> */}
       </Dialog>
+      <div className="text-sm justify-between mb-2 mt-5">
+        <p className="font-bold text-gray-base">Suggestions for you</p>
+        <div
+          className=" mt-4 post-show"
+          style={{
+            height: "270px",
+          }}
+        >
+          {skt && loopSkt()}
+
+          {suggests &&
+            suggests.map((item) => {
+              return <SuggestionsProfiles key={item.id} item={item} />;
+            })}
+        </div>
+      </div>
     </div>
   );
 };
 
-Suggestions.propTypes = {
-  open: PropTypes.bool.isRequired,
-};
+// Suggestions.propTypes = {
+//   open: PropTypes.bool.isRequired,
+// };

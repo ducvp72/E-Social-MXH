@@ -4,7 +4,6 @@ import WasTyping from "./wasTyping";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { chatApi } from "./../../../axiosApi/api/chatApi";
 import { useCookies } from "react-cookie";
-import InfititeLoading from "./../../LoadingPage/infititeLoading";
 import { useParams } from "react-router-dom";
 import { userApi } from "./../../../axiosApi/api/userApi";
 
@@ -18,39 +17,53 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 
 const ChatElement = (props) => {
-  const { data, userInfo, socket, index } = props;
+  const { data, userInfo, socket, recallMess } = props;
   const [cookies, ,] = useCookies("auth");
   const [fake, setFake] = useState(data || {});
+  let { userId } = useParams();
   useEffect(() => {
-    // console.log("data", fake);
-    // Example
+    // Example: Prop
     // conversationId: "61ae2e9a1324ef0024b24bd8"
     // createdAt: 1638954837662
     // id: "61b054aed96f410024571aaa"
     // sender: "61ab14460011d000240f9a46"
     // typeMessage: "RECALL"
+
     setFake(data);
   }, [data]);
+
+  // useEffect(() => {
+  //   console.log("recall", recallMess);
+  //   console.log("FakeId", fake.id);
+  //   if (recallMess === fake.id)
+  //     setFake({
+  //       id: recallMess,
+  //       createdAt: Date.now(),
+  //       sender: userInfo?.id,
+  //       typeMessage: "RECALL",
+  //     });
+  // }, [recallMess]);
 
   const handleRecall = async () => {
     chatApi
       .recallMess(
         cookies.auth.tokens.access.token,
-        data.conversationId,
-        data.id
+        fake.conversationId,
+        fake.id
       )
       .then((rs) => {
         console.log("CheckXoa", rs);
         setFake({
-          ...data,
+          // ...data,
+          id: rs.data.id,
           createdAt: Date.now(),
           sender: cookies.auth.user.id,
           typeMessage: "RECALL",
         });
         socket.current.emit("sendRecall", {
-          senderId: cookies.auth.tokens.access.token,
-          receiverId: rs.data.user.id,
-          messageId: data.id,
+          senderId: cookies.auth.user.id,
+          receiverId: userInfo?.id,
+          messageId: rs.data.id,
         });
       })
       .catch((err) => {
@@ -226,7 +239,8 @@ const ListMessage = (props) => {
     typing,
     socket,
     setMessData,
-    deleteRecall,
+    recallMess,
+    currentMessage,
   } = props;
   const messagesEndRef = useRef(null);
   const [cookies, ,] = useCookies(["auth"]);
@@ -239,29 +253,43 @@ const ListMessage = (props) => {
 
   let { userId } = useParams();
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef?.current) {
+      messagesEndRef?.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
   };
+
+  // useEffect(() => {
+  //   console.log("currentMessage con", currentMessage);
+  // }, [currentMessage]);
+
   // console.log("from long", messages);
   // console.log("list", listMess.length);
+
+  useEffect(() => {
+    setListMess([messages, ...listMess]);
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     getUserInfo();
   }, [userId]);
 
   useEffect(() => {
-    if (messData) {
-      getFirstPageMess();
-    }
-    return () => {
-      setLoading(true);
-      setListMess([]);
-    };
+    // if (messData) {
+    getFirstPageMess();
+    // }
+    // return () => {
+    //   setLoading(true);
+    //   setListMess([]);
+    // };
   }, [messData]);
-
-  useEffect(() => {
-    setListMess([messages, ...listMess]);
-    scrollToBottom();
-  }, [messages]);
 
   const getUserInfo = () => {
     userApi
@@ -304,6 +332,7 @@ const ListMessage = (props) => {
   };
 
   const fetchData = async () => {
+    console.log("Next");
     const messFromServer = await handleFetchMess();
     setListMess([...listMess, ...messFromServer]);
     if (messFromServer.length === 0 || messFromServer.length < 20) {
@@ -314,12 +343,26 @@ const ListMessage = (props) => {
 
   return (
     <>
+      {/* {loading ? (
+          <>
+      <div
+        className="flex absolute  h-full items-center justify-center  bg-green-400 transform translate-x-64 translate-y-10  "
+        style={{ width: "500px", height: "500px" }}
+      >
+        <div className="lds-ring flex items-center justify-center">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+      </>
+        ) : null} */}
       <ConversationHeader>
         <ConversationHeader.Back />
         <Avatar
           src={`https://mxhld.herokuapp.com/v1/image/${userInfo?.avatar}`}
           status="available"
-          name="long"
         />
         <ConversationHeader.Content
           userName={`${userInfo?.fullname}`}
@@ -337,7 +380,7 @@ const ListMessage = (props) => {
 
       <div
         className="post-show px-5 pb-2"
-        id="scrollableDiv"
+        id="scrollableDivChat"
         style={{
           overflow: "auto",
           display: "flex",
@@ -346,45 +389,42 @@ const ListMessage = (props) => {
         }}
       >
         <div ref={messagesEndRef} />
-        {loading ? (
-          <>
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="lds-ring flex items-center justify-center">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-              </div>
-            </div>
-          </>
-        ) : null}
-
         {(listMess || []).length > 0 && (
           <InfiniteScroll
             dataLength={listMess?.length}
             next={fetchData}
-            style={{ display: "flex", flexDirection: "column-reverse" }}
+            style={{
+              display: "flex",
+              flexDirection: "column-reverse",
+            }}
             inverse={true}
-            scrollThreshold={0.1}
+            scrollThreshold={0.2}
             hasMore={noMore}
             loader={
               <div className=" flex justify-center">
-                <InfititeLoading />
+                {/* <InfititeLoading /> */}
+                <div className="lds-ring flex items-center justify-center">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
               </div>
             }
-            scrollableTarget="scrollableDiv"
+            scrollableTarget="scrollableDivChat"
           >
             {listMess.map((data, index) => {
               return (
                 <div key={index}>
                   <ChatElement
+                    key={index}
                     userInfo={userInfo}
                     data={data}
                     socket={socket}
                     index={index}
                     setMessData={setMessData}
                     messData={messData}
-                    deleteRecall={deleteRecall}
+                    recallMess={recallMess}
                   />
                 </div>
               );
@@ -399,7 +439,7 @@ const ListMessage = (props) => {
         )}
 
         {/* <MessageSeparator content="Saturday, 30 November 2019" /> */}
-        {typing && <WasTyping />}
+        {typing && <WasTyping userInfo={userInfo} />}
       </div>
     </>
   );

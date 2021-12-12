@@ -4,7 +4,6 @@ import { ErrorMessage, Formik, Form, Field } from "formik";
 import { userforgotPassword } from "./../../../validation/validation";
 import { TextField } from "@mui/material";
 import "./styles.css";
-import { forgotPassword } from "./../../../context/actions/register";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import Swal from "sweetalert2";
 import Loading from "./../../LoadingPage/index";

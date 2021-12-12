@@ -18,9 +18,6 @@ export default function DialogActionPost(props) {
   } = props;
   const [cookies, ,] = useCookies("auth");
   const [status, SetStatus] = useState();
-  // useEffect(() => {
-  //   if (state) console.log("statesy", state?.user.userId);
-  // }, [state]);
 
   useEffect(() => {
     checkStatus();

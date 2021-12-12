@@ -102,9 +102,8 @@ const LoginForm = (props) => {
                       as={TextField}
                       fullWidth
                       name="adminName"
-                      error={errors.adminName}
+                      error={!!errors.adminName}
                       type="text"
-                      // id="outlined-basic"
                       label="Username"
                       variant="outlined"
                       helperText={
@@ -119,8 +118,7 @@ const LoginForm = (props) => {
                       fullWidth
                       name="password"
                       type={hidden ? "text" : "password"}
-                      // id="outlined-basic"
-                      error={errors.password}
+                      error={!!errors.password}
                       label="Password"
                       variant="outlined"
                       helperText={

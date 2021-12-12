@@ -28,15 +28,6 @@ const Profile = () => {
   const [toggle, setToggle] = useState({ isShow: false, postData: {} });
   const [post, setPost] = useState([]);
   const dispatch = useDispatch();
-  // useEffect(() => {
-  //   checkShow();
-  //   getUserPost();
-  //   return () => {
-  //     clearTimeout(checkShow);
-  //     setUSerSmr(null);
-  //     setUserPost(null);
-  //   };
-  // }, []);
 
   useEffect(() => {
     checkShow();
@@ -118,7 +109,7 @@ const Profile = () => {
 
   const loopSkeleton = () => {
     let arr = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 6; i++) {
       arr = [...arr, <SkeletonPostThumbnail key={i} />];
     }
     return arr;
@@ -199,13 +190,25 @@ const Profile = () => {
           </div>
         </div>
       )}
-
-      <div className="py-2 w-full xl:w-4/6 lg:w-4/6 md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2">
-        {skt && (
+      {skt && (
+        <div
+          style={{
+            height: "500px",
+          }}
+          className="py-2 w-full xl:w-4/6 lg:w-4/6 overflow-y-hidden md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2"
+        >
           <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
             {loopSkeleton()}
           </div>
-        )}
+        </div>
+      )}
+
+      <div className="py-2 w-full xl:w-4/6 lg:w-4/6 overflow-y-hidden md:w-full sm:w-full shadow-2xl rounded-md mt-20 absolute transform -translate-x-1/2 left-1/2">
+        {/* {skt && (
+          <div className="grid grid-cols-3 xl:gap-4 gap-2 lg:gap-4 p-2 md:gap-4">
+            {loopSkeleton()}
+          </div>
+        )} */}
         {userPost?.length > 0 && (
           <InfiniteScroll
             dataLength={userPost?.length}
@@ -218,7 +221,7 @@ const Profile = () => {
               </div>
             }
             endMessage={
-              <p className="flex justify-center font-avatar text-lg">
+              <p className="flex justify-center font-thin text-lg">
                 <b>Opp..! You have seen it all</b>
               </p>
             }

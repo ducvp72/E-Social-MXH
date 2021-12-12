@@ -6,7 +6,6 @@ import { styled } from "@mui/material/styles";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DialogTitle from "@mui/material/DialogTitle";
-import CircularStatic from "./../../containers/LoadingPage/upfileLoading";
 import Box from "@mui/material/Box";
 import { useOnClickOutside } from "./../../utils/handleRefresh";
 import { Link } from "react-router-dom";
@@ -76,7 +75,7 @@ const PostDialog = (props) => {
 
   const getProcess = (progressEvent) => {
     const { loaded, total } = progressEvent;
-    const percent = ((loaded / total) * 100).toFixed(2);
+    const percent = Math.round((loaded / total) * 100 * 100) / 100;
     setProcess(percent);
   };
 
@@ -219,9 +218,6 @@ const PostDialog = (props) => {
       });
     }
   };
-
-  // console.log("Send Data", formData.get("text"));
-  // console.log("Send Data2", formData.get("file"));
 
   const checkFile = () => {
     if (userImage) {

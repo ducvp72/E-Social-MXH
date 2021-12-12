@@ -22,8 +22,8 @@ export const adminApi = {
   blockUser(token, userId) {
     return axiosApi(`admin/blockUser/${userId}`, `PUT`, null, null, token);
   },
-  getAllPost() {
-    return axiosApi(`post`, `GET`);
+  getAllPost(token) {
+    return axiosApi(`post`, `GET`, null, null, token);
   },
   deletePost(token, idPost) {
     return axiosApi(`admin/post`, `DELETE`, idPost, null, token);

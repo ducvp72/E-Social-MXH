@@ -36,8 +36,10 @@ const SuccesVerify = () => {
 
       verifyEmail({ token: tokens });
     } else {
+      return;
     }
   }, [query]);
+
   const verifyEmail = async (token) => {
     try {
       await userApi.confirmMail(token);

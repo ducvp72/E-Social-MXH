@@ -1,26 +1,29 @@
 import React from "react";
 
-export const SuggestionsProfiles = () => {
+export const SuggestionsProfiles = (props) => {
+  const { item } = props;
   return (
-    <div className="w-full flex items-center align-items space-x-24 md:space-x-24 xl:space-x-28">
-      <div className="flex items-center">
-        <img
-          className="rounded-full w-8 flex mr-3"
-          src="/assets/image/defaultAvatar.png"
-          alt="img"
-        />
-        {/* <Link to={"/p/${username}"}> */}
-        <p className="font-bold text-sm">username</p>
-        {/* </Link> */}
-      </div>
-      <div className="">
-        <button
-          className="text-xs font-bold text-blue-medium"
-          type="button"
-          onClick={() => console.log("Following !")}
-        >
-          Follow
-        </button>
+    <div className="w-full mb-2 flex items-center gap-2 ">
+      <img
+        className="rounded-full w-10 h-10"
+        src={`https://mxhld.herokuapp.com/v1/image/${item?.avatar}`}
+        alt="img"
+      />
+      <div className="flex justify-between items-center  w-full">
+        <div>
+          {/* <Link to={"/p/${username}"}> */}
+          <p className="font-bold text-sm cursor-pointer">{item?.fullname}</p>
+          {/* </Link> */}
+        </div>
+        <div className="">
+          <button
+            className="text-xs font-bold text-blue-medium focus:outline-none"
+            type="button"
+            onClick={() => console.log("Following !")}
+          >
+            Follow
+          </button>
+        </div>
       </div>
     </div>
   );

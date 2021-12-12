@@ -35,14 +35,23 @@ export const converReducer = (
     }
 
     case "ADD_MORE": {
-      // console.log("Payload", ...payload);
-      // console.log("State", ...state.data)
       state.next = payload.results;
-      state.data = [...state.data, ...state.next];
-      if (state.next.length === 0 || state.next.length <= 10) {
-        state.loading = false;
+      if (state.next.length > 0) {
+        state.data = [...state.data, ...state.next];
+        state.pageNext = state.pageNext + 1;
       }
-      state.pageNext = state.pageNext + 1;
+      return { ...state };
+    }
+
+    case "UPDATE_CONVER": {
+      // console.log("New", payload.results);
+      state.data = payload.results;
+      state.next = [];
+      state.pageNext = 2;
+      state.totalPages = payload.totalPages;
+      state.totalResults = payload.totalResults;
+      state.loading = false;
+      state.error = null;
       return { ...state };
     }
 
@@ -80,6 +89,23 @@ export const actGetMyConver = (token, firstPage, limit) => {
       })
       .catch((error) => {
         console.log("getConver", error);
+      });
+  };
+};
+
+export const actUpdateting = (token, firstPage, limit) => {
+  return (dispatch) => {
+    chatApi
+      .getConverByToken(token, firstPage, limit)
+      .then((result) => {
+        // console.log("ReduxNew", result.data.results);
+        dispatch({
+          type: "UPDATE_CONVER",
+          payload: result.data,
+        });
+      })
+      .catch((error) => {
+        console.log("getUpdate", error);
       });
   };
 };

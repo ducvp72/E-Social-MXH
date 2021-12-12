@@ -69,7 +69,7 @@ const Signup = () => {
   };
   const onChangeDob = (newDob) => {
     setDob(newDob);
-    if (new Date().getUTCFullYear() - newDob.getUTCFullYear() < 13) {
+    if (new Date()?.getUTCFullYear() - newDob?.getUTCFullYear() < 13) {
       setErrDob(true);
       return;
     }

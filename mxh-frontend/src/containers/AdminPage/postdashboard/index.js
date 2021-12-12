@@ -32,11 +32,12 @@ export const PostDB = () => {
   }, []);
 
   const fetchAllPost = async () => {
+    console.log("Data");
     setLoading(true);
     adminApi
-      .getAllPost()
+      .getAllPost(cookies.auth.tokens.access.token)
       .then((result) => {
-        console.log("Ket qua", result.data.results);
+        console.log("Data", result.data.results);
         setData(result.data.results);
         setLoading(false);
       })

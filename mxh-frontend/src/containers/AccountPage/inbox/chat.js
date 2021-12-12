@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import ListMessage from "./listMessage";
 import { useOnClickOutside } from "./../../../utils/handleRefresh";
 import Picker from "emoji-picker-react";
-import { SideBarChatRight } from "./sideBarChatRight";
 import { useCookies } from "react-cookie";
 import { io } from "socket.io-client";
 import { chatApi } from "./../../../axiosApi/api/chatApi";
-import { base64StringToBlob } from "blob-util";
+import { actGetMyConver } from "../../../reducers/converReducer";
 import {
   ChatContainer,
   MessageInput,
@@ -15,6 +14,7 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import Loading from "../../LoadingPage/index";
 import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 const Chat = (props) => {
   const { setOpenSr, openSr } = props;
@@ -34,16 +34,22 @@ const Chat = (props) => {
   const [messages, setMessages] = useState({});
   const [loading, setLoading] = useState(false);
   const [messData, setMessData] = useState("");
+  const [recallMess, setRecallMess] = useState(null);
+  const dispatch = useDispatch();
+  let { userId } = useParams();
+  const [idCheck, setIdCheck] = useState(userId);
+  const currentMessage = useSelector((state) => state.messConver);
 
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
   useOnClickOutside(buttonMedia, modalMedia, () => setMedia(false));
-  let { userId } = useParams();
-
-  // useEffect(() => {
-  //   document.getElementById("textAREA").focus();
-  // });
 
   useEffect(() => {
+    setIdCheck(userId);
+    console.log("userId", idCheck);
+  }, [userId]);
+
+  useEffect(() => {
+    console.count("socket connect");
     socket.current = io("https://socket-mxhld.herokuapp.com/", {
       // transports: ["websocket", "polling"],
       // pingTimeout: 60000,
@@ -63,8 +69,9 @@ const Chat = (props) => {
 
     socket.current.on("connect_error", () => {
       console.log("connected error");
-      // socket.current.io.opts.transportOptions.polling.extraHeaders.Authorization = `Bearer ${cookies.auth.tokens.access.token}`;
-      // socket.current.connect();
+    });
+    socket.current.on("error", (err) => {
+      console.log(err);
     });
 
     // socket.current.emit("whoami", (data) => {
@@ -72,65 +79,116 @@ const Chat = (props) => {
     // });
     //#endregion
 
-    socket.current.on("getMessage", (data) => {
-      console.log("on", data.text);
-      setMessages({
-        ...messages,
-        content: {
-          text: data.text,
-        },
-        conversationId: messData?.id,
-        incomming: true,
-        createdAt: Date.now(),
-        id: Date.now(),
-        sender: data.senderId,
-        typeMessage: "TEXT",
-      });
+    socket.current.on("getMessage", async (data) => {
+      dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
+      console.log("onSender", data.senderId);
+      console.log("userId", idCheck);
+      if (idCheck === data.senderId) {
+        setMessages({
+          ...messages,
+          content: {
+            text: data.text,
+          },
+          conversationId: messData?.id,
+          incomming: true,
+          createdAt: Date.now(),
+          id: data?.messageId,
+          sender: data.senderId,
+          typeMessage: "TEXT",
+        });
+      } else {
+        return;
+      }
     });
 
     socket.current.on("getMedia", (data) => {
       console.log("on", data.text, " ", data.file);
-      setMessages({
-        ...messages,
-        content: {
-          text: data.text,
-          file: data.file,
-        },
-        incomming: true,
-        conversationId: messData?.id,
-        createdAt: Date.now(),
-        id: Date.now(),
-        sender: data.senderId,
-        typeMessage: data.typeMessage,
-      });
+      if (idCheck === data.senderId) {
+        if (data.text === "") {
+          console.log("1");
+          setMessages({
+            ...messages,
+            content: {
+              text: "hghgh",
+              file: data.file,
+            },
+            incomming: true,
+            conversationId: messData?.id,
+            createdAt: Date.now(),
+            id: data.messageId,
+            sender: data.senderId,
+            typeMessage: data.typeMessage,
+          });
+        } else {
+          console.log("2");
+          setMessages({
+            ...messages,
+            content: {
+              text: data.text,
+              file: data.file,
+            },
+            incomming: true,
+            conversationId: messData?.id,
+            createdAt: Date.now(),
+            id: data.messageId,
+            sender: data.senderId,
+            typeMessage: data.typeMessage,
+          });
+        }
+      }
     });
 
-    socket.current.on("getIcon", (data) => {
-      console.log("on", data.typeMessage);
+    socket.current.on("getRecall", (data) => {
+      console.log("on", "getRecall");
       setMessages({
         ...messages,
         content: null,
         incomming: true,
         conversationId: messData?.id,
         createdAt: Date.now(),
-        id: Date.now(),
+        id: data?.messageId,
         sender: data.senderId,
-        typeMessage: data.typeMessage,
+        typeMessage: "RECALL",
       });
+    });
+
+    socket.current.on("getIcon", (data) => {
+      console.log("on", data.typeMessage);
+      if (idCheck === data.senderId) {
+        setMessages({
+          ...messages,
+          content: null,
+          incomming: true,
+          conversationId: messData?.id,
+          createdAt: Date.now(),
+          id: data?.messageId,
+          sender: data.senderId,
+          typeMessage: data.typeMessage,
+        });
+      }
     });
 
     socket.current.on("typing", (data) => {
       console.log("on", "typing");
-      setTyping(true);
+      // console.log(idCheck, "+", data.senderId);
+      if (idCheck === data.senderId) {
+        setTyping(true);
+      }
     });
 
     socket.current.on("untyping", (data) => {
-      console.log("on", "untyping");
-      setTyping(false);
+      if (idCheck === data.senderId) {
+        setTyping(false);
+      }
     });
 
     socket.current.on("send-file", (data) => {
       console.log("on", "send-file");
+    });
+
+    socket.current.on("getRecall", (item) => {
+      console.log("onIT", item);
+      setRecallMess(item.messageId);
     });
   }, []);
 
@@ -156,12 +214,13 @@ const Chat = (props) => {
       });
   };
 
-  const handleChatSocket = (message) => {
-    console.log("socket handle");
+  const handleChatSocket = (message, id) => {
+    console.log("socket handle" + message + " " + id);
     const onchat = {
       senderId: cookies.auth.user.id,
       receiverId: userId,
       text: message,
+      messageId: id,
     };
     socket.current.emit("sendMessage", onchat);
   };
@@ -225,15 +284,15 @@ const Chat = (props) => {
     setSelectedImage(null);
   };
 
-  const handleSend = (message) => {
+  const handleSend = async (message) => {
     if (msgInputValue.length === 0 && selectedImage === null) {
-      console.log("Return");
       reset();
       return;
     }
     if (msgInputValue.length > 0) {
       // console.log("Text");
       sendTextOnly();
+
       unfocusTyping();
       reset();
     }
@@ -241,14 +300,19 @@ const Chat = (props) => {
       setLoading(true);
       // console.log("File");
       sendMediaFile();
+
       unfocusTyping();
       reset();
     }
+
+    setTimeout(() => {
+      dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
+    }, 2000);
   };
 
   const press = async (event) => {
     if (event.keyCode === 13 && !event.shiftKey && msgInputValue.length === 0) {
-      console.log("Return");
+      // console.log("Return");
       event.preventDefault();
     }
     if (
@@ -257,7 +321,6 @@ const Chat = (props) => {
       (msgInputValue.length > 0 || selectedImage !== null)
     ) {
       handleSend(msgInputValue);
-
       event.preventDefault();
     }
   };
@@ -277,13 +340,13 @@ const Chat = (props) => {
         msgInputValue
       )
       .then((rs) => {
-        handleChatSocket(msgInputValue);
+        handleChatSocket(msgInputValue, messData?.id);
         // console.log(rs.data);
         const data = rs.data;
         setMessages({
           ...messages,
           content: data?.content,
-          conversationId: messData,
+          conversationId: messData?.id,
           incomming: false,
           createdAt: Date.now(),
           id: data?.id,
@@ -328,7 +391,7 @@ const Chat = (props) => {
       .createMessMedia(cookies.auth.tokens.access.token, formData, getProcess)
       .then((rs) => {
         setLoading(false);
-        console.log("RS", rs.data);
+        // console.log("RS", rs.data);
         const data = rs.data;
         setMessages({
           ...messages,
@@ -398,6 +461,8 @@ const Chat = (props) => {
                 setOpenSr={setOpenSr}
                 openSr={openSr}
                 socket={socket}
+                recallMess={recallMess}
+                currentMessage={currentMessage.data}
               />
             </div>
 
@@ -497,9 +562,9 @@ const Chat = (props) => {
                   type="text"
                   autoComplete="off"
                   onKeyDown={press}
-                  // onFocus={focusTyping}
-                  // onBlur={unfocusTyping}
-                  onInput={focusTyping}
+                  onFocus={focusTyping}
+                  onBlur={unfocusTyping}
+                  // onInput={focusTyping}
                 />
               </div>
 

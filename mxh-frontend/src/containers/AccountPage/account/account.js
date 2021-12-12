@@ -115,7 +115,9 @@ const Account = () => {
   const imageFileHandler = (event) => {
     setSelectedImage(event.target.files[0]);
     if (selectedImage?.length !== 0)
-      setUserImage(URL.createObjectURL(event.target.files[0]));
+      setUserImage(
+        (window.URL || window.webkitURL).createObjectURL(event.target.files[0])
+      );
   };
 
   const changeAvatar = () => {
@@ -225,21 +227,21 @@ const Account = () => {
             <div className="pl-16 flex space-x-4 mb-4">
               <div className="flex space-x-4 mb-4 ">
                 <div className="flex justify-start">
-                  {skt ? (
+                  {/* {skt ? (
                     <SkeletonAvatarSideBar />
-                  ) : (
-                    <img
-                      className="rounded-full h-10 w-10 md:h-16 md:w-16 "
-                      src={
-                        userImage
-                          ? userImage
-                          : `https://mxhld.herokuapp.com/v1/image/${currentUser?.avatar}`
-                          ? `https://mxhld.herokuapp.com/v1/image/${currentUser?.avatar}`
-                          : "/assets/image/defaultAvatar.png"
-                      }
-                      alt={`profile`}
-                    />
-                  )}
+                  ) : ( */}
+                  <img
+                    className="rounded-full h-10 w-10 md:h-16 md:w-16 "
+                    src={
+                      userImage
+                        ? userImage
+                        : `https://mxhld.herokuapp.com/v1/image/${currentUser?.avatar}`
+                        ? `https://mxhld.herokuapp.com/v1/image/${currentUser?.avatar}`
+                        : "/assets/image/defaultAvatar.png"
+                    }
+                    alt={`profile`}
+                  />
+                  {/* )} */}
                 </div>
                 <div className="col-span-2">
                   <p className="">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CarouselElement from "./../../../Carousel/index";
 const UserPost = (props) => {
-  const { item, otherItem, getUserPost, getSummary, setSkt } = props;
+  const { item, otherItem, getUserPost, getSummary } = props;
   const [popup, setPopup] = useState(false);
   const [state, setState] = useState();
 
@@ -39,7 +39,10 @@ const UserPost = (props) => {
               <img
                 src={`https://mxhld.herokuapp.com/v1/file/${state?.file}`}
                 alt="userpost"
-                className="w-full "
+                className="w-full"
+                style={{
+                  height: " 250px",
+                }}
               />
             </div>
           </>
@@ -103,10 +106,10 @@ const UserPost = (props) => {
           getSummary={getSummary}
         />
       )}
-      <div className="shadow-2xl cursor-pointer rounded-sm  border-white relative group">
+      <div className="shadow-2xl cursor-pointer rounded-sm border-white relative group">
         <div
           className="flex items-center justify-center"
-          style={{ height: "250px" }}
+          style={{ height: "300px" }}
         >
           {checkFile()}
         </div>

@@ -32,22 +32,19 @@ export const UserDashboard = () => {
   const classes = useStyles();
 
   useEffect(() => {
-    console.log("run useffect");
-    if (status) console.log("statusFromchildren", status);
-    // if (search === "") {
-    //   getAllUserFirst();
-    // } else {
-    // }
-    callResultUser();
+    if (status)
+      // if (search === "") {
+      //   getAllUserFirst();
+      // } else {
+      // }
+      callResultUser();
   }, [search, status]);
 
   const getAllUserFirst = () => {
-    console.log("call Api get all");
     setLoading(true);
     userApi
       .getAllUser(cookies.auth.tokens.access.token)
       .then((res) => {
-        console.log("All User", res.data.results);
         setData(res.data.results);
         setLoading(false);
       })
@@ -61,8 +58,6 @@ export const UserDashboard = () => {
     userApi
       .getUserEmail(cookies.auth.tokens.access.token, search)
       .then((result) => {
-        console.log("Ket qua", result.data.results);
-        console.log("search: ", search);
         setData(result.data.results);
         setLoading(false);
       })
@@ -134,8 +129,6 @@ export const UserDashboard = () => {
   const onClose = () => {
     setOpenDialog(false);
   };
-
-  console.log("data: ", data);
 
   return (
     <>

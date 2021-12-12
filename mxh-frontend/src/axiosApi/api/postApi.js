@@ -28,8 +28,7 @@ export const postApi = {
   },
   getMyPost(token, page, limit) {
     return axiosApi(
-      `post/get-my-post?page=${page}&limit=${limit}
-      &sortBy=createdAt:desc`,
+      `post/get-my-post?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
       `GET`,
       null,
       null,
@@ -68,5 +67,17 @@ export const postApi = {
   },
   userComment(token, data) {
     return axiosApi(`post/comment`, `PUT`, data, null, token);
+  },
+  getMyNotification(token, page, limit) {
+    return axiosApi(
+      `notification?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
+      "GET",
+      null,
+      null,
+      token
+    );
+  },
+  deleteAllNotify(token) {
+    return axiosApi(`notification`, "DELETE", null, null, token);
   },
 };

@@ -204,11 +204,12 @@ const OtherProfile = () => {
                     className="font-sans font-light text-3xl hover:text-blue-500 cursor-pointer"
                     style={{ color: "#818181" }}
                   >
-                    {userInfo?.fullname || (
-                      <div className="mt-2">
-                        <Skeleton width={150} height={20} />
-                      </div>
-                    )}
+                    {
+                      userInfo?.fullname || "Undefinded"
+                      // <div className="mt-2">
+                      //   <Skeleton width={150} height={20} />
+                      // </div>)
+                    }
                   </h1>
                   {following ? (
                     <>

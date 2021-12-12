@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useCookies } from "react-cookie";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -15,6 +15,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import moment from "moment";
 import { Link, useParams } from "react-router-dom";
 import { actLoadMore } from "./../../../reducers/converReducer";
+import { actGetMess } from "./../../../reducers/messageReducer";
+import { io } from "socket.io-client";
 
 const SkeletonConversation = () => {
   let arr = [];
@@ -33,17 +35,45 @@ const SkeletonConversation = () => {
   return arr;
 };
 
-const ListConver = (props) => {
+const ListConver = () => {
   const [cookies, ,] = useCookies(["auth"]);
   const currentUser = useSelector((state) => state.auth.data);
   const currentConvers = useSelector((state) => state.myconver);
   const [open, setOpen] = useState(false);
   const [noMore, setnoMore] = useState(true);
   const [skt, setSkt] = useState(true);
-  const [notFound, setNotFound] = useState(false);
   const { userId } = useParams();
-  const [page, setPage] = useState(2);
   const dispatch = useDispatch();
+  const socket = useRef();
+  const [online, setOnline] = useState([]);
+
+  useEffect(() => {
+    socket.current = io("https://socket-mxhld.herokuapp.com/", {
+      // transports: ["websocket", "polling"],
+      // pingTimeout: 60000,
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            Authorization: `Bearer ${cookies.auth.tokens.access.token}`,
+          },
+        },
+      },
+    });
+    socket.current.on("online", (users) => {
+      // console.log("ArrUser", users);
+      setOnline(users);
+    });
+
+    socket.current.on("error", (err) => {
+      console.log(err);
+    });
+  }, []);
+
+  useEffect(() => {
+    // console.log("LIST", currentConvers);
+    let result = currentConvers?.data.map((a) => a.userId);
+    socket.current.emit("online", { users: result });
+  }, [currentConvers]);
 
   useEffect(() => {
     if (currentConvers?.data.length > 0) {
@@ -65,19 +95,15 @@ const ListConver = (props) => {
   const ifNull = async () => {
     setTimeout(() => {
       setSkt(false);
-      setNotFound(true);
     }, 500);
   };
 
   const checkResults = async () => {
     const flag = await dataFrom();
     if (flag > 0) {
-      setNotFound(false);
       setSkt(false);
     }
-    if (flag === 0) {
-      setNotFound(true);
-    }
+    return;
   };
 
   const handleClose = () => {
@@ -85,8 +111,6 @@ const ListConver = (props) => {
   };
 
   const fetchData = async () => {
-    console.log("Fetch");
-
     dispatch(
       actLoadMore(
         cookies.auth.tokens.access.token,
@@ -94,12 +118,15 @@ const ListConver = (props) => {
         10
       )
     );
-    console.log("NextFetch", currentConvers);
-    if (currentConvers?.next.length === 0 || currentConvers?.next < 10) {
-      // if (totalFromRedux >= page)
+    // console.log("NextFetch", currentConvers);
+    if (currentConvers?.next?.length < 10) {
       setnoMore(false);
     }
     // setPage(page + 1);
+  };
+
+  const getIdConverRedux = (converId) => {
+    dispatch(actGetMess(cookies.auth.tokens.access.token, converId, 1, 20));
   };
 
   return (
@@ -147,7 +174,7 @@ const ListConver = (props) => {
                   </div>
                 }
                 endMessage={
-                  <p className="flex justify-center font-avatar text-base">
+                  <p className="flex justify-center font-thin text-base">
                     <b>Opp..! No Conversations more !</b>
                   </p>
                 }
@@ -155,7 +182,10 @@ const ListConver = (props) => {
                 {currentConvers?.data &&
                   currentConvers?.data.map((item, index) => {
                     return (
-                      <div key={index}>
+                      <div
+                        key={index}
+                        onClick={() => getIdConverRedux(item.id)}
+                      >
                         <Link to={`/user/inbox/${item.userId}`}>
                           <Conversation
                             lastActivityTime={moment(
@@ -168,12 +198,20 @@ const ListConver = (props) => {
                             }
                           >
                             <Avatar
-                              src={`https://mxhld.herokuapp.com/v1/image/${item?.avatar}`}
+                              src={`https://mxhld.herokuapp.com/v1/image/${
+                                item?.id === cookies.auth.user.id
+                                  ? currentUser?.avatar
+                                  : item?.avatar
+                              }`}
                               name={item?.fullname}
-                              status="available"
+                              status={online[index] ? "available" : "invisible"}
                             />
                             <Conversation.Content
-                              name={item?.fullname}
+                              name={
+                                item?.id === cookies.auth.user.id
+                                  ? currentUser?.fullname
+                                  : item?.fullname
+                              }
                               info={item?.lastMessage?.content?.text}
                             />
                             <Conversation.Operations />
@@ -191,7 +229,7 @@ const ListConver = (props) => {
               </div>
             )} */}
 
-            {notFound && (
+            {currentConvers?.data?.length <= 0 && !skt && (
               <div className="flex justify-center items-center">
                 <p className="">You have no conversations</p>
               </div>

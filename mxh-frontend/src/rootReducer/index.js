@@ -6,6 +6,8 @@ import { authReducer } from "../reducers/authReducer";
 
 import { createPostDialogReducer } from "./../reducers/createPostDialog";
 import { converReducer } from "./../reducers/converReducer";
+import { notifyReducer } from "./../reducers/notificationReducer";
+import { messageReducer } from "./../reducers/messageReducer";
 const rootPersistConfig = {
   key: "root",
   storage: storage,
@@ -27,9 +29,18 @@ const converPersistConfig = {
   whiteList: ["conver"],
 };
 
+const messagePersistConfig = {
+  key: "message",
+  storage: storage,
+  stateReconciler: autoMergeLevel2,
+  whiteList: ["message"],
+};
+
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   myconver: persistReducer(converPersistConfig, converReducer),
+  // mynotify: notifyReducer,
+  messConver: persistReducer(messagePersistConfig, messageReducer),
   dialog: createPostDialogReducer,
 });
 

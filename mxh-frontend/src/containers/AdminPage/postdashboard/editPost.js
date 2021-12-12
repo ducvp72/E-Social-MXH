@@ -55,7 +55,63 @@ BootstrapDialogTitle.propTypes = {
 
 export default function EditPost(props) {
   const { openDialog, onClose, postInfo } = props;
-  console.log("Post", postInfo);
+
+  const checkFile = () => {
+    if (postInfo) {
+      if (postInfo?.fileTypes === "IMAGE") {
+        return (
+          <>
+            <div
+              className="flex items-center justify-center cursor-pointer"
+              style={{ border: "1px solid #efefef" }}
+            >
+              <img
+                src={`https://mxhld.herokuapp.com/v1/file/${postInfo?.file}`}
+                alt="userpost"
+                className="w-full object-cover "
+                width="500px"
+                style={{ height: "500px" }}
+              />
+            </div>
+          </>
+        );
+      }
+      if (postInfo?.fileTypes === "VIDEO") {
+        return (
+          <div className="flex items-center justify-center cursor-pointer bg-black ">
+            <video className="w-full outline-none h-full " controls>
+              <source
+                src={`https://mxhld.herokuapp.com/v1/file/${postInfo?.file}`}
+              />
+            </video>
+          </div>
+        );
+      }
+      if (postInfo?.fileTypes === "AUDIO") {
+        return (
+          <div className=" items-center justify-center cursor-pointer">
+            <img
+              src="/assets/image/audio.png"
+              className="h-full p-10"
+              alt="nocaption"
+            />
+          </div>
+        );
+      }
+    }
+    return (
+      <>
+        <div className=" items-center justify-center cursor-pointer">
+          <img
+            src="/assets/image/no-pictures.png"
+            className="h-full p-10"
+            alt="nocaption"
+          />
+        </div>
+      </>
+    );
+  };
+
   return (
     <div>
       <BootstrapDialog
@@ -64,7 +120,7 @@ export default function EditPost(props) {
         open={openDialog}
         fullWidth
         maxWidth="lg"
-        height="600px"
+        height="400px"
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={onClose}>
           <div className="flex items-center space-x-4">
@@ -90,16 +146,7 @@ export default function EditPost(props) {
                 display: "flex",
               }}
             >
-              <div className=" shadow boder">
-                <img
-                  alt="anh2"
-                  // src={`https://mxhld.herokuapp.com/v1/image/${params.row.user.avatar}`}
-                  src={`/assets/image/defaultAvatar.png`}
-                  className="object-cover p-5"
-                  width="480px"
-                  style={{ height: "480px" }}
-                />
-              </div>
+              <div className=" shadow boder mb-5">{checkFile()}</div>
             </Box>
 
             <Box

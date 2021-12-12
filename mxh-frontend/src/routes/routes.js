@@ -30,7 +30,6 @@ const Routes = () => {
   return (
     <Router>
       <Switch>
-        {/* <Route path="/user/inbox/" exact component={Inbox} /> */}
         <Route path="/" exact>
           <Redirect to="/login" />
         </Route>
@@ -63,18 +62,7 @@ const Routes = () => {
             </Switch>
           </DefaultLayout>
         </UserAuthRoute>
-        {/* <QuestAuthRoute path="/profile">
-          <DefaultLayout>
-            <Switch>
-              <Route path="/" exact>
-                <Redirect to="/login" />
-              </Route>
-              <Route path="*" exact>
-                <Redirect to="/404" />
-              </Route>
-            </Switch>
-          </DefaultLayout>
-        </QuestAuthRoute> */}
+
         <UserAuthRoute path="/search">
           <SearchLayout>
             <Switch>

@@ -1,31 +1,32 @@
 import * as yup from "yup";
 const phoneRegExp =
-  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+  // /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+  /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
 const fb =
   /(?:https?:\/\/)?(?:www\.)?(mbasic.facebook|m\.facebook|facebook|fb)\.(com|me)\/(?:(?:\w\.)*#!\/)?(?:pages\/)?(?:[\w\-\.]*\/)*([\w\-\.]*)/;
 export const userSignUpSchema = yup.object().shape({
   fullname: yup
     .string()
-    .required("Không được bỏ trống tên !")
-    .min(5, "Tên từ 5 kí tự trở lên !")
-    .max(30, "Tên phải dưới 30 kí tự !"),
+    .required()
+    .min(5, "over 5 characters")
+    .max(30, "under 30 characters"),
   gender: yup
     .string()
     .required()
-    .oneOf(["female", "male", "other"], "Giới tính chưa được chọn !"),
-  email: yup.string().email().required("Trường email không được bỏ trống !"),
+    .oneOf(["female", "male", "other"], "required !"),
+  email: yup.string().email().required("required !"),
   password: yup
     .string()
-    .required("Mật khẩu không được bỏ trống !")
+    .required("required !")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
-      "Mật khẩu phải từ 8 kí tự trở lên, bao gồm ít nhất 1 chữ hoa và 1 chữ thường"
+      "Password must more than 8 characters, included at least 1 Upcase and 1 Lowcase"
     ),
   confirm: yup
     .string()
     .required("Hãy xác nhận mật khẩu !")
     .matches()
-    .oneOf([yup.ref("password"), null], "Mật khẩu xác nhận không trùng khớp !"),
+    .oneOf([yup.ref("password"), null], "Password does not match !"),
 });
 
 export const userforgotPassword = yup.object().shape({
@@ -33,7 +34,7 @@ export const userforgotPassword = yup.object().shape({
 });
 
 export const userLogin = yup.object().shape({
-  email: yup.string().email().required("Trường email không được bỏ trống !"),
+  email: yup.string().email().required("Required !"),
   password: yup
     .string()
     .required("Password required !")
@@ -62,7 +63,10 @@ export const changeInfomation = yup.object().shape({
     .string()
     .matches(fb, "Facebook likely https://www.facebook.com/page/"),
   story: yup.string().min(0).max(150, "under 150 characters !"),
-  phone: yup.string().matches(phoneRegExp, "Number invalid"),
+  // phone: yup.string().matches(phoneRegExp, "Number invalid"),
+  phone: yup.string().min(10, "Number invalid"),
+  // .matches(phoneRegExp, "Number invalid")
+
   gender: yup
     .string()
     .required()
@@ -75,20 +79,20 @@ export const changePassword = yup.object().shape({
     .required("Mật khẩu không được bỏ trống !")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
-      "Mật khẩu phải từ 8 kí tự trở lên, bao gồm ít nhất 1 chữ hoa và 1 chữ thường"
+      "Password must more than 8 characters, included at least 1 Upcase and 1 Lowcase"
     ),
   password: yup
     .string()
     .required("Mật khẩu không được bỏ trống !")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
-      "Mật khẩu phải từ 8 kí tự trở lên, bao gồm ít nhất 1 chữ hoa và 1 chữ thường"
+      "Password must more than 8 characters, included at least 1 Upcase and 1 Lowcase"
     ),
   confirm: yup
     .string()
     .required("Hãy xác nhận mật khẩu !")
     .matches()
-    .oneOf([yup.ref("password"), null], "Mật khẩu xác nhận không trùng khớp !"),
+    .oneOf([yup.ref("password"), null], "Password does not match !"),
 });
 
 export const recoverPassword = yup.object().shape({
@@ -97,11 +101,11 @@ export const recoverPassword = yup.object().shape({
     .required("Mật khẩu không được bỏ trống !")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
-      "Mật khẩu phải từ 8 kí tự trở lên, bao gồm ít nhất 1 chữ hoa và 1 chữ thường"
+      "Password must more than 8 characters, included at least 1 Upcase and 1 Lowcase"
     ),
   confirm: yup
     .string()
     .required("Hãy xác nhận mật khẩu !")
     .matches()
-    .oneOf([yup.ref("password"), null], "Mật khẩu xác nhận không trùng khớp !"),
+    .oneOf([yup.ref("password"), null], "Password does not match !"),
 });

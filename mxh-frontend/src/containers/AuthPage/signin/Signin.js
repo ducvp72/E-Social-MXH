@@ -17,6 +17,7 @@ import Loading from "../../LoadingPage";
 import Swal from "sweetalert2";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { actGetMyConver } from "../../../reducers/converReducer";
+import { actGetMyNotify } from "../../../reducers/notificationReducer";
 const useStyles = makeStyles(() => ({
   label: {
     fontSize: "20px",
@@ -55,6 +56,7 @@ const Signin = (props) => {
       dispatch(actLoginSuccess(resData.data.user));
       //get 10 conver list first
       dispatch(actGetMyConver(resData.data.tokens.access.token, 1, 10));
+      // dispatch(actGetMyNotify(resData.data.tokens.access.token, 1, 10));
       setLoading(false);
       setCookie("auth", resData.data, { path: "/" });
       console.log("user", cookies.tokens.access.token);

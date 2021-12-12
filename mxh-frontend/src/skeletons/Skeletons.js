@@ -176,3 +176,15 @@ export const SkeletonConver = () => {
     </div>
   );
 };
+
+export const SkeletonSuggest = () => {
+  return (
+    <div className=" flex gap-2 mb-1">
+      <Skeleton circle={true} width={44} height={44} />
+      <div className=" flex-col items-center">
+        <Skeleton width={150} height={15} borderRadius={20} />
+        <Skeleton width={100} height={15} borderRadius={20} />
+      </div>
+    </div>
+  );
+};

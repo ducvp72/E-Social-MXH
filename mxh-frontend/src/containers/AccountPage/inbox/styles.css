@@ -1,13 +1,11 @@
 .post-show::-webkit-scrollbar {
     width: 0.4em;
-   
 }
 
 .post-show::-webkit-scrollbar-thumb {
     background: rgba(219, 215, 215, 0.925);
     border-radius: 25px;
     border: 2px ;
-    height: 5rem;
 }
 
 .lds-facebook {
