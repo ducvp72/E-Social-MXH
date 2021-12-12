@@ -222,7 +222,7 @@ const ListMess = React.memo(({ listMess, userInfo, socket }) => {
   return (
     <>
       {listMess &&
-        listMess.reverse().map((item, index) => {
+        listMess.map((item, index) => {
           return (
             <div key={index}>
               <ChatElement userInfo={userInfo} data={item} socket={socket} />
@@ -260,7 +260,7 @@ const ListMessBox = (props) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [currentMessage]);
 
   useEffect(() => {
     getUserInfo();
