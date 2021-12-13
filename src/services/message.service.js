@@ -4,7 +4,24 @@ const { Message, Conversation } = require('../models');
 const { fileTypes } = require('../config/file');
 const { fileService } = require('.');
 
+const isUserInConversation = async (userId, conversationId) => {
+  try {
+  const conversation =  await Conversation.findOne({
+      _id: conversationId,
+      members: {
+        $in: [userId],
+      },
+    });
+   if(!conversation) return false
+   else
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
 const createMessageText = async (userId, conversationId, text) => {
+  const isIncludes = await isUserInConversation(userId, conversationId);
+  if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   const newMessage = new Message({
     conversationId,
     sender: userId,
@@ -22,6 +39,8 @@ const createMessageText = async (userId, conversationId, text) => {
   }
 };
 const likeIcon = async (userId, conversationId) => {
+  const isIncludes = await isUserInConversation(userId, conversationId);
+  if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   const newMessage = new Message({
     conversationId,
     sender: userId,
@@ -36,6 +55,8 @@ const likeIcon = async (userId, conversationId) => {
   }
 };
 const loveIcon = async (userId, conversationId) => {
+  const isIncludes = await isUserInConversation(userId, conversationId);
+  if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   const newMessage = new Message({
     conversationId,
     sender: userId,
@@ -50,6 +71,8 @@ const loveIcon = async (userId, conversationId) => {
   }
 };
 const createMessageMedia = async (file, userId, conversationId, text) => {
+  const isIncludes = await isUserInConversation(userId, conversationId);
+  if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   const fileTypes = file.contentType.split('/')[0].toUpperCase();
   const newMessage = new Message({
     conversationId,
@@ -68,21 +91,8 @@ const createMessageMedia = async (file, userId, conversationId, text) => {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
   }
 };
-const isUserInConversation = async (userId, conversationId) => {
-  try {
-    await Conversation.find({
-      _id: conversationId,
-      members: {
-        $in: [userId],
-      },
-    });
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
 const getMessagesFromConversation = async (userId, conversationId, options) => {
-  const isIncludes = isUserInConversation(userId, conversationId);
+  const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   try {
     const messages = await Message.paginate({ conversationId }, options);
@@ -92,7 +102,7 @@ const getMessagesFromConversation = async (userId, conversationId, options) => {
   }
 };
 const getLastMessageFromConversation = async (userId, conversationId) => {
-  const isIncludes = isUserInConversation(userId, conversationId);
+  const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   try {
     const messages = await Message.findOne({
@@ -109,7 +119,7 @@ const recallMessagesFromConversation = async (userId, conversationId, messageId)
   const message = await Message.findById(messageId);
   if (!message) throw new ApiError(httpStatus.BAD_REQUEST, 'Not found');
   if (message.sender != userId) throw new ApiError(httpStatus.FORBIDDEN, 'Must be owner');
-  if (message.typeMessage == 'RECALL') throw new ApiError(httpStatus.BAD_REQUEST, 'Message has been recalled');
+  if (message.typeMessage === 'RECALL') throw new ApiError(httpStatus.BAD_REQUEST, 'Message has been recalled');
   try {
     const newMessage = await Message.findByIdAndUpdate(
       messageId,

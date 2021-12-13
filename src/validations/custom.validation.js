@@ -1,4 +1,4 @@
-const { dateFunction } = require('../function');
+
 
 const objectId = (value, helpers) => {
   if (!value.match(/^[0-9a-fA-F]{24}$/)) {
@@ -17,12 +17,21 @@ const password = (value, helpers) => {
   return value;
 };
 const birthday = (value, helper) => {
-  if (dateFunction.getAge(value) < 13) {
+  if (getAge(value) < 13) {
     return helper.message('Age must be greater than  or equal to 13');
   }
   return value;
 };
-
+const getAge = (dateString) => {
+  var today = new Date();
+  var birthDate = new Date(dateString);
+  var age = today.getFullYear() - birthDate.getFullYear();
+  var m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+  }
+  return age;
+}
 module.exports = {
   objectId,
   password,

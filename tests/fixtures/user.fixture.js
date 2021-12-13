@@ -25,6 +25,8 @@ const userTwo = {
   password,
   role: 'user',
   isEmailVerified: false,
+  gender: 'male',
+  birthday: '01/08/2000',
 };
 
 const admin = {

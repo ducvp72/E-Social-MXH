@@ -2,9 +2,12 @@ const httpStatus = require('http-status');
 const mongoose = require('mongoose');
 const sharp = require('sharp');
 const GridFs = require('gridfs-stream');
+
 eval(`GridFs.prototype.findOne = ${GridFs.prototype.findOne.toString().replace('nextObject', 'next')}`);
+const GifEncoder = require('gif-encoder');
 const catchAsync = require('../utils/catchAsync');
 const config = require('../config/config');
+
 
 let gfs;
 const conn = mongoose.createConnection(config.mongoose.url_file, config.mongoose.options);
@@ -15,6 +18,7 @@ conn.once('open', () => {
 });
 const getFiles = catchAsync(async (req, res) => {
   const { id } = req.params;
+  const { w, h } = req.query;
   if (!id || id === 'undefined') {
     res.status(httpStatus.BAD_REQUEST, 'No imges were found');
   }
@@ -24,8 +28,17 @@ const getFiles = catchAsync(async (req, res) => {
     if (err) res.send(err);
     if (!files || files.length === 0) return res.status(httpStatus.BAD_REQUEST).send('no files exist');
     const fileTypes = files.contentType.split('/')[0].toUpperCase();
-    if (fileTypes === 'IMAGE') gfs.createReadStream(_id).pipe(sharp().resize(500, 500).jpeg()).pipe(res);
-    else {
+    if (fileTypes === 'IMAGE') {
+      if (files.contentType === 'image/gif') {
+        const gif = new GifEncoder(w, h);
+        gif.pipe(gfs.createReadStream(_id)).pipe(res);
+      } else {
+        gfs
+          .createReadStream(_id)
+          .pipe(sharp().resize({ width: w, height: h, fit: sharp.fit.inside }).png())
+          .pipe(res);
+      }
+    } else {
       const { range } = req.headers;
       const { length } = files;
       const CHUNK_SIZE = 10 ** 6;

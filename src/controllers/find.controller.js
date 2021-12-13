@@ -23,14 +23,28 @@ const getUsers = catchAsync(async (req, res) => {
 });
 const getInfoById = catchAsync(async (req, res) => {
   const user = await userService.getUserById(req.params.userId);
-  const { fullname, avatar, id,story,facebook,phone,isBlocked, email } = user;
+  const { fullname, avatar, id, story, facebook, phone, isBlocked, email } = user;
   const followNumber = await followService.countFollow(user._id);
   const posts = await postService.countPosts(id);
-  const isFollow = await followService.hasFollow(req.user.id,id);
-    // eslint-disable-next-line no-await-in-loop
-    const { followers, following } = followNumber;
-    const reporters = 0;
-  res.send({id,fullname,email, avatar,isBlocked,story,facebook,phone,posts,isFollow,followers, following, reporters});
+  const isFollow = await followService.hasFollow(req.user.id, id);
+  // eslint-disable-next-line no-await-in-loop
+  const { followers, following } = followNumber;
+  const reporters = 0;
+  res.send({
+    id,
+    fullname,
+    email,
+    avatar,
+    isBlocked,
+    story,
+    facebook,
+    phone,
+    posts,
+    isFollow,
+    followers,
+    following,
+    reporters,
+  });
 });
 module.exports = {
   getUsers,

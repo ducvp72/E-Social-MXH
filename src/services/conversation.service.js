@@ -31,6 +31,7 @@ const getPrivate = async (userId, peopleId) => {
   }).populate('members', ['avatar', 'fullname']);
 
   if (!conversation) {
+    if (userId == peopleId) throw new ApiError(httpStatus.BAD_REQUEST, 'Conversation can be not created with myself');
     const newConversation = new Conversation({
       members: [userId, peopleId],
       conversationType: 'private',
@@ -58,6 +59,7 @@ const getPrivate = async (userId, peopleId) => {
   return ret;
 };
 const createPrivate = async (senderId, receiverId) => {
+  if (senderId == receiverId) throw new ApiError(httpStatus.BAD_REQUEST, 'Conversation can be not created with myself');
   const isCreated = await getPrivate(senderId, receiverId);
   if (isCreated) throw new ApiError(httpStatus.BAD_REQUEST, 'Conversation has been  created');
   const newConversation = new Conversation({

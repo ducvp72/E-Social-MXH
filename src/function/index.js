@@ -1,1 +1,0 @@
-module.exports.dateFunction = require('./date.function');

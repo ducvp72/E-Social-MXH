@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const { Follow, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { userService } = require('.');
+const notificationService = require('./notification.service');
 
 const follow = async (user, followingId) => {
   let followR;
@@ -45,6 +46,8 @@ const follow = async (user, followingId) => {
       followR = newFollow;
     });
   } else {
+    const notif = `${user.fullname} follows you`;
+    await notificationService.createNotification(followingId, notif);
     await Follow.findOneAndUpdate(
       { user: user._id },
       {
@@ -125,6 +128,7 @@ const getUserFollowing = async (userId) => {
   });
   return users;
 };
+
 module.exports = {
   follow,
   hasFollow,

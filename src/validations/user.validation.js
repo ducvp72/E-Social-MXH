@@ -1,6 +1,5 @@
 const Joi = require('joi').extend(require('@joi/date'));
 const { password, objectId, birthday } = require('./custom.validation');
-const { dateFunction } = require('../function');
 
 const createUser = {
     body: Joi.object().keys({

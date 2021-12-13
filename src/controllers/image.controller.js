@@ -1,10 +1,9 @@
 const httpStatus = require('http-status');
 const mongoose = require('mongoose');
 const sharp = require('sharp');
+const GifEncoder = require('gif-encoder');
 const catchAsync = require('../utils/catchAsync');
 const { imageService } = require('../services');
-const { Image } = require('../models');
-const { imageTypes } = require('../config/image');
 const config = require('../config/config');
 
 let gfs;
@@ -28,7 +27,15 @@ const getImage = catchAsync(async (req, res) => {
 
   gfs.find({ _id }).toArray((err, files) => {
     if (!files || files.length === 0) return res.status(httpStatus.BAD_REQUEST).send('no files exist');
-    gfs.openDownloadStream(_id).pipe(sharp().resize(weight, height).jpeg()).pipe(res);
+    if (files[0].contentType == 'image/gif') {
+      const gif = new GifEncoder(weight, height);
+      gif.pipe(gfs.openDownloadStream(_id)).pipe(res);
+    } else {
+      gfs
+        .openDownloadStream(_id)
+        .pipe(sharp().resize({ weight, height, fit: sharp.fit.inside }).png())
+        .pipe(res);
+    }
   });
 });
 const deleteImage = catchAsync(async (req, res) => {

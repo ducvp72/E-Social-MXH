@@ -11,11 +11,20 @@ const getUser = catchAsync(async (req, res) => {
   const { page, limit, totalPages, totalResults } = result;
   // eslint-disable-next-line no-restricted-syntax
   for (const conver of result.results) {
+    
     const newConver = {};
     const { members, id } = conver;
-    const user = members.filter((member) => member.id != req.user.id);
-    const userId = user[0].id;
-    const { fullname, avatar } = user[0];
+    let users
+    if(members.length!=1){
+      const user = members.filter((member) => member.id != req.user.id);
+        users = user[0];
+    }
+    else{
+      users = members[0];
+    }
+   
+   const userId = users.id;
+    const { fullname, avatar } = users;
     const lastMessage = await messageService.getLastMessageFromConversation(req.user.id, conver.id);
     // eslint-disable-next-line no-await-in-loop
     results.push(

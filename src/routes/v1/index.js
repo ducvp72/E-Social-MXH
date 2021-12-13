@@ -7,14 +7,13 @@ const docsRoute = require('./docs.route');
 const profileRoute = require('./profile.route');
 const imageRoute = require('./image.route');
 const postRoute = require('./post.route');
-const videoRoute = require('./video.route');
 const fileRoute = require('./file.route');
-const audioRoute = require('./audio.route');
 const commentRoute = require('./comment.route');
 const followRoute = require('./follow.route');
 const findRoute = require('./find.route');
 const messageRoute = require('./message.route');
 const conversationRoute = require('./conversation.route');
+const notificationRoute = require('./notification.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -39,14 +38,6 @@ const defaultRoutes = [
   {
     path: '/post',
     route: postRoute,
-  },
-  {
-    path: '/video',
-    route: videoRoute,
-  },
-  {
-    path: '/audio',
-    route: audioRoute,
   },
   {
     path: '/file',
@@ -79,6 +70,10 @@ const defaultRoutes = [
   {
     path: '/message',
     route: messageRoute,
+  },
+  {
+    path: '/notification',
+    route: notificationRoute,
   },
 ];
 

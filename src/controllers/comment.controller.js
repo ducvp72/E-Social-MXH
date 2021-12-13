@@ -10,7 +10,7 @@ const likeComment = catchAsync(async (req, res) => {
 const getComments = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['postId']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  options.populate='user';
+  options.populate = 'user';
   const result = await commentService.queryComment(filter, options);
   res.status(httpStatus.OK).send(result);
 });

@@ -1,29 +1,31 @@
 const mongoose = require('mongoose');
-const {
-    toJSON,
-    paginate
-} = require('./plugins');
-const {
-    Schema
-} = mongoose;
+const { toJSONM, paginateNotif } = require('./plugins');
 
-const notificationSchema = new Schema({
+const { Schema } = mongoose;
+
+const notificationSchema = new Schema(
+  {
     user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
     text: {
-        type: String,
-        required: true,
-        trim: true,
-    }
-
-}, {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    other: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  },
+  {
     timestamps: {},
-});
+  }
+);
 
-notificationSchema.plugin(toJSON);
-notificationSchema.plugin(paginate);
+notificationSchema.plugin(toJSONM);
+notificationSchema.plugin(paginateNotif);
 
 const Notification = mongoose.model('Notification', notificationSchema);
 module.exports = Notification;

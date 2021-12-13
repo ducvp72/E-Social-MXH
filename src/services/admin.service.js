@@ -65,6 +65,8 @@ const getAdminByName = async (adminName) => {
  * @returns {Promise<User>}
  */
 const toggleBlockById = async (userId) => {
+  const user = await User.findById(userId);
+  if(!user) throw new ApiError(httpStatus.NOT_FOUND, 'Not found user');
   const isBlock = await isBlocked(userId);
   if (!isBlock) {
    return await blockUserById(userId);

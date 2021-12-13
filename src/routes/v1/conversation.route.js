@@ -8,12 +8,6 @@ const auth = require('../../middlewares/auth');
 
 router.get('/', auth(''), validate(conversationValidation.getUser), conversationController.getUser);
 router.post(
-  '/create-private',
-  auth(''),
-  validate(conversationValidation.createPrivate),
-  conversationController.createPrivate
-);
-router.post(
   '/private',
   auth(''),
   validate(conversationValidation.createPrivate),

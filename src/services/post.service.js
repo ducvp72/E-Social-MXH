@@ -1,69 +1,21 @@
 const httpStatus = require('http-status');
 const { imageService, userService, fileService } = require('./index');
-const { imageTypes } = require('../config/file');
-const { Post, Comment, File } = require('../models');
+const notificationService = require('./notification.service');
+const { Post, Comment, Follow, Notification } = require('../models');
 const ApiError = require('../utils/ApiError');
-const commentService = require('./comment.service');
 
-const createPostImage = async (file, user, text) => {
-  imageService.uploadImage(file, user, imageTypes.POST);
-  const comment = await commentService.createInitComment();
-  const newPost = new Post({
-    owner: user._id,
-    text,
-    images: file.id,
-    comment: comment.id,
-  });
-  let postN;
-  await newPost
-    .save()
-    .then((post) => {
-      postN = post;
-    })
-    .catch((err) => {
-      throw new ApiError(httpStatus.BAD_REQUEST, err);
+const getUserFollowers = async (userId) => {
+  let users;
+  await Follow.findOne({
+    user: userId,
+  })
+    .populate('followers', ['fullname'])
+    .then((newFollow) => {
+      if (newFollow) {
+        users = newFollow.followers;
+      }
     });
-  return postN;
-};
-const createPostAudio = async (file, user, text) => {
-  imageService.uploadImage(file, user, imageTypes.POST);
-  const comment = await commentService.createInitComment();
-  const newPost = new Post({
-    owner: user._id,
-    text,
-    audio: file.id,
-    comment: comment.id,
-  });
-  let postN;
-  await newPost
-    .save()
-    .then((post) => {
-      postN = post;
-    })
-    .catch((err) => {
-      throw new ApiError(httpStatus.BAD_REQUEST, err);
-    });
-  return postN;
-};
-const createPostVideo = async (file, user, text) => {
-  imageService.uploadImage(file, user, imageTypes.POST);
-  const comment = await commentService.createInitComment();
-  const newPost = new Post({
-    owner: user._id,
-    text,
-    video: file.id,
-    comment: comment.id,
-  });
-  let postN;
-  await newPost
-    .save()
-    .then((post) => {
-      postN = post;
-    })
-    .catch((err) => {
-      throw new ApiError(httpStatus.BAD_REQUEST, err);
-    });
-  return postN;
+  return users;
 };
 const createPostT = async (user, text) => {
   const newPost = new Post({
@@ -71,6 +23,12 @@ const createPostT = async (user, text) => {
     text,
     fileTypes: 'TEXT',
   });
+  const followers = await getUserFollowers(user._id);
+  // eslint-disable-next-line no-restricted-syntax
+  for (const follower of followers) {
+    const notif = `${user.fullname} posted 1 post text`;
+    await notificationService.createNotification(follower._id, notif,user.id);
+  }
   let postN;
   await newPost
     .save()
@@ -84,6 +42,13 @@ const createPostT = async (user, text) => {
 };
 const createPostFile = async (file, user, text) => {
   const fileTypes = file.contentType.split('/')[0].toUpperCase() || 'TEXT';
+  const followers = await getUserFollowers(user._id);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const follower of followers) {
+    const notif = `${user.fullname} posted 1 post media`;
+    await notificationService.createNotification(follower._id, notif,user.id);
+  }
   const newPost = new Post({
     owner: user._id,
     text,
@@ -107,7 +72,7 @@ const like = async (user, id) => {
       postR = newPost;
     });
   } else {
-    await Post.findByIdAndUpdate(
+    const post = await Post.findByIdAndUpdate(
       id,
       {
         $push: {
@@ -115,10 +80,11 @@ const like = async (user, id) => {
         },
       },
       { new: true, useFindAndModify: false }
-    ).then((newPost) => {
-      if (!newPost) throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
-      postR = newPost;
-    });
+    );
+    postR = post;
+    if (!post) throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
+    const notif = `${user.fullname} liked your post`;
+    if (user.id !== post.owner) await notificationService.createNotification(post.owner, notif, user.id);
   }
   return postR;
 };
@@ -161,7 +127,7 @@ const deletePostById = async (userId, postId) => {
   if (post.owner != userId) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'The post are only created by the owner');
   }
-  await fileService.deleteFile(post.file);
+  if (post.fileTypes !== 'TEXT') await fileService.deleteFile(post.file);
   await Post.deleteOne({ _id: postId });
 };
 const countComments = async (postId) => {
@@ -188,9 +154,6 @@ const getPostById = async (postId) => {
   }
 };
 module.exports = {
-  createPostImage,
-  createPostAudio,
-  createPostVideo,
   createPostFile,
   createPostT,
   like,

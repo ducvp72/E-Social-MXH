@@ -20,7 +20,7 @@ const postSchema = new Schema(
       enum: files,
       required: true,
     },
-    file: { type: Schema.Types.ObjectId, ref: 'File' },
+    file: { type: Schema.Types.ObjectId },
     likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
   {

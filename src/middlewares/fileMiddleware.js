@@ -104,7 +104,7 @@ const uploadFileForMessage = (req, res, next) => {
   const uploadSV = uploadF.single('file');
   uploadSV(req, res, function (err) {
     if (!req.user) res.status(httpStatus.UNAUTHORIZED).send('Please authenticate');
-    if (!req.body.conversationId) return res.status(400).send('conversationId is null');
+    if (!req.body.conversationId) return res.status(400).send('conversationId is required');
     // if (!req.body.con) return res.status(400).send('text is null');
     if (err instanceof multer.MulterError) {
       return res.status(400).send('File too large');

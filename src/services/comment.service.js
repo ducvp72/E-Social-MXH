@@ -1,14 +1,18 @@
 const httpStatus = require('http-status');
-const { Comment } = require('../models');
+const { Comment, Post } = require('../models');
 const ApiError = require('../utils/ApiError');
+const notificationService = require('./notification.service');
 
-const createComment = async (userId, postId, text) => {
+const createComment = async (user, postId, text) => {
+  const post = await Post.findOne({ _id: postId });
   const newComment = new Comment({
-    user: userId,
+    user: user.id,
     postId,
     text,
   });
   const comment = await newComment.save();
+  const notif = `${user.fullname} commented your post: ${text}`;
+  if (user.id !== post.owner._id) await notificationService.createNotification(post.owner._id, notif,user.id);
   return comment;
 };
 const deleteComment = async (commentId) => {

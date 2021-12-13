@@ -3,18 +3,6 @@ const catchAsync = require('../utils/catchAsync');
 const pick = require('../utils/pick');
 const { postService, commentService, followService } = require('../services');
 
-const createPostImage = catchAsync(async (req, res) => {
-  const Post = await postService.createPostImage(req.file, req.user, req.body.text);
-  res.status(httpStatus.OK).send(Post);
-});
-const createPostAudio = catchAsync(async (req, res) => {
-  const Post = await postService.createPostAudio(req.file, req.user, req.body.text);
-  res.status(httpStatus.OK).send(Post);
-});
-const createPostVideo = catchAsync(async (req, res) => {
-  const Post = await postService.createPostVideo(req.file, req.user, req.body.text);
-  res.status(httpStatus.OK).send(Post);
-});
 const createPostText = catchAsync(async (req, res) => {
   const Post = await postService.createPostT(req.user, req.body.text);
   res.status(httpStatus.OK).send(Post);
@@ -32,7 +20,7 @@ const hasLike = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(Post);
 });
 const comment = catchAsync(async (req, res) => {
-  const Comment = await commentService.createComment(req.user.id, req.body.postId, req.body.text);
+  const Comment = await commentService.createComment(req.user, req.body.postId, req.body.text);
   res.status(httpStatus.OK).send(Comment);
 });
 const likeComment = catchAsync(async (req, res) => {
@@ -51,6 +39,7 @@ const getPosts = catchAsync(async (req, res) => {
   for (const post of result.results) {
     const newUser = {};
     const { id, file, owner, fileTypes, text, createdAt } = post;
+    if(!owner) continue;
     // eslint-disable-next-line no-await-in-loop
     const { fullname, avatar } = owner;
     const userId = owner.id;
@@ -90,7 +79,7 @@ const getPosts = catchAsync(async (req, res) => {
 const getMyPosts = catchAsync(async (req, res) => {
   const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
   options.populate = 'owner';
-  const usersHasFollowed = await followService.getUserFollowing(req.user.id);
+  const usersHasFollowed = await followService.getUserFollowing(req.user.id)||[];
   usersHasFollowed.push(req.user.id);
   const result = await postService.queryPosts(
     {
@@ -147,9 +136,6 @@ const deletePost = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send();
 });
 module.exports = {
-  createPostImage,
-  createPostVideo,
-  createPostAudio,
   like,
   hasLike,
   comment,
