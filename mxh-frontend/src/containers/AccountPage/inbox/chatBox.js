@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import ListMessage from "./listMessage";
 import { useOnClickOutside } from "./../../../utils/handleRefresh";
 import Picker from "emoji-picker-react";
 import { useCookies } from "react-cookie";
-import { io } from "socket.io-client";
 import { chatApi } from "./../../../axiosApi/api/chatApi";
 import { actGetMyConver } from "../../../reducers/converReducer";
 import {
@@ -17,7 +15,7 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import ListMessBox from "./listMessBox";
 import { actAddMessage } from "../../../reducers/messageReducer";
-import LoadingMedia from "./../../LoadingPage/indexMedia";
+import LoadingMedia from "./../../LoadingPage/LoadingChat/indexMedia";
 
 const ChatBox = (props) => {
   const { setOpenSr, openSr, socket } = props;
@@ -448,9 +446,6 @@ const ChatBox = (props) => {
     <>
       {userId ? (
         <>
-          <div className="z-50">
-            {/* {loading && <LoadingMedia process={process} />} */}
-          </div>
           <ChatContainer>
             {/* List chat here */}
             <div as={MessageList}>
@@ -464,6 +459,11 @@ const ChatBox = (props) => {
                 socket={socket}
                 recallMess={recallMess}
               />
+              {/* <div className=" flex items-center justify-center bg-gray-400"> */}
+              <div className="w-full" style={{ height: "10px" }}>
+                {loading && <LoadingMedia process={process} />}
+                {/* <LoadingMedia process={process} /> */}
+              </div>
             </div>
 
             <div

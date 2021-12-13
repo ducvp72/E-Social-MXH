@@ -6,19 +6,23 @@ import Box from "@mui/material/Box";
 
 function LinearProgressWithLabel(props) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box sx={{ width: "100%", mr: 1 }}>
-        <LinearProgress variant="determinate" {...props} />
-      </Box>
+    <div className="p-2">
+      <LinearProgress
+        variant="determinate"
+        {...props}
+        sx={{
+          borderRadius: "50px",
+        }}
+      />
+
       <Box sx={{ minWidth: 35 }}>
         <Typography variant="body2" color="text.secondary">{`${Math.round(
           props.value
         )}%`}</Typography>
       </Box>
-    </Box>
+    </div>
   );
 }
-
 LinearProgressWithLabel.propTypes = {
   /**
    * The value of the progress indicator for the determinate and buffer variants.
@@ -26,11 +30,9 @@ LinearProgressWithLabel.propTypes = {
    */
   value: PropTypes.number.isRequired,
 };
-
-export default function LinearWithValueLabel(props) {
+const LoadingMedia = (props) => {
   const { process } = props;
   const [progress, setProgress] = React.useState(0);
-
   React.useEffect(() => {
     setProgress(process);
     // console.log("Proceess", process);
@@ -38,10 +40,13 @@ export default function LinearWithValueLabel(props) {
       setProgress(0);
     };
   }, [process]);
-
   return (
-    <Box sx={{ width: "100%" }}>
-      <LinearProgressWithLabel value={progress} />
-    </Box>
+    <>
+      <Box sx={{ width: "100%" }}>
+        <LinearProgressWithLabel value={progress} />
+      </Box>
+    </>
   );
-}
+};
+
+export default LoadingMedia;

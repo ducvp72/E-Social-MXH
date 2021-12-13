@@ -234,7 +234,7 @@ const ListMess = React.memo(({ listMess, userInfo, socket }) => {
 });
 
 const ListMessBox = (props) => {
-  const { messages, setOpenSr, openSr, typing, socket } = props;
+  const { setOpenSr, openSr, typing, socket } = props;
   const messagesEndRef = useRef(null);
   const [cookies, ,] = useCookies(["auth"]);
   const [noMore, setnoMore] = useState(true);
@@ -323,7 +323,7 @@ const ListMessBox = (props) => {
           overflow: "auto",
           display: "flex",
           flexDirection: "column-reverse",
-          height: 520,
+          height: 510,
         }}
       >
         <div ref={messagesEndRef} />
