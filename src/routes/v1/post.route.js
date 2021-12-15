@@ -15,4 +15,5 @@ router.put('/comment', auth(''), validate(postValidation.comment), postControlle
 router.get('/', auth(''), validate(postValidation.getPosts), postController.getPosts);
 router.get('/get-my-post', auth(''), validate(postValidation.getPosts), postController.getMyPosts);
 router.delete('/', auth(''), validate(postValidation.deletePost), postController.deletePost);
+router.put('/', auth(''), validate(postValidation.editTextForPost), postController.editTextForPost);
 module.exports = router;

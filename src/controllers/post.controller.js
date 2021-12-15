@@ -11,6 +11,10 @@ const createPostFile = catchAsync(async (req, res) => {
   const Post = await postService.createPostFile(req.file, req.user, req.body.text);
   res.status(httpStatus.OK).send(Post);
 });
+const editTextForPost = catchAsync(async (req, res) => {
+  const Post = await postService.editTextForPost(req.user.id, req.body.postId, req.body.text);
+  res.status(httpStatus.OK).send(Post);
+});
 const like = catchAsync(async (req, res) => {
   const Post = await postService.like(req.user, req.body.postId);
   res.status(httpStatus.OK).send(Post);
@@ -145,4 +149,5 @@ module.exports = {
   createPostText,
   createPostFile,
   getMyPosts,
+  editTextForPost,
 };

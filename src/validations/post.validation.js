@@ -36,6 +36,12 @@ const deletePost = {
     postId: Joi.string().custom(objectId).required(),
   }),
 };
+const editTextForPost = {
+  body: Joi.object().keys({
+    postId: Joi.string().custom(objectId).required(),
+    text: Joi.string().required().min(1),
+  }),
+};
 const createPostText = {
   body: Joi.object().keys({
     text: Joi.string().required().min(1),
@@ -49,4 +55,5 @@ module.exports = {
   countPostsUser,
   deletePost,
   createPostText,
+  editTextForPost,
 };

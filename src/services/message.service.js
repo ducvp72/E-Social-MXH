@@ -6,14 +6,13 @@ const { fileService } = require('.');
 
 const isUserInConversation = async (userId, conversationId) => {
   try {
-  const conversation =  await Conversation.findOne({
+    const conversation = await Conversation.findOne({
       _id: conversationId,
       members: {
         $in: [userId],
       },
     });
-   if(!conversation) return false
-   else
+    if (!conversation) return false;
     return true;
   } catch (err) {
     return false;
@@ -119,7 +118,9 @@ const recallMessagesFromConversation = async (userId, conversationId, messageId)
   const message = await Message.findById(messageId);
   if (!message) throw new ApiError(httpStatus.BAD_REQUEST, 'Not found');
   if (message.sender != userId) throw new ApiError(httpStatus.FORBIDDEN, 'Must be owner');
-  if (message.typeMessage === 'RECALL') throw new ApiError(httpStatus.BAD_REQUEST, 'Message has been recalled');
+  if (message.typeMessage === 'RECALL') {
+    await Message.deleteOne({ _id: messageId });
+  }
   try {
     const newMessage = await Message.findByIdAndUpdate(
       messageId,

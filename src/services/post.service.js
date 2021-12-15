@@ -27,7 +27,7 @@ const createPostT = async (user, text) => {
   // eslint-disable-next-line no-restricted-syntax
   for (const follower of followers) {
     const notif = `${user.fullname} posted 1 post text`;
-    await notificationService.createNotification(follower._id, notif,user.id);
+    await notificationService.createNotification(follower._id, notif, user.id);
   }
   let postN;
   await newPost
@@ -47,7 +47,7 @@ const createPostFile = async (file, user, text) => {
   // eslint-disable-next-line no-restricted-syntax
   for (const follower of followers) {
     const notif = `${user.fullname} posted 1 post media`;
-    await notificationService.createNotification(follower._id, notif,user.id);
+    await notificationService.createNotification(follower._id, notif, user.id);
   }
   const newPost = new Post({
     owner: user._id,
@@ -88,7 +88,17 @@ const like = async (user, id) => {
   }
   return postR;
 };
-
+const editTextForPost = async (userId, postId, text) => {
+  const post = await Post.findOne({ _id: postId });
+  if (!post) throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
+  if (post.owner != userId) throw new ApiError(httpStatus.FORBIDDEN, 'Post must be edited by owner');
+  try {
+    const nPost = await Post.findByIdAndUpdate(postId, { text }, { new: true, useFindAndModify: false });
+    return nPost;
+  } catch (err) {
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
+  }
+};
 const hasLike = async (userId, id) => {
   let isLike = true;
   await Post.findOne({
@@ -164,4 +174,5 @@ module.exports = {
   countComments,
   countLikes,
   getPostById,
+  editTextForPost,
 };
