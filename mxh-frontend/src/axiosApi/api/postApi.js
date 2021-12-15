@@ -80,4 +80,16 @@ export const postApi = {
   deleteAllNotify(token) {
     return axiosApi(`notification`, "DELETE", null, null, token);
   },
+  updateTextPost(token, postId, text) {
+    return axiosApi(
+      `post`,
+      "PUT",
+      {
+        postId,
+        text,
+      },
+      null,
+      token
+    );
+  },
 };

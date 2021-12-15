@@ -27,8 +27,6 @@ export const messageReducer = (
     }
 
     case "GET_MORE_MESS": {
-      // console.log("mang can them", state.data);
-      // console.log("More", payload.results);
       state.next = payload.results;
       if (state.next.length > 0) {
         state.data = [...state.data, ...state.next];
@@ -38,10 +36,22 @@ export const messageReducer = (
     }
 
     case "ADD_MESSAGE": {
-      // console.log("mang can them", state.data);
-      // console.log("dataMessage", payload);
       state.data = [{ ...payload }, ...state.data];
-      // console.log("StateData", state.data);
+
+      return { ...state };
+    }
+
+    case "RECALL_MESSAGE": {
+      console.log("payload", payload);
+      state.data[payload.index] = {
+        content: null,
+        incomming: true,
+        conversationId: payload.value.conversationId,
+        createdAt: payload.value.createdAt,
+        id: payload.value.id,
+        sender: payload.value.sender,
+        typeMessage: "RECALL",
+      };
       return { ...state };
     }
 
@@ -101,6 +111,20 @@ export const actAddMessage = (data) => {
     dispatch({
       type: "ADD_MESSAGE",
       payload: data,
+    });
+  };
+};
+
+export const actRecallMessage = (value, index) => {
+  const temp = {
+    value,
+    index,
+  };
+  console.log("temp", temp);
+  return (dispatch) => {
+    dispatch({
+      type: "RECALL_MESSAGE",
+      payload: temp,
     });
   };
 };

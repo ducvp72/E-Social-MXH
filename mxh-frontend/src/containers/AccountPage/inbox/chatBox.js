@@ -16,6 +16,9 @@ import { useSelector, useDispatch } from "react-redux";
 import ListMessBox from "./listMessBox";
 import { actAddMessage } from "../../../reducers/messageReducer";
 import LoadingMedia from "./../../LoadingPage/LoadingChat/indexMedia";
+import RecordingVideo from "./Media/recordingVideo";
+import RecordingAudio from "./Media/recordingAudio";
+import { actRecallMessage } from "./../../../reducers/messageReducer";
 
 const ChatBox = (props) => {
   const { setOpenSr, openSr, socket } = props;
@@ -32,6 +35,8 @@ const ChatBox = (props) => {
   const [process, setProcess] = useState(0);
   const [msgInputValue, setMsgInputValue] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [recordVideo, setRecordVideo] = useState(false);
+  const [recordAudio, setRecordAudio] = useState(false);
 
   //Biến dùng đẻ set Nội dung tin nhắn và thêm vào mảng tin nhắn hiện có
   const [messages, setMessages] = useState({});
@@ -48,6 +53,10 @@ const ChatBox = (props) => {
 
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
   useOnClickOutside(buttonMedia, modalMedia, () => setMedia(false));
+
+  useEffect(() => {
+    console.log("choose", selectedImage);
+  }, [selectedImage]);
 
   useEffect(() => {
     if (!socket.current) return;
@@ -129,16 +138,20 @@ const ChatBox = (props) => {
     //Thu hồi tin nhẵn
     socket.current.on("getRecall", (data) => {
       console.log("on", "getRecall");
-      setMessages({
-        ...messages,
-        content: null,
-        incomming: true,
-        conversationId: messData?.id,
-        createdAt: Date.now(),
-        id: data?.messageId,
-        sender: data.senderId,
-        typeMessage: "RECALL",
-      });
+      dispatch(
+        actRecallMessage(
+          {
+            content: null,
+            incomming: true,
+            conversationId: messData?.id,
+            createdAt: Date.now(),
+            id: data?.messageId,
+            sender: data.senderId,
+            typeMessage: "RECALL",
+          },
+          data.index
+        )
+      );
     });
 
     //Nhận Icon
@@ -325,7 +338,7 @@ const ChatBox = (props) => {
     const file = event.target.files[0];
     setSelectedImage(file);
     // const x = (window.URL || window.webkitURL).createObjectURL(file);
-    // console.log("tren", x);
+    console.log("tren", file);
   };
 
   const sendTextOnly = async () => {
@@ -377,6 +390,44 @@ const ChatBox = (props) => {
       typeMessage,
     };
     socket.current.emit("sendIcon", onchat);
+  };
+
+  const sendMediaBlood = async () => {
+    console.log("ok");
+    let blob = await fetch(selectedImage)
+      .then((r) => r.blob())
+      .then(
+        (blob) => new File([blob], Date.now() + ".mp3", { type: "audio/wav" })
+      );
+
+    console.log(blob);
+
+    var formData = new FormData();
+
+    formData.append("file", blob);
+    formData.append("conversationId", messData?.id);
+
+    chatApi
+      .createMessMedia(cookies.auth.tokens.access.token, formData, getProcess)
+      .then((rs) => {
+        setLoading(false);
+        console.log("ImgSend", rs.data.content);
+        const value = {
+          content: rs.data.content,
+          conversationId: messData?.id,
+          incomming: false,
+          createdAt: Date.now(),
+          id: rs.data?.id,
+          sender: cookies.auth.user.id,
+          typeMessage: rs.data?.typeMessage,
+        };
+        dispatch(actAddMessage(value));
+        handleChatSocketMedia(value);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err);
+      });
   };
 
   const sendMediaFile = async () => {
@@ -464,6 +515,19 @@ const ChatBox = (props) => {
                 {loading && <LoadingMedia process={process} />}
                 {/* <LoadingMedia process={process} /> */}
               </div>
+              <RecordingVideo
+                open={recordVideo}
+                onClose={() => setRecordVideo(false)}
+                setSelectedImage={setSelectedImage}
+                selectedImage={setSelectedImage}
+              />
+              <RecordingAudio
+                open={recordAudio}
+                setSelectedImage={setSelectedImage}
+                selectedImage={setSelectedImage}
+                onClose={() => setRecordAudio(false)}
+                sendMediaBlood={sendMediaBlood}
+              />
             </div>
 
             <div
@@ -554,7 +618,7 @@ const ChatBox = (props) => {
                   src={"/assets/image/mic.png"}
                   alt="record"
                   onClick={() => {
-                    alert("record");
+                    setRecordAudio(true);
                   }}
                 />
               </div>
@@ -572,7 +636,7 @@ const ChatBox = (props) => {
                   src={"/assets/image/video.png"}
                   alt="video"
                   onClick={() => {
-                    alert("video");
+                    setRecordVideo(true);
                   }}
                   // ref={buttonMedia}
                 />

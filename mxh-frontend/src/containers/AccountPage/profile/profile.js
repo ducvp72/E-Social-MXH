@@ -143,7 +143,7 @@ const Profile = () => {
         <title>{currentUser?.fullname}</title>
         <meta name="description" content="Helmet application" />
       </Helmet>
-      <ChangePost open={openChangePost.showChange} />
+      {/* <ChangePost open={openChangePost.showChange} /> */}
 
       <PostDialog
         getSummary={getSummary}

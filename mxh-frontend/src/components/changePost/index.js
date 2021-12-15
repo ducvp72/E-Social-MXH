@@ -17,7 +17,10 @@ import { useCookies } from "react-cookie";
 import Loading from "./../../containers/LoadingPage/index";
 import { useOnClickOutside } from "./../../utils/handleRefresh";
 import { useSelector, useDispatch } from "react-redux";
-import { setDialogChange } from "../../reducers/changePostDialog";
+import {
+  setDialogChange,
+  setDialogCloseAll,
+} from "../../reducers/changePostDialog";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -39,7 +42,7 @@ const BootstrapDialogTitle = (props) => {
         <IconButton
           aria-label="close"
           onClick={() => {
-            dispatch(setDialogChange(false));
+            dispatch(setDialogCloseAll(false));
           }}
           sx={{
             position: "absolute",
@@ -57,7 +60,18 @@ const BootstrapDialogTitle = (props) => {
 };
 
 const ChangePost = (props) => {
-  const { onClose, open, getFirstPage, getSummary, getUserPost } = props;
+  const {
+    onClose,
+    open,
+    getFirstPage,
+    getSummary,
+    getUserPost,
+    status,
+    state,
+    item,
+    popup,
+    setPopup,
+  } = props;
   const [inputStr, setInputStr] = useState([]);
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
@@ -70,12 +84,13 @@ const ChangePost = (props) => {
   const [loading, setLoading] = useState(false);
   const [cookies, ,] = useCookies("auth");
   const [process, setProcess] = useState(0);
+  const dispatch = useDispatch();
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
-  const getProcess = (progressEvent) => {
-    const { loaded, total } = progressEvent;
-    const percent = Math.round((loaded / total) * 100 * 100) / 100;
-    setProcess(percent);
-  };
+
+  useEffect(() => {
+    setInputStr(status?.text);
+    console.log("popup", popup);
+  }, [status]);
 
   const onEmojiClick = (e, emojiObject) => {
     if (inputStr?.length >= 2200) {
@@ -133,30 +148,19 @@ const ChangePost = (props) => {
     return true;
   };
 
-  const FormData = require("form-data");
-
   const onhandleSubmit = async () => {
     // console.log("UserImage", userImage);
     setLoading(true);
-    if (!userImage) {
-      postText();
-      getFirstPage();
-
-      return;
-    } else {
-      await postMedia();
-      getFirstPage();
-    }
+    postText();
+    return;
   };
 
   const postText = async () => {
     try {
-      await postApi.createPostTest(
+      await postApi.updateTextPost(
         cookies.auth.tokens.access.token,
-        {
-          text: inputStr,
-        },
-        getProcess
+        status?.id,
+        inputStr
       );
       setLoading(false);
       toast.success("Let's see your post 😀", {
@@ -170,43 +174,22 @@ const ChangePost = (props) => {
           getSummary();
         }, 1000);
       }
-      setInputStr(null);
 
-      onClose();
-    } catch (error) {
-      setLoading(false);
-      toast.error(`${error}`, {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 2000,
-        hideProgressBar: true,
-      });
-    }
-  };
-  const postMedia = async () => {
-    try {
-      let formData = new FormData();
-      formData.append("text", inputStr);
-      formData.append("file", selectedImage);
-      await postApi.createPost(
-        cookies.auth.tokens.access.token,
-        formData,
-        getProcess
-      );
-      setLoading(false);
-      toast.success("Let's see your post 😀", {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 1500,
-        hideProgressBar: true,
-      });
-      if (getUserPost) {
+      if (state) {
         await getUserPost();
         setTimeout(() => {
           getSummary();
         }, 1000);
+        if (popup) {
+          setPopup({ ...popup, isShow: false });
+        }
+      }
+
+      if (item) {
+        getFirstPage();
       }
       setInputStr(null);
-      delelteCurrentImage();
-      onClose();
+      dispatch(setDialogCloseAll());
     } catch (error) {
       setLoading(false);
       toast.error(`${error}`, {
@@ -214,6 +197,12 @@ const ChangePost = (props) => {
         autoClose: 2000,
         hideProgressBar: true,
       });
+
+      dispatch(setDialogCloseAll());
+
+      if (popup) {
+        setPopup({ ...popup, isShow: false });
+      }
     }
   };
 
@@ -449,7 +438,7 @@ const ChangePost = (props) => {
                   onhandleSubmit();
                 }}
               >
-                Post
+                Edit
               </button>
             </div>
           </div>

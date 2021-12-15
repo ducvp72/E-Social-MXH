@@ -5,7 +5,7 @@ import { postApi } from "./../../axiosApi/api/postApi";
 import { useCookies } from "react-cookie";
 import { toast, ToastContainer, Zoom } from "react-toastify";
 import ChangePost from "./../changePost/index";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setDialogChange,
   setDialogCloseAll,
@@ -24,6 +24,7 @@ export default function DialogActionPost(props) {
     getSummary,
   } = props;
   const [cookies, ,] = useCookies("auth");
+  const openChangePost = useSelector((state) => state.changePost);
   const [status, SetStatus] = useState();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -41,15 +42,17 @@ export default function DialogActionPost(props) {
     }
   };
 
-  useEffect(() => {
-    if (state) {
-      console.log("states", state?.id);
-    }
+  // console.log(status);
 
-    if (item) {
-      console.log("item", item?.id);
-    }
-  }, [item, state]);
+  // useEffect(() => {
+  //   if (state) {
+  //     console.log("states", state?.id);
+  //   }
+
+  //   if (item) {
+  //     console.log("item", item?.id);
+  //   }
+  // }, [item, state]);
 
   const handleDelete = async () => {
     try {
@@ -89,8 +92,16 @@ export default function DialogActionPost(props) {
 
   return (
     <>
-      {/* <ChangePost /> */}
       <Dialog open={open} onClose={onClose}>
+        <ChangePost
+          open={openChangePost.showChange}
+          status={status}
+          getFirstPage={getFirstPage}
+          getUserPost={getUserPost}
+          getSummary={getUserPost}
+          setPopup={setPopup}
+          popup={popup}
+        />
         <ToastContainer transition={Zoom} />
         <div className="w-64 divide-y divide-gray-300">
           {status?.user.userId === cookies.auth.user.id && (
@@ -101,6 +112,7 @@ export default function DialogActionPost(props) {
               >
                 Edit
               </div>
+
               <div
                 onClick={() => handleDelete()}
                 className="cursor-pointer py-2 px-4  bg-gradient-to-r hover:from-purple-400 hover:via-pink-500 hover:to-red-500 hover:text-white text-red-500 text-lg font-medium text-center"

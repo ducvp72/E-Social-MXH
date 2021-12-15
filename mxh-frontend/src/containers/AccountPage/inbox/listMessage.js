@@ -52,7 +52,6 @@ const ChatElement = (props) => {
         fake.id
       )
       .then((rs) => {
-        console.log("CheckXoa", rs);
         setFake({
           // ...data,
           id: rs.data.id,

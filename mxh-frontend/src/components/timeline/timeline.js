@@ -22,10 +22,10 @@ export const Timeline = () => {
   const [skt, setSkt] = useState(true);
   const currentUser = useSelector((state) => state.auth.data);
   const [cookies, ,] = useCookies("auth");
-  const openChangePost = useSelector((state) => state.changePost);
+  // const openChangePost = useSelector((state) => state.changePost);
   useEffect(() => {
     getFirstPage();
-    console.log("openChangePost", openChangePost.showChange);
+    // console.log("openChangePost", openChangePost.showChange);
     return () => setPost(null);
   }, []);
 
@@ -88,7 +88,7 @@ export const Timeline = () => {
         open={createPost.show}
         onClose={onClose}
       />
-      <ChangePost open={openChangePost.showChange} />
+      {/* <ChangePost open={openChangePost.showChange} /> */}
 
       <div className="rounded border border-gray-primary mb-5 md:mr-16 sm:mr-1 lg:mr-0 shadow-md">
         <div

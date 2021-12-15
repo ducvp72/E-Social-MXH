@@ -15,14 +15,13 @@ import {
   VoiceCallButton,
   Message,
 } from "@chatscope/chat-ui-kit-react";
-import { actGetMoreMess } from "./../../../reducers/messageReducer";
-import axios from "axios";
+import { actRecallMessage } from "./../../../reducers/messageReducer";
 
-const ChatElement = React.memo(({ data, userInfo, socket }) => {
+const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   // const { data, userInfo, socket } = props;
   const [cookies, ,] = useCookies("auth");
   const [fake, setFake] = useState(null);
-  const [srcData, setSrcData] = useState(null);
+  const dispatch = useDispatch();
   // console.log("Render chat element");
 
   useEffect(() => {}, [data]);
@@ -35,22 +34,30 @@ const ChatElement = React.memo(({ data, userInfo, socket }) => {
     chatApi
       .recallMess(
         cookies.auth.tokens.access.token,
-        fake.conversationId,
-        fake.id
+        data?.conversationId,
+        data?.id
       )
       .then((rs) => {
-        console.log("CheckXoa", rs);
-        setFake({
-          // ...data,
-          id: rs.data.id,
-          createdAt: Date.now(),
-          sender: cookies.auth.user.id,
-          typeMessage: "RECALL",
-        });
+        console.log("CheckXoa", rs.data);
+
+        dispatch(
+          actRecallMessage(
+            {
+              id: rs?.data?.id,
+              createdAt: rs?.data?.createdAt,
+              conversationId: rs?.data?.conversationId,
+              sender: cookies.auth.user.id,
+              typeMessage: "RECALL",
+            },
+            index
+          )
+        );
+
         socket.current.emit("sendRecall", {
           senderId: cookies.auth.user.id,
           receiverId: userInfo?.id,
           messageId: rs.data.id,
+          index,
         });
       })
       .catch((err) => {
@@ -60,8 +67,8 @@ const ChatElement = React.memo(({ data, userInfo, socket }) => {
 
   const showRecall = () => {
     if (
-      fake?.sender === cookies.auth.user.id &&
-      fake?.typeMessage !== "RECALL"
+      data?.sender === cookies.auth.user.id &&
+      data?.typeMessage !== "RECALL"
     ) {
       return (
         <div
@@ -218,20 +225,25 @@ const ChatElement = React.memo(({ data, userInfo, socket }) => {
   );
 });
 
-const ListMess = React.memo(({ listMess, userInfo, socket }) => {
+const ListMess = ({ listMess, userInfo, socket }) => {
   return (
     <>
       {listMess &&
         listMess.map((item, index) => {
           return (
             <div key={index}>
-              <ChatElement userInfo={userInfo} data={item} socket={socket} />
+              <ChatElement
+                index={index}
+                userInfo={userInfo}
+                data={item}
+                socket={socket}
+              />
             </div>
           );
         })}
     </>
   );
-});
+};
 
 const ListMessBox = (props) => {
   const { setOpenSr, openSr, typing, socket } = props;
@@ -245,6 +257,7 @@ const ListMessBox = (props) => {
 
   const dispatch = useDispatch();
   let { userId } = useParams();
+
   const scrollToBottom = () => {
     if (messagesEndRef?.current) {
       messagesEndRef?.current.scrollIntoView({
@@ -254,9 +267,9 @@ const ListMessBox = (props) => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("Render");
-  // }, [currentMessage]);
+  useEffect(() => {
+    console.log("Render");
+  }, [currentMessage]);
 
   useEffect(() => {
     scrollToBottom();
@@ -278,21 +291,21 @@ const ListMessBox = (props) => {
       });
   };
 
-  const fetchData = async () => {
-    console.log("nexFetch");
-    dispatch(
-      actGetMoreMess(
-        cookies.auth.tokens.access.token,
-        currentMessage?.data[0]?.conversationId,
-        currentMessage?.pageNext,
-        10
-      )
-    );
-    // console.log("NextFetch", currentMessage);
-    if (currentMessage?.next?.length < 20) {
-      setnoMore(false);
-    }
-  };
+  // const fetchData = async () => {
+  //   console.log("nexFetch");
+  //   dispatch(
+  //     actGetMoreMess(
+  //       cookies.auth.tokens.access.token,
+  //       currentMessage?.data[0]?.conversationId,
+  //       currentMessage?.pageNext,
+  //       10
+  //     )
+  //   );
+  //   // console.log("NextFetch", currentMessage);
+  //   if (currentMessage?.next?.length < 20) {
+  //     setnoMore(false);
+  //   }
+  // };
 
   return (
     <>

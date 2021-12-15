@@ -13,7 +13,7 @@ export const ChangePostDialogReducer = (
 ) => {
   switch (type) {
     case DIALOG_CHANGE:
-      return { showChange: payload, showAction: false, data: null };
+      return { showChange: payload, showAction: true, data: null };
     case DIALOG_ACTION:
       return { showChange: false, showAction: payload, data: null };
     case CLOSE_ALL:

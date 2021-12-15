@@ -39,6 +39,7 @@
     "react-hook-form": "^7.17.5",
     "react-infinite-scroll-component": "^6.1.0",
     "react-loading-skeleton": "^3.0.1",
+    "react-media-recorder": "^1.6.3",
     "react-multi-select-component": "^4.1.14",
     "react-redux": "7.2.5",
     "react-responsive-carousel": "^3.2.22",

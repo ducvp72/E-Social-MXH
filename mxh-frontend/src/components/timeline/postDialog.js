@@ -143,8 +143,6 @@ const PostDialog = (props) => {
     if (!userImage) {
       postText();
       getFirstPage();
-
-      return;
     } else {
       await postMedia();
       getFirstPage();

@@ -94,6 +94,7 @@ const PostDetail = (props) => {
         setPopup={setPopup}
         popup={popup}
       ></DialogActionPost>
+
       <div
         className="post-show fixed w-full h-screen opacity-80 z-40 top-0 left-0 flex justify-end items-start"
         style={{ background: "#7d7d7d" }}
