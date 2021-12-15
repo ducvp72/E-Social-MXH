@@ -34,21 +34,21 @@ const Statistic = (props) => {
       <p className=" font-light">
         <span className=" font-medium">
           {/* {userSmr ? userSmr?.countPosts : userInfo?.posts} */}
-          {state?.posts}
+          {state ? state?.posts : 0}
         </span>{" "}
         Posts
       </p>
       <p className=" font-light">
         <span className="font-medium">
           {/* {userSmr ? userSmr?.countFollow.followers : userInfo?.followers} */}
-          {state?.followers}
+          {state ? state?.followers : 0}
         </span>{" "}
         Followers
       </p>
       <p className=" font-light">
         <span className="font-medium">
           {/* {userSmr ? userSmr?.countFollow.following : userInfo?.following} */}
-          {state?.followings}
+          {state ? state?.followings : 0}
         </span>{" "}
         Following
       </p>

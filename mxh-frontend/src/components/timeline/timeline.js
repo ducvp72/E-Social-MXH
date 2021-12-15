@@ -8,6 +8,7 @@ import InfititeLoading from "../../containers/LoadingPage/infititeLoading";
 import { useCookies } from "react-cookie";
 import { postApi } from "./../../axiosApi/api/postApi";
 import { setDialogAction } from "../../reducers/createPostDialog";
+import ChangePost from "./../changePost/index";
 
 export const Timeline = () => {
   const [toggle, setToggle] = useState({ isShow: false, postData: {} });
@@ -21,13 +22,15 @@ export const Timeline = () => {
   const [skt, setSkt] = useState(true);
   const currentUser = useSelector((state) => state.auth.data);
   const [cookies, ,] = useCookies("auth");
-
+  const openChangePost = useSelector((state) => state.changePost);
   useEffect(() => {
     getFirstPage();
+    console.log("openChangePost", openChangePost.showChange);
     return () => setPost(null);
   }, []);
 
   const getFirstPage = async () => {
+    console.log("render first");
     postApi
       .getMyPost(cookies.auth.tokens.access.token, 1, 5)
       .then((rs) => {
@@ -85,6 +88,8 @@ export const Timeline = () => {
         open={createPost.show}
         onClose={onClose}
       />
+      <ChangePost open={openChangePost.showChange} />
+
       <div className="rounded border border-gray-primary mb-5 md:mr-16 sm:mr-1 lg:mr-0 shadow-md">
         <div
           className=" flex"

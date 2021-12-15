@@ -8,14 +8,17 @@ import { ListCommentCrs } from "./listCommentCrs";
 import { SkeletonImagePostProfile } from "../skeletons/Skeletons";
 import moment from "moment";
 import DialogActionPost from "./../components/post/dialogAction";
-
+import { useSelector, useDispatch } from "react-redux";
+import { setDialogCloseAll } from "../reducers/changePostDialog";
+import { setDialogAction } from "./../reducers/changePostDialog";
 const CarouselElement = (props) => {
   const { setPopup, popup, item, otherItem, getUserPost, getSummary } = props;
   const [comment, setComment] = useState({ text: "", realtime: null });
   const [state, setState] = useState();
   const [skt, setSkt] = useState(true);
   const [action, setAction] = useState(false);
-
+  const actionCurrent = useSelector((state) => state.changePost);
+  const dispatch = useDispatch();
   useEffect(() => {
     checkState();
     cancleShow();
@@ -33,15 +36,14 @@ const CarouselElement = (props) => {
 
   const onClose = () => {
     setAction(false);
+    // dispatch(setDialogCloseAll());
   };
 
   const checkState = () => {
     if (item) {
       setState(item);
-      // console.log("My USerpost", item);
     } else {
       setState(otherItem);
-      // console.log("Other Profile", otherItem);
     }
   };
 
@@ -105,7 +107,8 @@ const CarouselElement = (props) => {
     <>
       <DialogActionPost
         state={state}
-        open={action}
+        // open={action}
+        open={actionCurrent.showAction}
         onClose={onClose}
         setPopup={setPopup}
         getUserPost={getUserPost}
@@ -173,7 +176,8 @@ const CarouselElement = (props) => {
                     <p className="font-bold text-md">{state?.user?.fullname}</p>
                     <p
                       onClick={() => {
-                        setAction(!action);
+                        // setAction(!action);
+                        dispatch(setDialogAction(true));
                       }}
                       className=" font-black text-2xl cursor-pointer text-gray-400"
                     >

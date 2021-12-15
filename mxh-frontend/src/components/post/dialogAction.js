@@ -4,6 +4,13 @@ import Dialog from "@mui/material/Dialog";
 import { postApi } from "./../../axiosApi/api/postApi";
 import { useCookies } from "react-cookie";
 import { toast, ToastContainer, Zoom } from "react-toastify";
+import ChangePost from "./../changePost/index";
+import { useDispatch } from "react-redux";
+import {
+  setDialogChange,
+  setDialogCloseAll,
+} from "./../../reducers/changePostDialog";
+
 export default function DialogActionPost(props) {
   const {
     setPopup,
@@ -18,7 +25,7 @@ export default function DialogActionPost(props) {
   } = props;
   const [cookies, ,] = useCookies("auth");
   const [status, SetStatus] = useState();
-
+  const dispatch = useDispatch();
   useEffect(() => {
     checkStatus();
     return () => {
@@ -34,9 +41,15 @@ export default function DialogActionPost(props) {
     }
   };
 
-  if (state) {
-    console.log("states", state?.id);
-  }
+  useEffect(() => {
+    if (state) {
+      console.log("states", state?.id);
+    }
+
+    if (item) {
+      console.log("item", item?.id);
+    }
+  }, [item, state]);
 
   const handleDelete = async () => {
     try {
@@ -62,6 +75,8 @@ export default function DialogActionPost(props) {
       if (item) {
         getFirstPage();
       }
+
+      dispatch(setDialogCloseAll());
     } catch (error) {
       onClose();
       toast.error(`${error}`, {
@@ -74,12 +89,16 @@ export default function DialogActionPost(props) {
 
   return (
     <>
+      {/* <ChangePost /> */}
       <Dialog open={open} onClose={onClose}>
         <ToastContainer transition={Zoom} />
         <div className="w-64 divide-y divide-gray-300">
           {status?.user.userId === cookies.auth.user.id && (
             <>
-              <div className=" cursor-pointer bg-gradient-to-r py-2 px-4  hover:from-purple-400 hover:via-pink-500 hover:to-red-500 hover:text-white text-red-500 text-lg font-medium text-center">
+              <div
+                onClick={() => dispatch(setDialogChange(true))}
+                className=" cursor-pointer bg-gradient-to-r py-2 px-4  hover:from-purple-400 hover:via-pink-500 hover:to-red-500 hover:text-white text-red-500 text-lg font-medium text-center"
+              >
                 Edit
               </div>
               <div
@@ -95,7 +114,8 @@ export default function DialogActionPost(props) {
             Report
           </div>
           <div
-            onClick={onClose}
+            // onClick={onClose}
+            onClick={() => dispatch(setDialogCloseAll())}
             className="  cursor-pointer py-2 px-4 bg-gradient-to-r hover:from-purple-400 hover:via-pink-500 hover:to-red-500 hover:text-white text-gray-700 text-lg font-medium text-center"
           >
             Cancle

@@ -3,13 +3,21 @@ import DialogActionPost from "./dialogAction";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setDialogAction,
+  setDialogCloseAll,
+} from "./../../reducers/changePostDialog";
 
 export const Header = (props) => {
   const { item, getFirstPage } = props;
   const [cookies, ,] = useCookies("auth");
   const [action, setAction] = useState(false);
+  const dispatch = useDispatch();
+  const actionCurrent = useSelector((state) => state.changePost);
   const onClose = () => {
     setAction(false);
+    // dispatch(setDialogCloseAll());
   };
 
   // useEffect(() => {
@@ -20,7 +28,8 @@ export const Header = (props) => {
     <div className="grid grid-cols-2 pt-2 mb-2">
       <DialogActionPost
         item={item}
-        open={action}
+        // open={true}
+        open={actionCurrent.showAction}
         onClose={onClose}
         getFirstPage={getFirstPage}
       ></DialogActionPost>
@@ -65,6 +74,7 @@ export const Header = (props) => {
         <div
           onClick={() => {
             setAction(!action);
+            dispatch(setDialogAction(true));
           }}
           className=" font-black text-2xl cursor-pointer text-gray-400"
         >

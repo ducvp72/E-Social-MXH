@@ -532,10 +532,47 @@ const ChatBox = (props) => {
                 <img
                   className="rounded w-7 h-7 cursor-pointer"
                   src={"/assets/image/attach.png"}
-                  alt="emokiimg"
+                  alt="emoji"
                   onClick={() => {
                     setSelectedImage(null);
                     setMedia(!media);
+                  }}
+                  // ref={buttonMedia}
+                />
+              </div>
+
+              <div
+                style={{
+                  fontSize: "1.2em",
+                  paddingLeft: "0.2em",
+                  paddingRight: "0.2em",
+                }}
+                className="flex items-center"
+              >
+                <img
+                  className="rounded w-7 h-7 cursor-pointer"
+                  src={"/assets/image/mic.png"}
+                  alt="record"
+                  onClick={() => {
+                    alert("record");
+                  }}
+                />
+              </div>
+
+              <div
+                style={{
+                  fontSize: "1.2em",
+                  paddingLeft: "0.2em",
+                  paddingRight: "0.2em",
+                }}
+                className="flex items-center"
+              >
+                <img
+                  className="rounded w-7 h-7 cursor-pointer"
+                  src={"/assets/image/video.png"}
+                  alt="video"
+                  onClick={() => {
+                    alert("video");
                   }}
                   // ref={buttonMedia}
                 />

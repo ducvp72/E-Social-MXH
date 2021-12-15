@@ -14,6 +14,7 @@ import InfititeLoading from "./../../LoadingPage/infititeLoading";
 import { useCookies } from "react-cookie";
 import PostDialog from "./../../../components/timeline/postDialog";
 import { setDialogAction } from "../../../reducers/createPostDialog";
+import ChangePost from "./../../../components/changePost/index";
 
 const Profile = () => {
   const [cookies, ,] = useCookies(["auth"]);
@@ -28,7 +29,7 @@ const Profile = () => {
   const [toggle, setToggle] = useState({ isShow: false, postData: {} });
   const [post, setPost] = useState([]);
   const dispatch = useDispatch();
-
+  const openChangePost = useSelector((state) => state.changePost);
   useEffect(() => {
     checkShow();
     return () => {
@@ -142,6 +143,8 @@ const Profile = () => {
         <title>{currentUser?.fullname}</title>
         <meta name="description" content="Helmet application" />
       </Helmet>
+      <ChangePost open={openChangePost.showChange} />
+
       <PostDialog
         getSummary={getSummary}
         getUserPost={getUserPost}

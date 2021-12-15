@@ -1,23 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import Dialog from "@mui/material/Dialog";
 import Picker from "emoji-picker-react";
-import "./postshow.css";
 import { styled } from "@mui/material/styles";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
-import { useOnClickOutside } from "./../../utils/handleRefresh";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import Button from "@mui/material/Button";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import { toast, ToastContainer, Zoom } from "react-toastify";
-import Loading from "./../../containers/LoadingPage/index";
 import { postApi } from "./../../axiosApi/api/postApi";
 import { useCookies } from "react-cookie";
+import Loading from "./../../containers/LoadingPage/index";
+import { useOnClickOutside } from "./../../utils/handleRefresh";
+import { useSelector, useDispatch } from "react-redux";
+import { setDialogChange } from "../../reducers/changePostDialog";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -31,6 +31,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 const BootstrapDialogTitle = (props) => {
   const { children, onClose, onConfirm, ...other } = props;
+  const dispatch = useDispatch();
   return (
     <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
       {children}
@@ -38,8 +39,7 @@ const BootstrapDialogTitle = (props) => {
         <IconButton
           aria-label="close"
           onClick={() => {
-            // onClose();
-            onConfirm();
+            dispatch(setDialogChange(false));
           }}
           sx={{
             position: "absolute",
@@ -56,7 +56,7 @@ const BootstrapDialogTitle = (props) => {
   );
 };
 
-const PostDialog = (props) => {
+const ChangePost = (props) => {
   const { onClose, open, getFirstPage, getSummary, getUserPost } = props;
   const [inputStr, setInputStr] = useState([]);
   const [active, setActive] = useState(false);
@@ -70,9 +70,7 @@ const PostDialog = (props) => {
   const [loading, setLoading] = useState(false);
   const [cookies, ,] = useCookies("auth");
   const [process, setProcess] = useState(0);
-
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
-
   const getProcess = (progressEvent) => {
     const { loaded, total } = progressEvent;
     const percent = Math.round((loaded / total) * 100 * 100) / 100;
@@ -330,7 +328,7 @@ const PostDialog = (props) => {
               {userImage && (
                 <button
                   className="bg-red-500 rounded-md  focus:outline-none
-              transform hover:translate-y-1 transition-all duration-700"
+                  transform hover:translate-y-1 transition-all duration-700"
                   onClick={() => delelteCurrentImage()}
                 >
                   <p className="p-1 text-white text-base font-medium">
@@ -341,7 +339,7 @@ const PostDialog = (props) => {
             </div>
             <div className="flex-none">
               <p className="text-mygrey font-medium text-2xl">
-                Create new post
+                Change your post
               </p>
             </div>
             <div className="flex-1"></div>
@@ -445,7 +443,7 @@ const PostDialog = (props) => {
                 className={`${
                   checkDisabled(inputStr, userImage) && "opacity-25"
                 } 
-           w-full p-2 bg-primarycolor rounded-full text-white font-bold uppercase text-lg  transform hover:translate-y-1 transition-all duration-700`}
+               w-full p-2 bg-primarycolor rounded-full text-white font-bold uppercase text-lg  transform hover:translate-y-1 transition-all duration-700`}
                 disabled={checkDisabled(inputStr, userImage)}
                 onClick={() => {
                   onhandleSubmit();
@@ -461,4 +459,4 @@ const PostDialog = (props) => {
   );
 };
 
-export default PostDialog;
+export default ChangePost;

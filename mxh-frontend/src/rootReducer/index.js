@@ -5,6 +5,7 @@ import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import { authReducer } from "../reducers/authReducer";
 
 import { createPostDialogReducer } from "./../reducers/createPostDialog";
+import { ChangePostDialogReducer } from "./../reducers/changePostDialog";
 import { converReducer } from "./../reducers/converReducer";
 import { notifyReducer } from "./../reducers/notificationReducer";
 import { messageReducer } from "./../reducers/messageReducer";
@@ -42,6 +43,7 @@ const rootReducer = combineReducers({
   // mynotify: notifyReducer,
   messConver: persistReducer(messagePersistConfig, messageReducer),
   dialog: createPostDialogReducer,
+  changePost: ChangePostDialogReducer,
 });
 
 export default persistReducer(rootPersistConfig, rootReducer);
