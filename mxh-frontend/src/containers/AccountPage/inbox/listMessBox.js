@@ -156,7 +156,7 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
                 {data?.typeMessage === "IMAGE" && (
                   <>
                     <img
-                      src={`https://mxhld.herokuapp.com/v1/file/${data?.content.file}`}
+                      src={`https://mxhld.herokuapp.com/v1/file/${data?.content?.file}`}
                       alt="Akane avatar"
                       width={200}
                     />
@@ -291,22 +291,6 @@ const ListMessBox = (props) => {
       });
   };
 
-  // const fetchData = async () => {
-  //   console.log("nexFetch");
-  //   dispatch(
-  //     actGetMoreMess(
-  //       cookies.auth.tokens.access.token,
-  //       currentMessage?.data[0]?.conversationId,
-  //       currentMessage?.pageNext,
-  //       10
-  //     )
-  //   );
-  //   // console.log("NextFetch", currentMessage);
-  //   if (currentMessage?.next?.length < 20) {
-  //     setnoMore(false);
-  //   }
-  // };
-
   return (
     <>
       <ConversationHeader>
@@ -331,16 +315,13 @@ const ListMessBox = (props) => {
 
       <div
         className="post-show px-5 pb-2"
-        id="scrollableDivChat"
         style={{
           overflow: "auto",
-          display: "flex",
-          flexDirection: "column-reverse",
+          // display: "flex",
+          // flexDirection: "column-reverse",
           height: 510,
         }}
       >
-        <div ref={messagesEndRef} />
-
         {/* {currentMessage?.data &&
           currentMessage?.data.reverse().map((item, index) => {
             console.log(item.id);
@@ -355,6 +336,7 @@ const ListMessBox = (props) => {
           listMess={currentMessage?.data}
           socket={socket}
         />
+        <div ref={messagesEndRef} />
 
         {notFound && (
           <div className="fixed  z-50 transform -translate-x-1/2 mr-5 -translate-y-1/2 left-1/2 top-1/2 mt-5 ">

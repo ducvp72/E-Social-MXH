@@ -19,6 +19,12 @@ export const ListCommentCrs = (props) => {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    return () => {
+      setCmt([]);
+    };
+  }, []);
+
+  useEffect(() => {
     // console.log("itemIn List", item);
     const value = {
       id: comment.realtime,

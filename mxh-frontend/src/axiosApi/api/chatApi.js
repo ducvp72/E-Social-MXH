@@ -17,7 +17,7 @@ export const chatApi = {
 
   getMessByIdConver(token, idConver) {
     return axiosApi(
-      `message/${idConver}?sortBy=createdAt`,
+      `message/${idConver}?sortBy=createdAt:desc`,
       `GET`,
       null,
       null,

@@ -21,6 +21,7 @@ import {
   setDialogChange,
   setDialogCloseAll,
 } from "../../reducers/changePostDialog";
+import { SkeletonImagePostProfile } from "../../skeletons/Skeletons";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -69,27 +70,27 @@ const ChangePost = (props) => {
     status,
     state,
     item,
-    popup,
-    setPopup,
+    handleCloseCaro,
   } = props;
   const [inputStr, setInputStr] = useState([]);
   const [active, setActive] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
   const currentUser = useSelector((state) => state.auth.data);
-  const hiddenFileInput = React.useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [userImage, setUserImage] = useState();
   const [confirm, setonConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [cookies, ,] = useCookies("auth");
   const [process, setProcess] = useState(0);
+
   const dispatch = useDispatch();
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
   useEffect(() => {
+    //Nhan du lieu tu hook tam la status
     setInputStr(status?.text);
-    console.log("popup", popup);
+    // console.log("status data", status);
   }, [status]);
 
   const onEmojiClick = (e, emojiObject) => {
@@ -124,22 +125,6 @@ const ChangePost = (props) => {
     onClose();
   };
 
-  const handleClick = (event) => {
-    hiddenFileInput.current.click();
-  };
-
-  const imageFileHandler = (event) => {
-    const file = event.target.files[0];
-    setSelectedImage(file);
-    setUserImage(window.URL.createObjectURL(event.target.files[0]));
-  };
-
-  const delelteCurrentImage = () => {
-    setSelectedImage(null);
-    setUserImage(null);
-    document.getElementById("fileChoosen").value = "";
-  };
-
   const checkDisabled = (inputText, fileMedia) => {
     // console.log("FileMdia ", fileMedia);
     if (inputText?.length >= 1) {
@@ -168,26 +153,28 @@ const ChangePost = (props) => {
         autoClose: 1500,
         hideProgressBar: true,
       });
+
       if (getUserPost) {
         await getUserPost();
         setTimeout(() => {
           getSummary();
         }, 1000);
+        handleCloseCaro();
       }
 
+      //Gợi ở profile
       if (state) {
         await getUserPost();
         setTimeout(() => {
           getSummary();
         }, 1000);
-        if (popup) {
-          setPopup({ ...popup, isShow: false });
-        }
       }
 
+      //Gọi ở timeline
       if (item) {
         getFirstPage();
       }
+
       setInputStr(null);
       dispatch(setDialogCloseAll());
     } catch (error) {
@@ -197,62 +184,69 @@ const ChangePost = (props) => {
         autoClose: 2000,
         hideProgressBar: true,
       });
-
       dispatch(setDialogCloseAll());
-
-      if (popup) {
-        setPopup({ ...popup, isShow: false });
-      }
+      handleCloseCaro();
     }
   };
 
   const checkFile = () => {
-    if (userImage) {
-      if (
-        selectedImage?.type === "image/jpeg" ||
-        selectedImage?.type === "image/png" ||
-        selectedImage?.type === "image/gif"
-      ) {
+    if (status) {
+      if (status?.fileTypes === "IMAGE") {
         return (
-          <img
-            style={{
-              width: "550px",
-              height: "550px",
-            }}
-            src={userImage}
-            alt="img"
-            className="z-30"
-          />
+          <div className="flex justify-center h-full">
+            <img
+              src={`https://mxhld.herokuapp.com/v1/file/${status?.file}`}
+              alt="userpost"
+              className="w-full object-cover "
+            />
+          </div>
         );
       }
-      if (selectedImage?.type === "video/mp4") {
+      if (status?.fileTypes === "VIDEO") {
         return (
-          <video
-            style={{
-              width: "550px",
-              height: "550px",
-            }}
-            className="z-30"
-            controls
+          <div
+            style={{ border: "1px solid #91a3b0" }}
+            className="flex justify-center bg-black "
           >
-            <source src={userImage} />
-          </video>
+            <video
+              style={{
+                height: "550px",
+              }}
+              className="w-full focus:outline-none"
+              controls
+            >
+              <source
+                src={`https://mxhld.herokuapp.com/v1/file/${status?.file}`}
+              />
+            </video>
+          </div>
         );
       }
-      if (
-        selectedImage?.type === "audio/ogg" ||
-        selectedImage?.type === "audio/mpeg" ||
-        selectedImage?.type === "audio/mp3"
-      ) {
+      if (status?.fileTypes === "AUDIO") {
         return (
-          <audio className=" flex w-4/5  items-center z-30 " controls>
-            <source src={userImage} />
-          </audio>
+          <div className="flex h-full w-full justify-center items-center bg-gradient-to-r from-green-400 via-yellow-500 to-pink-500">
+            <audio
+              className="w-4/5 focus:outline-none"
+              src={`https://mxhld.herokuapp.com/v1/file/${status?.file}`}
+              controls
+            >
+              <source
+                src={`https://mxhld.herokuapp.com/v1/file/${status?.file}`}
+              />
+            </audio>
+          </div>
         );
       }
-    } else {
-      return;
     }
+    return (
+      <div className="flex justify-center h-full">
+        <img
+          src="/assets/image/no-pictures.png"
+          alt="userpost"
+          className="w-full object-cover p-24"
+        />
+      </div>
+    );
   };
 
   return (
@@ -313,19 +307,7 @@ const ChangePost = (props) => {
           onConfirm={handleConfirm}
         >
           <div className=" z-30 flex justify-center items-center justify-items-center ">
-            <div className="flex-1">
-              {userImage && (
-                <button
-                  className="bg-red-500 rounded-md  focus:outline-none
-                  transform hover:translate-y-1 transition-all duration-700"
-                  onClick={() => delelteCurrentImage()}
-                >
-                  <p className="p-1 text-white text-base font-medium">
-                    Delete File
-                  </p>
-                </button>
-              )}
-            </div>
+            <div className="flex-1"></div>
             <div className="flex-none">
               <p className="text-mygrey font-medium text-2xl">
                 Change your post
@@ -349,25 +331,6 @@ const ChangePost = (props) => {
               className="flex justify-center items-center"
             >
               {checkFile()}
-
-              <div className="absolute z-20">
-                <button
-                  onClick={handleClick}
-                  className={`${
-                    selectedImage && "hidden"
-                  } mr-2 cursor-pointer border-2 border-gray-400 bg-white p-1 rounded-md text-gray-400 font-medium`}
-                >
-                  Upload a file
-                </button>
-                <input
-                  className=" hidden cursor-pointer left-0 top-1  font-medium absolute text-blue-500 text-sm "
-                  type="file"
-                  accept="video/*,audio/*,image/gif,image/jpeg,image/png,.gif,.jpeg,.jpg,.png"
-                  onChange={imageFileHandler}
-                  id="fileChoosen"
-                  ref={hiddenFileInput}
-                />
-              </div>
             </div>
           </div>
           <div className="col-span-2 border-2 border-light-gray-700 divide-y-2">

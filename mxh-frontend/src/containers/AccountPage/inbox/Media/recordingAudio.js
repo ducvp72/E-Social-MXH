@@ -9,23 +9,35 @@ import { useReactMediaRecorder } from "react-media-recorder";
 const RecordingAudio = (props) => {
   const { open, onClose, setSelectedImage, sendMediaBlood } = props;
   const [audioFile, setAudioFile] = useState(null);
-  const { status, startRecording, stopRecording, mediaBlobUrl } =
-    useReactMediaRecorder({ audio: true });
+  const {
+    status,
+    startRecording,
+    stopRecording,
+    mediaBlobUrl,
+    mediaBlob,
+    clearBlobUrl,
+  } = useReactMediaRecorder({ audio: true });
 
   useEffect(() => {
     return () => {
       setAudioFile(null);
     };
   }, []);
+
   useEffect(() => {
     setAudioFile(mediaBlobUrl);
   }, [mediaBlobUrl]);
 
+  useEffect(() => {
+    if (mediaBlob !== null) setSelectedImage(mediaBlob);
+  }, [mediaBlob]);
+
   const handleVoice = () => {
-    setSelectedImage(audioFile);
+    setSelectedImage(mediaBlob);
     sendMediaBlood();
     setAudioFile(null);
     onClose();
+    clearBlobUrl();
   };
 
   return (
@@ -35,7 +47,7 @@ const RecordingAudio = (props) => {
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        Width="xl"
+        width="xl"
         fullWidth
       >
         <DialogTitle id="alert-dialog-title">
@@ -44,20 +56,29 @@ const RecordingAudio = (props) => {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div>
-              <p className="mb-2">{status}</p>
-              <button
-                className="bg-red-500 text-white rounded-md mr-2 "
-                onClick={startRecording}
-              >
-                <p className="p-2">Start Recording</p>
-              </button>
-              <button
-                className="bg-blue-500 text-white rounded-md"
-                onClick={stopRecording}
-              >
-                <p className="p-2"> Stop Recording</p>
-              </button>
-              <audio className="mt-5" src={audioFile} controls autoPlay />
+              <div className="mb-2">{status}</div>
+              <div className="flex gap-4 justify-center">
+                <button
+                  className="bg-red-400 text-white rounded-md mr-2 "
+                  onClick={startRecording}
+                >
+                  <div className="p-2">Start Recording</div>
+                </button>
+                <button
+                  className="bg-blue-400 text-white rounded-md"
+                  onClick={stopRecording}
+                >
+                  <div className="p-2"> Stop Recording</div>
+                </button>
+              </div>
+              {mediaBlobUrl && (
+                <audio
+                  className="mt-5 w-full"
+                  src={audioFile}
+                  controls
+                  autoPlay
+                />
+              )}
             </div>
           </DialogContentText>
         </DialogContent>

@@ -5,34 +5,18 @@ import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  setDialogAction,
+  setDialogAction2,
   setDialogCloseAll,
 } from "./../../reducers/changePostDialog";
 
 export const Header = (props) => {
-  const { item, getFirstPage } = props;
+  const { item } = props;
   const [cookies, ,] = useCookies("auth");
-  const [action, setAction] = useState(false);
-  const dispatch = useDispatch();
-  const actionCurrent = useSelector((state) => state.changePost);
-  const onClose = () => {
-    setAction(false);
-    // dispatch(setDialogCloseAll());
-  };
 
-  // useEffect(() => {
-  //   console.log("Item header", item);
-  // }, []);
+  const dispatch = useDispatch();
 
   return (
     <div className="grid grid-cols-2 pt-2 mb-2">
-      <DialogActionPost
-        item={item}
-        // open={true}
-        open={actionCurrent.showAction}
-        onClose={onClose}
-        getFirstPage={getFirstPage}
-      ></DialogActionPost>
       <div className=" relative flex h-4 p-4 py-6">
         <div className="flex items-center relative">
           <Link
@@ -73,8 +57,7 @@ export const Header = (props) => {
       <div className=" flex justify-end mr-2 items-center">
         <div
           onClick={() => {
-            setAction(!action);
-            dispatch(setDialogAction(true));
+            dispatch(setDialogAction2(true, item));
           }}
           className=" font-black text-2xl cursor-pointer text-gray-400"
         >

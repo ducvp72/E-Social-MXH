@@ -26,6 +26,10 @@ const UserPost = (props) => {
     setPopup(true);
   };
 
+  const handleCloseCaro = () => {
+    setPopup(false);
+  };
+
   const checkFile = () => {
     if (state) {
       if (state?.fileTypes === "IMAGE") {
@@ -34,7 +38,7 @@ const UserPost = (props) => {
             <div
               className="flex items-center justify-center cursor-pointer"
               style={{ border: "1px solid #efefef" }}
-              onClick={() => setPopup({ ...popup, isShow: true })}
+              onClick={() => setPopup(true)}
             >
               <img
                 src={`https://mxhld.herokuapp.com/v1/file/${state?.file}`}
@@ -52,7 +56,7 @@ const UserPost = (props) => {
         return (
           <div className="flex items-center justify-center cursor-pointer bg-black ">
             <video
-              onClick={() => setPopup({ ...popup, isShow: true })}
+              onClick={() => setPopup(true)}
               className="w-full outline-none h-full "
               controls
             >
@@ -67,7 +71,7 @@ const UserPost = (props) => {
         return (
           <div
             className=" items-center justify-center cursor-pointer"
-            onClick={() => setPopup({ ...popup, isShow: true })}
+            onClick={() => setPopup(true)}
           >
             <img
               src="/assets/image/audio.png"
@@ -104,6 +108,7 @@ const UserPost = (props) => {
           popup={popup}
           getUserPost={getUserPost}
           getSummary={getSummary}
+          handleCloseCaro={handleCloseCaro}
         />
       )}
       <div className="shadow-2xl cursor-pointer rounded-sm border-white relative group">

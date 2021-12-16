@@ -9,6 +9,7 @@ import { useCookies } from "react-cookie";
 import { postApi } from "./../../axiosApi/api/postApi";
 import { setDialogAction } from "../../reducers/createPostDialog";
 import ChangePost from "./../changePost/index";
+import DialogActionPost from "./../post/dialogAction";
 
 export const Timeline = () => {
   const [toggle, setToggle] = useState({ isShow: false, postData: {} });
@@ -22,6 +23,8 @@ export const Timeline = () => {
   const [skt, setSkt] = useState(true);
   const currentUser = useSelector((state) => state.auth.data);
   const [cookies, ,] = useCookies("auth");
+  const actionCurrent = useSelector((state) => state.changePost);
+
   // const openChangePost = useSelector((state) => state.changePost);
   useEffect(() => {
     getFirstPage();
@@ -81,6 +84,7 @@ export const Timeline = () => {
     return arr;
   };
   // console.log("PostApi...", post);
+  // console.log(actionCurrent);
   return (
     <div className="md:col-span-2 sm:col-start-1 sm:col-end-7 md:py-16 md:px-0 lg:px-12 xl:p-16  py-16">
       <PostDialog
@@ -89,7 +93,12 @@ export const Timeline = () => {
         onClose={onClose}
       />
       {/* <ChangePost open={openChangePost.showChange} /> */}
-
+      <DialogActionPost
+        item={actionCurrent.data}
+        open={actionCurrent.showAction}
+        onClose={onClose}
+        getFirstPage={getFirstPage}
+      ></DialogActionPost>
       <div className="rounded border border-gray-primary mb-5 md:mr-16 sm:mr-1 lg:mr-0 shadow-md">
         <div
           className=" flex"
@@ -130,9 +139,11 @@ export const Timeline = () => {
           }
         >
           {post &&
-            post.map((item) => {
+            post.map((item, index) => {
               return (
-                <Post getFirstPage={getFirstPage} key={item.id} item={item} />
+                <div key={index}>
+                  <Post getFirstPage={getFirstPage} key={index} item={item} />
+                </div>
               );
             })}
         </InfiniteScroll>

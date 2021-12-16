@@ -55,10 +55,6 @@ const ChatBox = (props) => {
   useOnClickOutside(buttonMedia, modalMedia, () => setMedia(false));
 
   useEffect(() => {
-    console.log("choose", selectedImage);
-  }, [selectedImage]);
-
-  useEffect(() => {
     if (!socket.current) return;
     console.count("socket connect");
 
@@ -393,41 +389,51 @@ const ChatBox = (props) => {
   };
 
   const sendMediaBlood = async () => {
-    console.log("ok");
-    let blob = await fetch(selectedImage)
-      .then((r) => r.blob())
-      .then(
-        (blob) => new File([blob], Date.now() + ".mp3", { type: "audio/wav" })
-      );
+    // const blob = await dataURItoBlob(selectedImage);
+    console.log("ok", selectedImage?.type);
+    let filex;
+    if (selectedImage) {
+      if (selectedImage?.type === "video/mp4") {
+        filex = new File([selectedImage], "nameFile.mp4", {
+          type: "video/mp4",
+        });
+      } else {
+        filex = new File([selectedImage], "nameFile.mp3", {
+          type: "audio/mp3",
+        });
+      }
+      var formData = new FormData();
+      console.log("ok2", filex);
+      formData.append("file", filex);
+      formData.append("conversationId", messData?.id);
 
-    console.log(blob);
-
-    var formData = new FormData();
-
-    formData.append("file", blob);
-    formData.append("conversationId", messData?.id);
-
-    chatApi
-      .createMessMedia(cookies.auth.tokens.access.token, formData, getProcess)
-      .then((rs) => {
-        setLoading(false);
-        console.log("ImgSend", rs.data.content);
-        const value = {
-          content: rs.data.content,
-          conversationId: messData?.id,
-          incomming: false,
-          createdAt: Date.now(),
-          id: rs.data?.id,
-          sender: cookies.auth.user.id,
-          typeMessage: rs.data?.typeMessage,
-        };
-        dispatch(actAddMessage(value));
-        handleChatSocketMedia(value);
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.log(err);
-      });
+      chatApi
+        .createMessMedia(cookies.auth.tokens.access.token, formData, getProcess)
+        .then((rs) => {
+          setLoading(false);
+          console.log("ImgSend", rs.data.typeMessage);
+          const value = {
+            content: {
+              text: Date.now(),
+              file: rs.data.content.file,
+            },
+            conversationId: messData?.id,
+            incomming: false,
+            createdAt: Date.now(),
+            id: rs.data?.id,
+            sender: cookies.auth.user.id,
+            typeMessage: rs.data?.typeMessage,
+          };
+          dispatch(actAddMessage(value));
+          handleChatSocketMedia(value);
+        })
+        .catch((err) => {
+          setLoading(false);
+          console.log(err);
+        });
+    } else {
+      console.log("TRY AGIAN");
+    }
   };
 
   const sendMediaFile = async () => {
@@ -520,12 +526,13 @@ const ChatBox = (props) => {
                 onClose={() => setRecordVideo(false)}
                 setSelectedImage={setSelectedImage}
                 selectedImage={setSelectedImage}
+                sendMediaBlood={sendMediaBlood}
               />
               <RecordingAudio
                 open={recordAudio}
+                onClose={() => setRecordAudio(false)}
                 setSelectedImage={setSelectedImage}
                 selectedImage={setSelectedImage}
-                onClose={() => setRecordAudio(false)}
                 sendMediaBlood={sendMediaBlood}
               />
             </div>

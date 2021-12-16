@@ -56,7 +56,7 @@ export const Post = (props) => {
 
       <Comment setPopup={setPopup} popup={popup} item={item} />
 
-      {twoCmt.map((cmt) => {
+      {twoCmt?.map((cmt) => {
         return <CurrentComment key={cmt.id} item={cmt} />;
       })}
 

@@ -36,8 +36,7 @@ export const messageReducer = (
     }
 
     case "ADD_MESSAGE": {
-      state.data = [{ ...payload }, ...state.data];
-
+      state.data = [...state.data, { ...payload }];
       return { ...state };
     }
 
@@ -76,7 +75,7 @@ export const actGetMess = (token, converId) => {
     chatApi
       .getMessByIdConver(token, converId)
       .then((rs) => {
-        // console.log("ListConvers", rs.data.results);
+        console.log("ListConversaa", rs.data.results);
         dispatch({
           type: "GET_MESSAGE",
           payload: rs.data,

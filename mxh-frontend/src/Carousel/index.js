@@ -10,9 +10,18 @@ import moment from "moment";
 import DialogActionPost from "./../components/post/dialogAction";
 import { useSelector, useDispatch } from "react-redux";
 import { setDialogCloseAll } from "../reducers/changePostDialog";
-import { setDialogAction } from "./../reducers/changePostDialog";
+import { setDialogAction2 } from "./../reducers/changePostDialog";
+
 const CarouselElement = (props) => {
-  const { setPopup, popup, item, otherItem, getUserPost, getSummary } = props;
+  const {
+    setPopup,
+    popup,
+    item,
+    otherItem,
+    getUserPost,
+    getSummary,
+    handleCloseCaro,
+  } = props;
   const [comment, setComment] = useState({ text: "", realtime: null });
   const [state, setState] = useState();
   const [skt, setSkt] = useState(true);
@@ -110,9 +119,9 @@ const CarouselElement = (props) => {
         // open={action}
         open={actionCurrent.showAction}
         onClose={onClose}
-        setPopup={setPopup}
         getUserPost={getUserPost}
         getSummary={getSummary}
+        handleCloseCaro={handleCloseCaro}
       ></DialogActionPost>
 
       <Dialog
@@ -177,7 +186,7 @@ const CarouselElement = (props) => {
                     <p
                       onClick={() => {
                         // setAction(!action);
-                        dispatch(setDialogAction(true));
+                        dispatch(setDialogAction2(true));
                       }}
                       className=" font-black text-2xl cursor-pointer text-gray-400"
                     >

@@ -16,6 +16,26 @@ const Home = () => {
   const currentUser = useSelector((state) => state.auth.data);
   const dispatch = useDispatch();
   const history = useHistory();
+
+  useEffect(() => {
+    userApi
+      .getAuthentication(cookies.auth.tokens.access.token)
+      .then((rs) => {
+        // console.log("CheckToken", rs);
+        return;
+      })
+      .catch((err) => {
+        console.log(err);
+        Swal.fire({
+          icon: "error",
+          title: "Your login session has expired",
+          showConfirmButton: false,
+          timer: 4000,
+        });
+        history.replace("/login");
+      });
+  }, []);
+
   useEffect(() => {
     // console.log(cookies.auth);
     if (cookies.auth)

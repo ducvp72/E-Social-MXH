@@ -141,7 +141,7 @@ const PostDialog = (props) => {
     // console.log("UserImage", userImage);
     setLoading(true);
     if (!userImage) {
-      postText();
+      await postText();
       getFirstPage();
     } else {
       await postMedia();
