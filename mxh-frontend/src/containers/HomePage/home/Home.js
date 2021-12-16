@@ -10,6 +10,8 @@ import { actLogout } from "./../../../reducers/authReducer";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import ListUserSearch from "./ListUserSearch";
 import { ListComment } from "./../../../components/timeline/ListComment";
+import { actLogoutConver } from "./../../../reducers/converReducer";
+import { actLogoutMess } from "../../../reducers/messageReducer";
 
 const Home = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["auth", "tempTokens"]);
@@ -32,9 +34,22 @@ const Home = () => {
           showConfirmButton: false,
           timer: 4000,
         });
-        history.replace("/login");
+        // history.replace("/");
+        // window.location.href("/login");
+        handlelogout();
       });
   }, []);
+
+  const handlelogout = () => {
+    try {
+      dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
+      dispatch(actLogoutConver());
+      dispatch(actLogoutMess());
+      removeCookie("auth", { path: "/" });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     // console.log(cookies.auth);

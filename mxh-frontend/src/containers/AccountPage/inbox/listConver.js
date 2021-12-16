@@ -59,7 +59,7 @@ const ListConver = (props) => {
   }, [socket]);
 
   useEffect(() => {
-    // console.log("LIST", currentConvers);
+    console.log("LIST", currentConvers);
     let result = currentConvers?.data.map((a) => a.userId);
     socket.current?.emit("online", { users: result });
   }, [currentConvers]);
