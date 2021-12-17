@@ -19,6 +19,7 @@ import LoadingMedia from "./../../LoadingPage/LoadingChat/indexMedia";
 import RecordingVideo from "./Media/recordingVideo";
 import RecordingAudio from "./Media/recordingAudio";
 import { actRecallMessage } from "./../../../reducers/messageReducer";
+import RecordingScreen from "./Media/recordingScreen";
 
 const ChatBox = (props) => {
   const { setOpenSr, openSr, socket } = props;
@@ -37,6 +38,7 @@ const ChatBox = (props) => {
   const [loading, setLoading] = useState(false);
   const [recordVideo, setRecordVideo] = useState(false);
   const [recordAudio, setRecordAudio] = useState(false);
+  const [recordScreen, setRecordScreen] = useState(false);
 
   //Biến dùng đẻ set Nội dung tin nhắn và thêm vào mảng tin nhắn hiện có
   const [messages, setMessages] = useState({});
@@ -393,7 +395,10 @@ const ChatBox = (props) => {
     console.log("ok", selectedImage?.type);
     let filex;
     if (selectedImage) {
-      if (selectedImage?.type === "video/mp4") {
+      if (
+        selectedImage?.type === "video/mp4" ||
+        selectedImage?.type === "video/x-matroska;codecs=avc1,opus"
+      ) {
         filex = new File([selectedImage], "nameFile.mp4", {
           type: "video/mp4",
         });
@@ -535,6 +540,13 @@ const ChatBox = (props) => {
                 selectedImage={setSelectedImage}
                 sendMediaBlood={sendMediaBlood}
               />
+              <RecordingScreen
+                open={recordScreen}
+                onClose={() => setRecordScreen(false)}
+                setSelectedImage={setSelectedImage}
+                selectedImage={setSelectedImage}
+                sendMediaBlood={sendMediaBlood}
+              />
             </div>
 
             <div
@@ -644,6 +656,25 @@ const ChatBox = (props) => {
                   alt="video"
                   onClick={() => {
                     setRecordVideo(true);
+                  }}
+                  // ref={buttonMedia}
+                />
+              </div>
+
+              <div
+                style={{
+                  fontSize: "1.2em",
+                  paddingLeft: "0.2em",
+                  paddingRight: "0.2em",
+                }}
+                className="flex items-center"
+              >
+                <img
+                  className="rounded w-7 h-7 cursor-pointer"
+                  src={"/assets/image/present.png"}
+                  alt="video"
+                  onClick={() => {
+                    setRecordScreen(true);
                   }}
                   // ref={buttonMedia}
                 />

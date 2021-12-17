@@ -5,7 +5,9 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useReactMediaRecorder } from "react-media-recorder";
+// import { useReactMediaRecorder } from "react-media-recorder";
+import { useReactMediaRecorder } from "../../../../mylibrary/react-media-recorder";
+
 import { toast, ToastContainer, Zoom } from "react-toastify";
 const RecordingAudio = (props) => {
   const { open, onClose, setSelectedImage, sendMediaBlood } = props;

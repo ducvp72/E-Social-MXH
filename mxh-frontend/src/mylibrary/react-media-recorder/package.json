@@ -1,0 +1,70 @@
+{
+  "_from": "react-media-recorder",
+  "_id": "react-media-recorder@1.6.3",
+  "_inBundle": false,
+  "_integrity": "sha512-uJ5lys9JNzE77cLXZ0EOg9jxAqQb6BpntHHRpC1nHaVKA0ygbGLvBVXU95xms+VnS9mp8pW21oM9uxAjBylTtg==",
+  "_location": "/react-media-recorder",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "react-media-recorder",
+    "name": "react-media-recorder",
+    "escapedName": "react-media-recorder",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/react-media-recorder/-/react-media-recorder-1.6.3.tgz",
+  "_shasum": "2e18172d90d4a26b0bbf3a141dfb8aeccb233dac",
+  "_spec": "react-media-recorder",
+  "_where": "E:\\GitHub\\E-Social-MXH\\mxh-frontend",
+  "author": {
+    "name": "Giridharan GM"
+  },
+  "bugs": {
+    "url": "https://github.com/giridharangm/react-media-recorder/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "A React component based on MediaRecorder() API to record audio/video streams",
+  "devDependencies": {
+    "@types/react": "^16.9.11",
+    "jsmin": "^1.0.1",
+    "typescript": "^4.4.3"
+  },
+  "files": [
+    "lib"
+  ],
+  "homepage": "https://github.com/giridharangm/react-media-recorder#readme",
+  "keywords": [
+    "react",
+    "recorder",
+    "voice recording",
+    "video recording",
+    "media recording",
+    "getusermedia",
+    "MediaRecorder",
+    "getDisplayMedia",
+    "screen recorder",
+    "video recorder",
+    "audio recorder"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "react-media-recorder",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giridharangm/react-media-recorder.git"
+  },
+  "scripts": {
+    "build": "tsc && jsmin -o ./lib/index.js ./lib/index.js",
+    "prepare": "npm run build"
+  },
+  "types": "./lib/index.d.ts",
+  "version": "1.6.3"
+}
