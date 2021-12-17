@@ -6,9 +6,10 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useReactMediaRecorder } from "react-media-recorder";
+import { toast, ToastContainer, Zoom } from "react-toastify";
 const RecordingVideo = (props) => {
   const { open, onClose, setSelectedImage, sendMediaBlood } = props;
-  const [localStream, setLocalStream] = useState(null || "");
+  const [localStream, setLocalStream] = useState(null);
   const {
     status,
     startRecording,
@@ -18,10 +19,23 @@ const RecordingVideo = (props) => {
     clearBlobUrl,
   } = useReactMediaRecorder({ video: true });
   const [videoFile, setVideoFile] = useState(null);
+  useEffect(() => {
+    clearBlobUrl();
+    return () => {
+      setVideoFile(null);
+    };
+  }, []);
 
   useEffect(() => {
-    setVideoFile(mediaBlobUrl);
-  }, [mediaBlobUrl]);
+    console.log("blob", mediaBlob);
+    console.log("url", mediaBlobUrl);
+    console.log("videoFile", videoFile);
+    console.log("local", localStream);
+  }, [mediaBlob, mediaBlobUrl]);
+
+  useEffect(() => {
+    setVideoFile(mediaBlob);
+  }, [mediaBlob]);
 
   useEffect(() => {
     if (mediaBlob !== null) setSelectedImage(mediaBlob);
@@ -46,19 +60,37 @@ const RecordingVideo = (props) => {
         track.stop();
       });
       setLocalStream(null);
-      setVideoFile(null);
-    } else return;
+      // setVideoFile(null);
+    } else onCloseVideo();
   };
 
   const handleVideo = () => {
-    setSelectedImage(mediaBlob);
-    sendMediaBlood();
-    onClose();
+    if (videoFile !== null) {
+      setSelectedImage(videoFile);
+      sendMediaBlood();
+    } else {
+      toast.error(`You not recording video !`, {
+        position: toast.POSITION.BOTTOM_CENTER,
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
+    }
     clearBlobUrl();
+    setVideoFile(null);
+    onClose();
+  };
+
+  const onCloseVideo = () => {
+    stopRecording();
+    // stopWebCam(localStream);
+    clearBlobUrl();
+    setVideoFile(null);
+    onClose();
   };
 
   return (
     <div>
+      <ToastContainer transition={Zoom} />
       <Dialog
         open={open}
         onClose={onClose}
@@ -99,13 +131,19 @@ const RecordingVideo = (props) => {
                   onClick={() => {
                     stopRecording();
                     stopWebCam(localStream);
+                    setVideoFile(mediaBlob);
                   }}
                 >
                   <div className="p-2">Stop Recording</div>
                 </button>
               </div>
               {mediaBlobUrl != null && (
-                <video className="w-full" src={videoFile} controls autoPlay />
+                <video
+                  className="w-full"
+                  src={mediaBlobUrl}
+                  controls
+                  autoPlay
+                />
               )}
             </div>
           </DialogContentText>
@@ -121,8 +159,10 @@ const RecordingVideo = (props) => {
           </Button>
           <Button
             onClick={() => {
-              clearBlobUrl();
-              onClose();
+              if (localStream !== null) {
+                stopWebCam(localStream);
+              }
+              onCloseVideo();
             }}
             autoFocus
           >
