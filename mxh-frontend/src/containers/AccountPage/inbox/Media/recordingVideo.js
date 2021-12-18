@@ -5,7 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useReactMediaRecorder } from "react-media-recorder";
+import { useReactMediaRecorder } from "../../../../mylibrary/react-media-recorder";
 import { toast, ToastContainer, Zoom } from "react-toastify";
 const RecordingVideo = (props) => {
   const { open, onClose, setSelectedImage, sendMediaBlood } = props;
@@ -26,12 +26,12 @@ const RecordingVideo = (props) => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log("blob", mediaBlob);
-    console.log("url", mediaBlobUrl);
-    console.log("videoFile", videoFile);
-    console.log("local", localStream);
-  }, [mediaBlob, mediaBlobUrl]);
+  // useEffect(() => {
+  //   console.log("blob", mediaBlob);
+  //   console.log("url", mediaBlobUrl);
+  //   console.log("videoFile", videoFile);
+  //   console.log("local", localStream);
+  // }, [mediaBlob, mediaBlobUrl]);
 
   useEffect(() => {
     setVideoFile(mediaBlob);
@@ -116,15 +116,15 @@ const RecordingVideo = (props) => {
                 />
               )}
 
-              <div className="text-red-400">{status}...</div>
+              <span className="text-red-400">{status}...</span>
               <div className=" flex gap-4 py-2 justify-center">
                 <button
-                  className=" rounded-md text-white bg-red-400"
+                  className=" rounded-md text-white bg-red-400 h-12"
                   onClick={startRecording}
                 >
-                  <div onClick={startWebCam.bind(this)} className="p-2">
+                  <span onClick={startWebCam.bind(this)} className="p-2">
                     Start Recording
-                  </div>
+                  </span>
                 </button>
                 <button
                   className=" rounded-md text-white bg-blue-400"
@@ -134,7 +134,7 @@ const RecordingVideo = (props) => {
                     setVideoFile(mediaBlob);
                   }}
                 >
-                  <div className="p-2">Stop Recording</div>
+                  <span className="p-2">Stop Recording</span>
                 </button>
               </div>
               {mediaBlobUrl != null && (

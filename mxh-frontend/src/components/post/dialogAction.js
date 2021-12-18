@@ -45,11 +45,11 @@ export default function DialogActionPost(props) {
 
   const checkStatus = () => {
     if (item) {
-      console.log("item heee", item);
+      // console.log("item heee", item);
       SetStatus(item);
       return;
     } else {
-      console.log("state here");
+      // console.log("state here");
       SetStatus(state);
     }
   };

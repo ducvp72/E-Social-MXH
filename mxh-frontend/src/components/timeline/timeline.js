@@ -8,7 +8,6 @@ import InfititeLoading from "../../containers/LoadingPage/infititeLoading";
 import { useCookies } from "react-cookie";
 import { postApi } from "./../../axiosApi/api/postApi";
 import { setDialogAction } from "../../reducers/createPostDialog";
-import ChangePost from "./../changePost/index";
 import DialogActionPost from "./../post/dialogAction";
 
 export const Timeline = () => {
@@ -33,7 +32,7 @@ export const Timeline = () => {
   }, []);
 
   const getFirstPage = async () => {
-    console.log("render first");
+    // console.log("render first");
     postApi
       .getMyPost(cookies.auth.tokens.access.token, 1, 5)
       .then((rs) => {

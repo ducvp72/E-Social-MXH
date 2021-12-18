@@ -24,8 +24,6 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   const dispatch = useDispatch();
   // console.log("Render chat element");
 
-  useEffect(() => {}, [data]);
-
   // useEffect(() => {
   //   console.log(data);
   // }, [data]);
@@ -254,8 +252,6 @@ const ListMessBox = (props) => {
   const [loading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useState("");
   const currentMessage = useSelector((state) => state.messConver);
-
-  const dispatch = useDispatch();
   let { userId } = useParams();
 
   const scrollToBottom = () => {
@@ -266,10 +262,9 @@ const ListMessBox = (props) => {
       });
     }
   };
-
   useEffect(() => {
-    console.log("Render");
-  }, [currentMessage]);
+    scrollToBottom();
+  }, []);
 
   useEffect(() => {
     scrollToBottom();

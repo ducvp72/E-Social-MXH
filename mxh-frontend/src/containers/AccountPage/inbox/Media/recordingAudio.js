@@ -94,7 +94,7 @@ const RecordingAudio = (props) => {
                     setOnRecoring(true);
                   }}
                 >
-                  <div className="p-2">Start Recording</div>
+                  <span className="p-2">Start Recording</span>
                 </button>
                 <button
                   className="bg-blue-400 text-white rounded-md"
@@ -104,7 +104,7 @@ const RecordingAudio = (props) => {
                     setOnRecoring(false);
                   }}
                 >
-                  <div className="p-2"> Stop Recording</div>
+                  <span className="p-2"> Stop Recording</span>
                 </button>
               </div>
               {mediaBlobUrl && (

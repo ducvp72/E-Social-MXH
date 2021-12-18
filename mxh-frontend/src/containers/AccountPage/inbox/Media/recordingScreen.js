@@ -5,9 +5,10 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import useScreenRecorder from "use-screen-recorder";
+// import useScreenRecorder from "use-screen-recorder";
+import useScreenRecorder from "../../../../mylibrary/use-screen-recorder";
 import { toast, ToastContainer, Zoom } from "react-toastify";
-
+import "./styles.css";
 export const Pill = ({ title, value, style }) => {
   return (
     <div style={style} className="pill">
@@ -35,13 +36,27 @@ const RecordingScreen = (props) => {
     setSelectedImage(blob);
   }, [blob]);
 
-  useEffect(() => {
-    console.log("blob", blob);
-  }, [blob]);
+  // useEffect(() => {
+  //   return () => {
+  //     setScreenFile(null);
+  //   };
+  // }, []);
 
   const handleScreen = () => {
-    setSelectedImage(blob);
-    sendMediaBlood();
+    console.log("data", blob);
+    if (blob) {
+      setSelectedImage(blob);
+      sendMediaBlood();
+    } else {
+      toast.error(`You not recording screen !`, {
+        position: toast.POSITION.BOTTOM_CENTER,
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
+    }
+    videoRef.current.load();
+    console.log("blob last", blob);
+    resetRecording();
     onClose();
   };
 
@@ -80,37 +95,56 @@ const RecordingScreen = (props) => {
                   autoPlay
                 />
               </div>
-
-              <div className="buttons">
-                {(status === "idle" ||
-                  status === "permission-requested" ||
-                  status === "error") && (
-                  <button onClick={startRecording}>Start recording</button>
-                )}
-                {(status === "recording" || status === "paused") && (
-                  <button onClick={stopRecording}>Stop recording</button>
-                )}
-                {(status === "recording" || status === "paused") && (
-                  <button
-                    onClick={() =>
-                      status === "paused" ? resumeRecording() : pauseRecording()
-                    }
-                  >
-                    {status === "paused"
-                      ? "Resume recording"
-                      : "Pause recording"}
-                  </button>
-                )}
-                {status === "stopped" && (
-                  <button
-                    onClick={() => {
-                      resetRecording();
-                      videoRef.current.load();
-                    }}
-                  >
-                    Reset recording
-                  </button>
-                )}
+              <div className="flex justify-center items-center  ">
+                <div>
+                  {(status === "idle" ||
+                    status === "permission-requested" ||
+                    status === "error") && (
+                    <button
+                      className="bg-red-500 text-white rounded-md  h-10"
+                      onClick={() => {
+                        startRecording();
+                      }}
+                    >
+                      <span className="p-5"> Start recording</span>
+                    </button>
+                  )}
+                  {(status === "recording" || status === "paused") && (
+                    <button
+                      className="bg-red-500 text-white rounded-md mr-2 h-10"
+                      onClick={stopRecording}
+                    >
+                      <span className="p-5"> Stop recording</span>
+                    </button>
+                  )}
+                  {(status === "recording" || status === "paused") && (
+                    <button
+                      className="bg-blue-500 text-white rounded-md h-10"
+                      onClick={() =>
+                        status === "paused"
+                          ? resumeRecording()
+                          : pauseRecording()
+                      }
+                    >
+                      <span className="p-5">
+                        {status === "paused"
+                          ? "Resume recording"
+                          : "Pause recording"}
+                      </span>
+                    </button>
+                  )}
+                  {status === "stopped" && (
+                    <button
+                      className="bg-yellow-500 text-white rounded-md h-10"
+                      onClick={() => {
+                        resetRecording();
+                        videoRef.current.load();
+                      }}
+                    >
+                      <span className="p-5"> Reset recording</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </DialogContentText>
@@ -125,6 +159,7 @@ const RecordingScreen = (props) => {
           </Button>
           <Button
             onClick={() => {
+              resetRecording();
               onClose();
             }}
             autoFocus

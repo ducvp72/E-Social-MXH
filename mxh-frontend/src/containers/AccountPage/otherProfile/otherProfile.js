@@ -53,7 +53,6 @@ const OtherProfile = () => {
       .createConver(cookies.auth.tokens.access.token, q)
       .then((res) => {
         setLoading(false);
-        console.log(res);
         dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
         // toast.success("Creating successfully conversation with new friend !", {
         //   position: toast.POSITION.TOP_RIGHT,
@@ -89,7 +88,7 @@ const OtherProfile = () => {
       .getUserPost(cookies.auth.tokens.access.token, q, 1, 10)
       .then((res) => {
         setSkt(false);
-        console.log(res);
+        // console.log(res);
         setUserPost(res.data.results);
         if (!res.data.totalResults) setNotFound(true);
         setnoMore(true);
@@ -204,12 +203,13 @@ const OtherProfile = () => {
                     className="font-sans font-light text-3xl hover:text-blue-500 cursor-pointer"
                     style={{ color: "#818181" }}
                   >
-                    {
-                      userInfo?.fullname || "Undefinded"
-                      // <div className="mt-2">
-                      //   <Skeleton width={150} height={20} />
-                      // </div>)
-                    }
+                    {userInfo ? (
+                      userInfo?.fullname
+                    ) : (
+                      <div className="mt-2">
+                        <Skeleton width={150} height={20} />
+                      </div>
+                    )}
                   </h1>
                   {following ? (
                     <>

@@ -14,10 +14,10 @@ import { Status } from "@chatscope/chat-ui-kit-react";
 import { setDialogAction } from "../../reducers/createPostDialog";
 import { actLogoutConver } from "./../../reducers/converReducer";
 import { actLogoutMess } from "./../../reducers/messageReducer";
-
 import { postApi } from "./../../axiosApi/api/postApi";
 import InfiniteScroll from "react-infinite-scroll-component";
 import moment from "moment";
+
 export const Topbar = () => {
   const [skt, setSkt] = useState(true);
   // const myNotify = useSelector((state) => state.myNotify.data);
@@ -164,12 +164,12 @@ export const Topbar = () => {
                 </svg>
               </NavLink>
               <div className="relative">
-                <span
+                {/* <span
                   className="absolute cursor-pointer flex  text-white items-center justify-center  rounded-full bg-red-primary"
                   style={{ top: "1px", marginLeft: "30px" }}
                 >
                   <Status status="dnd" className="cursor-pointer" size="sm" />
-                </span>
+                </span> */}
 
                 {currentUser && (
                   <NavLink to="/user/inbox/" activeClassName="text-red-500">

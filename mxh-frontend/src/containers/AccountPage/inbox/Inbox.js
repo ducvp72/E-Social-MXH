@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import Chat from "./chat";
 import ListConver from "./listConver";
 import { MainContainer } from "@chatscope/chat-ui-kit-react";
 import { SideBarChatRight } from "./sideBarChatRight";

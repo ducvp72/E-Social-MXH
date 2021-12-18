@@ -73,6 +73,11 @@ export const userApi = {
       token
     );
   },
+
+  getUserNameByPage(token, userfullname) {
+    return axiosApi(`find?fullname=${userfullname}`, `GET`, null, null, token);
+  },
+
   getAllUser(token) {
     return axiosApi(`users`, `GET`, null, null, token);
   },
