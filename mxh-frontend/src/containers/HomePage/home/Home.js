@@ -14,7 +14,12 @@ import { actLogoutConver } from "./../../../reducers/converReducer";
 import { actLogoutMess } from "../../../reducers/messageReducer";
 
 const Home = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["auth", "tempTokens"]);
+  const [cookies, setCookie, removeCookie] = useCookies([
+    "auth",
+    "tempTokens",
+    "tokens",
+    "rm_psw",
+  ]);
   const currentUser = useSelector((state) => state.auth.data);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -82,8 +87,6 @@ const Home = () => {
       <div className="bg-white overflow-x-auto">
         <div className="bg-white block" style={{ marginTop: "2rem" }}></div>
         <div className=" bg-white grid grid-cols-1 gap-0 md:grid-cols-3 md:gap-0 lg:gap-5 xl:grid-cols-3 xl:gap-4  mx-auto max-w-screen-lg ">
-          {/* <ListUserSearch /> */}
-          {/* <ListComment /> */}
           <Timeline />
           <Sidebar currentUser={currentUser} />
         </div>
