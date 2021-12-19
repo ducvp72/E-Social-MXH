@@ -1,0 +1,7 @@
+.postshow::-webkit-scrollbar {
+    width: 0em;
+}
+
+.postshow::-webkit-scrollbar-thumb {
+    background: rgba(219, 215, 215, 0.925);
+   }

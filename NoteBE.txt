@@ -1,1 +1,0 @@
-Run 'npm install' when pull source code BE and Database for add Library
