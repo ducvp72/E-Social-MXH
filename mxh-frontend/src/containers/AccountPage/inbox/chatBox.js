@@ -47,7 +47,6 @@ const ChatBox = (props) => {
   const [messData, setMessData] = useState("");
 
   //Danh sach doan chat theo id lay tu redux
-  const currentMessage = useSelector((state) => state.messConver);
 
   const [recallMess, setRecallMess] = useState(null);
   const dispatch = useDispatch();
@@ -190,7 +189,7 @@ const ChatBox = (props) => {
     });
 
     return () => {
-      console.log(socket.current);
+      // console.log(socket.current);
       socket.current.off("getMessage");
       socket.current.off("getMedia");
       socket.current.off("typing");

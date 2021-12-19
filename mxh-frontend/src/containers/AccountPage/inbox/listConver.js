@@ -16,7 +16,6 @@ import moment from "moment";
 import { Link, useParams } from "react-router-dom";
 import { actLoadMore } from "./../../../reducers/converReducer";
 import { actGetMess } from "./../../../reducers/messageReducer";
-import { io } from "socket.io-client";
 
 const SkeletonConversation = () => {
   let arr = [];
@@ -116,7 +115,8 @@ const ListConver = (props) => {
   };
 
   const getIdConverRedux = (converId) => {
-    dispatch(actGetMess(cookies.auth.tokens.access.token, converId));
+    // dispatch(actGetMess(cookies.auth.tokens.access.token, converId));
+    dispatch(actGetMess(cookies.auth.tokens.access.token, converId, 1, 20));
   };
 
   return (

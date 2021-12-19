@@ -16,6 +16,9 @@ export const Suggestions = () => {
 
   useEffect(() => {
     callListApi();
+    return () => {
+      setSuggest([]);
+    };
   }, []);
 
   const loopSkt = () => {
