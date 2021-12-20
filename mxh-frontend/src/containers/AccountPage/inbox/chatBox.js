@@ -39,7 +39,7 @@ const ChatBox = (props) => {
   const [recordVideo, setRecordVideo] = useState(false);
   const [recordAudio, setRecordAudio] = useState(false);
   const [recordScreen, setRecordScreen] = useState(false);
-
+  const messagesEndRef = useRef(null);
   //Biến dùng đẻ set Nội dung tin nhắn và thêm vào mảng tin nhắn hiện có
   const [messages, setMessages] = useState({});
 
@@ -74,6 +74,7 @@ const ChatBox = (props) => {
     // Nhận tin nhắn
     socket.current.on("getMessage", async (data) => {
       dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
+      scrollToBottom();
       console.log("onSender", data.senderId);
       console.log("userId", userId);
       console.log(userId !== data.senderId);
@@ -97,6 +98,7 @@ const ChatBox = (props) => {
     // Nhận hình ảnh hoặc ảnh kèm tin nhắn
     socket.current.on("getMedia", (data) => {
       console.log("on", data.text, " ", data.file);
+      scrollToBottom();
       if (userId !== data.senderId) return;
       if (data.text === "") {
         console.log("1");
@@ -154,7 +156,7 @@ const ChatBox = (props) => {
     //Nhận Icon
     socket.current.on("getIcon", (data) => {
       console.log("on", data.typeMessage);
-
+      scrollToBottom();
       dispatch(
         actAddMessage({
           content: null,
@@ -208,6 +210,15 @@ const ChatBox = (props) => {
     return () => setMessages([]);
   }, []);
 
+  const scrollToBottom = () => {
+    if (messagesEndRef?.current) {
+      messagesEndRef?.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
+  };
+
   const getConverByUserId = async () => {
     chatApi
       .createConver(cookies.auth.tokens.access.token, userId)
@@ -229,6 +240,7 @@ const ChatBox = (props) => {
       messageId: id,
     };
     socket.current.emit("sendMessage", onchat);
+    scrollToBottom();
   };
 
   const focusTyping = async () => {
@@ -387,6 +399,7 @@ const ChatBox = (props) => {
       typeMessage,
     };
     socket.current.emit("sendIcon", onchat);
+    scrollToBottom();
   };
 
   const sendMediaBlood = async () => {
@@ -394,10 +407,7 @@ const ChatBox = (props) => {
     console.log("ok", selectedImage?.type);
     let filex;
     if (selectedImage) {
-      if (
-        selectedImage?.type === "video/mp4" ||
-        selectedImage?.type === "video/x-matroska;codecs=avc1,opus"
-      ) {
+      if (selectedImage?.type === "video/mp4") {
         filex = new File([selectedImage], "nameFile.mp4", {
           type: "video/mp4",
         });
@@ -430,6 +440,7 @@ const ChatBox = (props) => {
           };
           dispatch(actAddMessage(value));
           handleChatSocketMedia(value);
+          scrollToBottom();
         })
         .catch((err) => {
           setLoading(false);
@@ -471,13 +482,13 @@ const ChatBox = (props) => {
     if (emotion === "like") {
       chatApi
         .likeMess(cookies.auth.tokens.access.token, messData?.id)
-        .then((data) => {
+        .then((rs) => {
           dispatch(
             actAddMessage({
               conversationId: messData?.id,
               incomming: false,
               createdAt: Date.now(),
-              id: data?.id,
+              id: rs?.data.id,
               sender: cookies.auth.user.id,
               typeMessage: "LIKE",
             })
@@ -487,13 +498,13 @@ const ChatBox = (props) => {
     } else {
       chatApi
         .loveMess(cookies.auth.tokens.access.token, messData?.id)
-        .then((data) => {
+        .then((rs) => {
           dispatch(
             actAddMessage({
               conversationId: messData?.id,
               incomming: false,
               createdAt: Date.now(),
-              id: data?.id,
+              id: rs?.data.id,
               sender: cookies.auth.user.id,
               typeMessage: "LOVE",
             })
@@ -501,6 +512,7 @@ const ChatBox = (props) => {
           handleChatSocketIcon("LOVE");
         });
     }
+    scrollToBottom();
   };
 
   return (
@@ -519,6 +531,7 @@ const ChatBox = (props) => {
                 openSr={openSr}
                 socket={socket}
                 recallMess={recallMess}
+                scrollDown={messagesEndRef}
               />
               {/* <div className=" flex items-center justify-center bg-gray-400"> */}
               <div className="w-full" style={{ height: "10px" }}>

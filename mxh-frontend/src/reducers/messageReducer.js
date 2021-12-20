@@ -18,7 +18,7 @@ export const messageReducer = (
     case "GET_MESSAGE":
       state.more = true;
       // console.log("Vao Day");
-      state.data = payload.results.reverse();
+      state.data = payload.results;
       // state.data = payload.results;
       state.next = [];
       state.pageNext = 2;
@@ -38,7 +38,7 @@ export const messageReducer = (
       const length = payload.results.length;
       if (state.pageNext > state.totalPages) state.more = false;
       else {
-        state.data = [...state.next, ...state.data];
+        state.data = [...state.data, ...state.next];
         state.pageNext = state.pageNext + 1;
         state.more = true;
       }
@@ -46,12 +46,12 @@ export const messageReducer = (
     }
 
     case "ADD_MESSAGE": {
-      state.data = [...state.data, { ...payload }];
+      state.data = [{ ...payload }, ...state.data];
       return { ...state };
     }
 
     case "RECALL_MESSAGE": {
-      console.log("payload", payload);
+      // console.log("payload", payload);
       state.data[payload.index] = {
         content: null,
         incomming: true,
@@ -80,23 +80,6 @@ export const messageReducer = (
     }
   }
 };
-
-// export const actGetMess = (token, converId) => {
-//   return (dispatch) => {
-//     chatApi
-//       .getMessByIdConver(token, converId)
-//       .then((rs) => {
-//         // console.log("ListConversaa", rs.data.results);
-//         dispatch({
-//           type: "GET_MESSAGE",
-//           payload: rs.data,
-//         });
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//       });
-//   };
-// };
 
 export const actGetMess = (token, converId, page, limit) => {
   return (dispatch) => {

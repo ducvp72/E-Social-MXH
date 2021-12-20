@@ -5,29 +5,27 @@ import { SuggestionsProfiles } from "./suggestionsProfiles";
 import { SkeletonSuggest } from "./../../skeletons/Skeletons";
 import { userApi } from "./../../axiosApi/api/userApi";
 import { useCookies } from "react-cookie";
+import axios from "axios";
 
 export const Suggestions = () => {
-  const [cookies, ,] = useCookies(["auth"]);
   const [openNew, setOpenNew] = useState(false);
   const [select, setSelect] = useState(null);
   const [open, setOpen] = useState(false);
-  const [skt, setSkt] = useState(true);
-  const [suggests, setSuggest] = useState([]);
+  const [advice, setAdvice] = useState(null);
 
   useEffect(() => {
-    callListApi();
-    return () => {
-      setSuggest([]);
-    };
+    axios({
+      method: "get",
+      url: "https://www.boredapi.com/api/activity",
+    })
+      .then((res) => {
+        console.log("advice", res.data.activity);
+        setAdvice(res.data.activity);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
-
-  const loopSkt = () => {
-    let arr = [];
-    for (let i = 0; i <= 5; i++) {
-      arr = [...arr, <SkeletonSuggest key={i} />];
-    }
-    return arr;
-  };
 
   const handleClose = () => {
     setOpen(false);
@@ -36,31 +34,6 @@ export const Suggestions = () => {
   const choosing = (choose) => {
     setSelect(choose);
     setOpen(true);
-  };
-
-  const getRandomString = async (length) => {
-    var randomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    var result = "";
-    for (var i = 0; i < length; i++) {
-      result += randomChars.charAt(
-        Math.floor(Math.random() * randomChars.length)
-      );
-    }
-    return result;
-  };
-
-  const callListApi = async () => {
-    const random = await getRandomString(1);
-    await userApi
-      .getUserName(cookies.auth.tokens.access.token, random, 1, 5)
-      .then((rs) => {
-        setSuggest(rs.data.results);
-        setSkt(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setSkt(false);
-      });
   };
 
   return (
@@ -156,19 +129,15 @@ export const Suggestions = () => {
         {/* </div> */}
       </Dialog>
       <div className="text-sm justify-between mb-2 mt-5">
-        <p className="font-bold text-gray-base">Suggestions for you</p>
+        {/* <p className="font-bold text-gray-base">Suggestions for you</p> */}
         <div
-          className=" mt-4 post-show"
+          className=" mt-4 post-show bg-red-300 flex items-center justify-center"
           style={{
             height: "270px",
+            width: "350px",
           }}
         >
-          {skt && loopSkt()}
-
-          {suggests &&
-            suggests.map((item) => {
-              return <SuggestionsProfiles key={item.id} item={item} />;
-            })}
+          <p className=" text-black text-xl font-avatar p-5">{advice}</p>
         </div>
       </div>
     </div>

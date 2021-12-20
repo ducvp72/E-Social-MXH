@@ -8,8 +8,6 @@ import { useHistory } from "react-router-dom";
 import Swal from "sweetalert2";
 import { actLogout } from "./../../../reducers/authReducer";
 import { userApi } from "./../../../axiosApi/api/userApi";
-import ListUserSearch from "./ListUserSearch";
-import { ListComment } from "./../../../components/timeline/ListComment";
 import { actLogoutConver } from "./../../../reducers/converReducer";
 import { actLogoutMess } from "../../../reducers/messageReducer";
 

@@ -223,34 +223,17 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   );
 });
 
-const ListMess = ({ listMess, userInfo, socket, currentMessage }) => {
+const ListMess = ({
+  listMess,
+  userInfo,
+  socket,
+  currentMessage,
+  scrollDown,
+}) => {
   const [cookies, ,] = useCookies(["auth"]);
-  const [loading, setLoading] = useState(true);
-  const [noMore, setnoMore] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const messagesEndRef = useRef(null);
-
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    scrollToBottom();
-  }, []);
-
-  const scrollToBottom = () => {
-    if (messagesEndRef?.current) {
-      messagesEndRef?.current.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
-    }
-  };
-  useEffect(() => {
-    console.log("Scroll", listMess?.length);
-    console.log("Scroll2", currentMessage);
-  }, [currentMessage, listMess]);
-
   const fetchMess = async () => {
-    console.log("NextFetch");
     dispatch(
       actGetMoreMess(
         cookies.auth.tokens.access.token,
@@ -270,9 +253,9 @@ const ListMess = ({ listMess, userInfo, socket, currentMessage }) => {
         height: 520,
         flexDirection: "column-reverse",
       }}
-      className=" post-show"
+      className=" post-show p-5"
     >
-      <div ref={messagesEndRef} />
+      <div ref={scrollDown}></div>
       <InfiniteScroll
         dataLength={listMess?.length}
         next={fetchMess}
@@ -295,55 +278,30 @@ const ListMess = ({ listMess, userInfo, socket, currentMessage }) => {
         }
         scrollableTarget="scrollableDivChat"
       >
-        <div className="p-4">
-          {listMess &&
-            listMess.map((item, index) => {
-              return (
-                <div key={index}>
-                  <ChatElement
-                    index={index}
-                    userInfo={userInfo}
-                    data={item}
-                    socket={socket}
-                  />
-                </div>
-              );
-            })}
-        </div>
-
-        {/* {notFound && (
-          <div className="fixed  z-50 transform -translate-x-1/2 mr-5 -translate-y-1/2 left-1/2 top-1/2 mt-5 ">
-            <p className=""></p>
-          </div>
-        )} */}
+        {listMess &&
+          listMess.map((item, index) => {
+            return (
+              <div key={index}>
+                <ChatElement
+                  index={index}
+                  userInfo={userInfo}
+                  data={item}
+                  socket={socket}
+                />
+              </div>
+            );
+          })}
       </InfiniteScroll>
     </div>
   );
 };
 
 const ListMessBox = (props) => {
-  const { setOpenSr, openSr, typing, socket } = props;
-  const messagesEndRef = useRef(null);
+  const { setOpenSr, openSr, typing, socket, scrollDown } = props;
 
   const [userInfo, setUserInfo] = useState("");
   const currentMessage = useSelector((state) => state.messConver);
   let { userId } = useParams();
-
-  const scrollToBottom = () => {
-    if (messagesEndRef?.current) {
-      messagesEndRef?.current.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
-    }
-  };
-  useEffect(() => {
-    scrollToBottom();
-  }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [currentMessage]);
 
   useEffect(() => {
     getUserInfo();
@@ -367,7 +325,7 @@ const ListMessBox = (props) => {
         <ConversationHeader.Back />
         <Avatar
           src={`https://mxhld.herokuapp.com/v1/image/${userInfo?.avatar}`}
-          status="available"
+          // status="available"
         />
         <ConversationHeader.Content
           userName={`${userInfo?.fullname}`}
@@ -397,6 +355,7 @@ const ListMessBox = (props) => {
           listMess={currentMessage?.data}
           currentMessage={currentMessage}
           socket={socket}
+          scrollDown={scrollDown}
         />
 
         {/* <MessageSeparator content="Saturday, 30 November 2019" /> */}

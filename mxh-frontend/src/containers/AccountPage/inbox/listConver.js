@@ -55,7 +55,7 @@ const ListConver = (props) => {
     socket?.current?.on("error", (err) => {
       console.log(err);
     });
-  }, [socket]);
+  }, [socket, currentConvers]);
 
   useEffect(() => {
     // console.log("LIST", currentConvers);
@@ -107,15 +107,12 @@ const ListConver = (props) => {
         10
       )
     );
-    // console.log("NextFetch", currentConvers);
     if (currentConvers?.next?.length < 10) {
       setnoMore(false);
     }
-    // setPage(page + 1);
   };
 
   const getIdConverRedux = (converId) => {
-    // dispatch(actGetMess(cookies.auth.tokens.access.token, converId));
     dispatch(actGetMess(cookies.auth.tokens.access.token, converId, 1, 20));
   };
 

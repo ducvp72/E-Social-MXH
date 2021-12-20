@@ -73,6 +73,7 @@ const PostDialog = (props) => {
   const [process, setProcess] = useState(0);
   const model = useRef(null);
   const [load, setLoad] = useState(true);
+
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
   useEffect(() => {
@@ -138,9 +139,6 @@ const PostDialog = (props) => {
   };
 
   const FormData = require("form-data");
-  useEffect(() => {
-    console.log("currentLoad", load);
-  }, [load]);
 
   const onhandleSubmit = async () => {
     setLoad(true);
@@ -149,7 +147,8 @@ const PostDialog = (props) => {
 
     if (
       selectedImage?.type === "image/jpeg" ||
-      selectedImage?.type === "image/png"
+      selectedImage?.type === "image/png" ||
+      selectedImage?.type === "video/mp4"
     ) {
       predictions = await model.current.classify(img);
       console.log("hinh: ", predictions);
@@ -206,31 +205,13 @@ const PostDialog = (props) => {
           autoClose: 1,
         },
       });
-
       await resolveAfter;
-
-      //#region Cach cu
-      // const predictions = await model.current.classifyGif(img, myConfig);
-      // console.log("gif", predictions);
-      // predictions.forEach((p) => {
-      //   if (
-      //     (p[0].className === "Porn" ||
-      //       p[0].className === "Hentai" ||
-      //       p[0].className === "Sexy") &&
-      //     p[0].probability >= 0.5
-      //   ) {
-      //     degree = true;
-      //     return;
-      //   }
-      // });
-      //
     }
     console.log("loadAfter", load);
     console.log("Degree", degree);
     if (degree) {
       toast.error(
         <div className="flex items-center justify-center">
-          {/* "Please choose a photo that matches the community standards !", */}
           <img
             className="w-16 h-16"
             src="/assets/image/18plus.png"
@@ -243,22 +224,16 @@ const PostDialog = (props) => {
           hideProgressBar: true,
         }
       );
+    } else {
+      setLoading(true);
+      if (!userImage) {
+        await postText();
+        getFirstPage();
+      } else {
+        await postMedia();
+        getFirstPage();
+      }
     }
-
-    // toast.success("Ảnh bình thường", {
-    //   position: toast.POSITION.TOP_RIGHT,
-    //   autoClose: 2000,
-    //   hideProgressBar: true,
-    // });
-
-    // setLoading(true);
-    // if (!userImage) {
-    //   await postText();
-    //   getFirstPage();
-    // } else {
-    //   await postMedia();
-    //   getFirstPage();
-    // }
   };
 
   const postText = async () => {
@@ -381,8 +356,7 @@ const PostDialog = (props) => {
   };
 
   const imageFileHandler = async (event) => {
-    const file = event.target.files[0];
-
+    const file = event.target.files?.item(0);
     setSelectedImage(file);
     setUserImage(window.URL.createObjectURL(event.target.files[0]));
   };
