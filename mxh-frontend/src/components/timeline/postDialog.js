@@ -18,6 +18,7 @@ import { toast, ToastContainer, Zoom } from "react-toastify";
 import Loading from "./../../containers/LoadingPage/index";
 import { postApi } from "./../../axiosApi/api/postApi";
 import { useCookies } from "react-cookie";
+import * as nsfwjs from "nsfwjs";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -70,8 +71,15 @@ const PostDialog = (props) => {
   const [loading, setLoading] = useState(false);
   const [cookies, ,] = useCookies("auth");
   const [process, setProcess] = useState(0);
-
+  const model = useRef(null);
+  const [load, setLoad] = useState(true);
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
+
+  useEffect(() => {
+    setTimeout(async () => {
+      model.current = await nsfwjs.load();
+    }, 100);
+  }, []);
 
   const getProcess = (progressEvent) => {
     const { loaded, total } = progressEvent;
@@ -115,12 +123,6 @@ const PostDialog = (props) => {
     hiddenFileInput.current.click();
   };
 
-  const imageFileHandler = (event) => {
-    const file = event.target.files[0];
-    setSelectedImage(file);
-    setUserImage(window.URL.createObjectURL(event.target.files[0]));
-  };
-
   const delelteCurrentImage = () => {
     setSelectedImage(null);
     setUserImage(null);
@@ -136,17 +138,127 @@ const PostDialog = (props) => {
   };
 
   const FormData = require("form-data");
+  useEffect(() => {
+    console.log("currentLoad", load);
+  }, [load]);
 
   const onhandleSubmit = async () => {
-    // console.log("UserImage", userImage);
-    setLoading(true);
-    if (!userImage) {
-      await postText();
-      getFirstPage();
-    } else {
-      await postMedia();
-      getFirstPage();
+    setLoad(true);
+    const img = document.getElementById("imgcheck");
+    let degree, predictions, resolveAfter;
+
+    if (
+      selectedImage?.type === "image/jpeg" ||
+      selectedImage?.type === "image/png"
+    ) {
+      predictions = await model.current.classify(img);
+      console.log("hinh: ", predictions);
+      if (
+        (predictions[0].className === "Porn" ||
+          predictions[0].className === "Hentai" ||
+          predictions[0].className === "Sexy") &&
+        predictions[0].probability >= 0.5
+      )
+        degree = true;
     }
+    if (selectedImage?.type === "image/gif") {
+      const myConfig = {
+        topk: 1,
+        fps: 20,
+      };
+      resolveAfter = new Promise(async (resolve) => {
+        predictions = await model.current.classifyGif(img, myConfig);
+        console.log("gif", predictions);
+        predictions.forEach((p) => {
+          if (
+            (p[0].className === "Porn" ||
+              p[0].className === "Hentai" ||
+              p[0].className === "Sexy") &&
+            p[0].probability >= 0.5
+          ) {
+            degree = true;
+            return;
+          }
+        });
+        setTimeout(resolve, 1);
+      });
+
+      toast.promise(resolveAfter, {
+        pending: {
+          render() {
+            return (
+              <div className="flex items-center justify-center gap-2">
+                <img
+                  className="w-16 h-16"
+                  src="/assets/image/phantich.gif"
+                  alt="analyzing"
+                />
+                <span className=" font-avatar text-xl">Scanning</span>
+              </div>
+            );
+          },
+          hideProgressBar: false,
+          position: toast.POSITION.TOP_RIGHT,
+        },
+        success: {
+          hideProgressBar: true,
+          theme: "light",
+          autoClose: 1,
+        },
+      });
+
+      await resolveAfter;
+
+      //#region Cach cu
+      // const predictions = await model.current.classifyGif(img, myConfig);
+      // console.log("gif", predictions);
+      // predictions.forEach((p) => {
+      //   if (
+      //     (p[0].className === "Porn" ||
+      //       p[0].className === "Hentai" ||
+      //       p[0].className === "Sexy") &&
+      //     p[0].probability >= 0.5
+      //   ) {
+      //     degree = true;
+      //     return;
+      //   }
+      // });
+      //
+    }
+    console.log("loadAfter", load);
+    console.log("Degree", degree);
+    if (degree) {
+      toast.error(
+        <div className="flex items-center justify-center">
+          {/* "Please choose a photo that matches the community standards !", */}
+          <img
+            className="w-16 h-16"
+            src="/assets/image/18plus.png"
+            alt="banned"
+          />
+        </div>,
+        {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 2500,
+          hideProgressBar: true,
+        }
+      );
+    }
+
+    // toast.success("Ảnh bình thường", {
+    //   position: toast.POSITION.TOP_RIGHT,
+    //   autoClose: 2000,
+    //   hideProgressBar: true,
+    // });
+
+    // setLoading(true);
+    // if (!userImage) {
+    //   await postText();
+    //   getFirstPage();
+    // } else {
+    //   await postMedia();
+    //   getFirstPage();
+    // }
   };
 
   const postText = async () => {
@@ -226,6 +338,7 @@ const PostDialog = (props) => {
       ) {
         return (
           <img
+            id="imgcheck"
             style={{
               width: "550px",
               height: "550px",
@@ -239,6 +352,7 @@ const PostDialog = (props) => {
       if (selectedImage?.type === "video/mp4") {
         return (
           <video
+            id="imgcheck"
             style={{
               width: "550px",
               height: "550px",
@@ -266,9 +380,16 @@ const PostDialog = (props) => {
     }
   };
 
+  const imageFileHandler = async (event) => {
+    const file = event.target.files[0];
+
+    setSelectedImage(file);
+    setUserImage(window.URL.createObjectURL(event.target.files[0]));
+  };
+
   return (
     <div>
-      <ToastContainer transition={Zoom} />
+      {load && <ToastContainer transition={Zoom} icon={false} />}
       <BootstrapDialog
         maxWidth="lg"
         height="600px"
@@ -331,7 +452,7 @@ const PostDialog = (props) => {
               transform hover:translate-y-1 transition-all duration-700"
                   onClick={() => delelteCurrentImage()}
                 >
-                  <p className="p-1 text-white text-base font-medium">
+                  <p className="p-1 text-white text-base font-medium ">
                     Delete File
                   </p>
                 </button>
@@ -366,9 +487,9 @@ const PostDialog = (props) => {
                   onClick={handleClick}
                   className={`${
                     selectedImage && "hidden"
-                  } mr-2 cursor-pointer border-2 border-gray-400 bg-white p-1 rounded-md text-gray-400 font-medium`}
+                  }  transform hover:translate-y-2 h-10 transition-all duration-700 mr-2 cursor-pointer border bg-blue-400 text-white focus:outline-none border-gray-400  p-1 rounded-md  font-medium`}
                 >
-                  Upload a file
+                  <span className="p-5"> Upload a file</span>
                 </button>
                 <input
                   className=" hidden cursor-pointer left-0 top-1  font-medium absolute text-blue-500 text-sm "

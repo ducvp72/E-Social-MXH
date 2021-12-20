@@ -38,9 +38,21 @@ export const Suggestions = () => {
     setOpen(true);
   };
 
+  const getRandomString = async (length) => {
+    var randomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    var result = "";
+    for (var i = 0; i < length; i++) {
+      result += randomChars.charAt(
+        Math.floor(Math.random() * randomChars.length)
+      );
+    }
+    return result;
+  };
+
   const callListApi = async () => {
+    const random = await getRandomString(1);
     await userApi
-      .getUserName(cookies.auth.tokens.access.token, "d", 1, 5)
+      .getUserName(cookies.auth.tokens.access.token, random, 1, 5)
       .then((rs) => {
         setSuggest(rs.data.results);
         setSkt(false);
