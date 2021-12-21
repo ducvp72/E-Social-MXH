@@ -16,7 +16,6 @@ import moment from "moment";
 import { Link, useParams } from "react-router-dom";
 import { actLoadMore } from "./../../../reducers/converReducer";
 import { actGetMess } from "./../../../reducers/messageReducer";
-import { io } from "socket.io-client";
 
 const SkeletonConversation = () => {
   let arr = [];
@@ -48,6 +47,12 @@ const ListConver = (props) => {
   const [online, setOnline] = useState([]);
 
   useEffect(() => {
+    return () => {
+      setOnline([]);
+    };
+  }, []);
+
+  useEffect(() => {
     socket?.current?.on("online", (users) => {
       // console.log("ArrUser", users);
       setOnline(users);
@@ -56,7 +61,7 @@ const ListConver = (props) => {
     socket?.current?.on("error", (err) => {
       console.log(err);
     });
-  }, [socket]);
+  }, [socket, currentConvers]);
 
   useEffect(() => {
     // console.log("LIST", currentConvers);
@@ -108,15 +113,13 @@ const ListConver = (props) => {
         10
       )
     );
-    // console.log("NextFetch", currentConvers);
     if (currentConvers?.next?.length < 10) {
       setnoMore(false);
     }
-    // setPage(page + 1);
   };
 
   const getIdConverRedux = (converId) => {
-    dispatch(actGetMess(cookies.auth.tokens.access.token, converId));
+    dispatch(actGetMess(cookies.auth.tokens.access.token, converId, 1, 20));
   };
 
   return (

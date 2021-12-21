@@ -25,15 +25,15 @@ export const chatApi = {
     );
   },
 
-  // getMessByIdConver(token, idConver, page, limit) {
-  //   return axiosApi(
-  //     `message/${idConver}?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
-  //     `GET`,
-  //     null,
-  //     null,
-  //     token
-  //   );
-  // },
+  getMessByIdConverByPage(token, idConver, page, limit) {
+    return axiosApi(
+      `message/${idConver}?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
+      `GET`,
+      null,
+      null,
+      token
+    );
+  },
 
   createConver(token, idUser) {
     return axiosApi(

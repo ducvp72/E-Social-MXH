@@ -7,6 +7,7 @@ const initialState = {
   totalResults: 0,
   loading: true,
   error: null,
+  more: true,
 };
 
 export const messageReducer = (
@@ -14,43 +15,56 @@ export const messageReducer = (
   { type, payload, ...action }
 ) => {
   switch (type) {
-    case "GET_MESSAGE": {
-      console.log("Vao Day");
-      state.data = payload.results.reverse();
+    case "GET_MESSAGE":
+      state.more = true;
+      // console.log("Vao Day");
+      state.data = payload.results;
+      // state.data = payload.results;
       state.next = [];
       state.pageNext = 2;
       state.totalPages = payload.totalPages;
       state.totalResults = payload.totalResults;
       state.loading = false;
       state.error = null;
+      // const length = payload.results.length;
+
+      // console.log("aaaaaa", length);
+      if (state.pageNext > state.totalPages) state.more = false;
+      else state.more = true;
       return { ...state };
-    }
 
     case "GET_MORE_MESS": {
       state.next = payload.results;
-      if (state.next.length > 0) {
+      const length = payload.results.length;
+      if (state.pageNext > state.totalPages) state.more = false;
+      else {
         state.data = [...state.data, ...state.next];
         state.pageNext = state.pageNext + 1;
+        state.more = true;
       }
       return { ...state };
     }
 
     case "ADD_MESSAGE": {
-      state.data = [...state.data, { ...payload }];
+      state.data = [{ ...payload }, ...state.data];
       return { ...state };
     }
 
     case "RECALL_MESSAGE": {
-      console.log("payload", payload);
-      state.data[payload.index] = {
-        content: null,
-        incomming: true,
-        conversationId: payload.value.conversationId,
-        createdAt: payload.value.createdAt,
-        id: payload.value.id,
-        sender: payload.value.sender,
-        typeMessage: "RECALL",
-      };
+      // console.log("payload", payload);
+      const length = state.data.length;
+      if (length > payload.index) {
+        state.data[payload.index] = {
+          content: null,
+          incomming: true,
+          conversationId: payload.value.conversationId,
+          createdAt: payload.value.createdAt,
+          id: payload.value.id,
+          sender: payload.value.sender,
+          typeMessage: "RECALL",
+        };
+      }
+
       return { ...state };
     }
 
@@ -61,6 +75,7 @@ export const messageReducer = (
       state.totalPages = 0;
       state.totalResults = 0;
       state.error = null;
+      state.more = true;
       return { ...state };
     }
 
@@ -70,10 +85,10 @@ export const messageReducer = (
   }
 };
 
-export const actGetMess = (token, converId) => {
+export const actGetMess = (token, converId, page, limit) => {
   return (dispatch) => {
     chatApi
-      .getMessByIdConver(token, converId)
+      .getMessByIdConverByPage(token, converId, page, limit)
       .then((rs) => {
         // console.log("ListConversaa", rs.data.results);
         dispatch({
@@ -90,9 +105,8 @@ export const actGetMess = (token, converId) => {
 export const actGetMoreMess = (token, converId, page, limit) => {
   return (dispatch) => {
     chatApi
-      .getMessByIdConver(token, converId, page, limit)
+      .getMessByIdConverByPage(token, converId, page, limit)
       .then((rs) => {
-        console.log("ListConverMore", rs.data.results);
         dispatch({
           type: "GET_MORE_MESS",
           payload: rs.data,

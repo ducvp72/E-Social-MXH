@@ -77,7 +77,6 @@ const Account = () => {
 
   // let { userName } = useParams();
   useEffect(() => {
-    console.log("auth", cookies.auth.user.gender);
     if (currentUser) {
       const birthday = currentUser.birthday.toString().split("/");
       setDob(birthday[1] + "/" + birthday[0] + "/" + birthday[2]);
@@ -114,10 +113,12 @@ const Account = () => {
 
   const imageFileHandler = (event) => {
     setSelectedImage(event.target.files[0]);
-    if (selectedImage?.length !== 0)
-      setUserImage(
-        (window.URL || window.webkitURL).createObjectURL(event.target.files[0])
-      );
+    // if (selectedImage?.length !== 0)
+    //   setUserImage(
+    //     (window.URL || window.webkitURL).createObjectURL(event.target.files[0])
+    //   );
+
+    setUserImage(window.URL.createObjectURL(event.target.files[0]));
   };
 
   const changeAvatar = () => {
@@ -147,12 +148,12 @@ const Account = () => {
       })
       .catch((err) => {
         console.log("err", err.response.data.message);
-        Swal.fire({
-          icon: "error",
-          title: err.response.data.message,
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        // Swal.fire({
+        //   icon: "error",
+        //   title: err.response.data.message,
+        //   showConfirmButton: false,
+        //   timer: 1500,
+        // });
         setLoading(false);
       });
   };

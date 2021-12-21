@@ -5,7 +5,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-// import { useReactMediaRecorder } from "react-media-recorder";
 import { useReactMediaRecorder } from "../../../../mylibrary/react-media-recorder";
 
 import { toast, ToastContainer, Zoom } from "react-toastify";
@@ -86,7 +85,7 @@ const RecordingAudio = (props) => {
               )}
 
               <div className="mb-2">{status}</div>
-              <div className="flex gap-4 justify-center">
+              <div className="flex gap-4 justify-center h-10">
                 <button
                   className="bg-red-400 text-white rounded-md mr-2 "
                   onClick={() => {
@@ -122,6 +121,7 @@ const RecordingAudio = (props) => {
           <Button onClick={() => handleVoice()}>Send</Button>
           <Button
             onClick={() => {
+              stopRecording();
               clearBlobUrl();
               setAudioFile(null);
               setOnRecoring(false);

@@ -15,14 +15,14 @@ import {
   VoiceCallButton,
   Message,
 } from "@chatscope/chat-ui-kit-react";
-import { actRecallMessage } from "./../../../reducers/messageReducer";
+import {
+  actRecallMessage,
+  actGetMoreMess,
+} from "./../../../reducers/messageReducer";
 
 const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
-  // const { data, userInfo, socket } = props;
   const [cookies, ,] = useCookies("auth");
-  const [fake, setFake] = useState(null);
   const dispatch = useDispatch();
-  // console.log("Render chat element");
 
   // useEffect(() => {
   //   console.log(data);
@@ -223,52 +223,85 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   );
 });
 
-const ListMess = ({ listMess, userInfo, socket }) => {
+const ListMess = ({
+  listMess,
+  userInfo,
+  socket,
+  currentMessage,
+  scrollDown,
+}) => {
+  const [cookies, ,] = useCookies(["auth"]);
+  const dispatch = useDispatch();
+
+  const fetchMess = async () => {
+    dispatch(
+      actGetMoreMess(
+        cookies.auth.tokens.access.token,
+        currentMessage.data[0].conversationId,
+        currentMessage?.pageNext,
+        20
+      )
+    );
+  };
+
   return (
-    <>
-      {listMess &&
-        listMess.map((item, index) => {
-          return (
-            <div key={index}>
-              <ChatElement
-                index={index}
-                userInfo={userInfo}
-                data={item}
-                socket={socket}
-              />
+    <div
+      id="scrollableDivChat"
+      style={{
+        overflow: "auto",
+        display: "flex",
+        height: 520,
+        flexDirection: "column-reverse",
+      }}
+      className=" post-show p-5"
+    >
+      <div ref={scrollDown}></div>
+      <InfiniteScroll
+        dataLength={listMess?.length}
+        next={fetchMess}
+        style={{
+          display: "flex",
+          flexDirection: "column-reverse",
+        }}
+        inverse={true}
+        // scrollThreshold={0.2}
+        hasMore={currentMessage.more}
+        loader={
+          <div className=" flex justify-center">
+            <div className="lds-ring flex items-center justify-center">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
             </div>
-          );
-        })}
-    </>
+          </div>
+        }
+        scrollableTarget="scrollableDivChat"
+      >
+        {listMess &&
+          listMess.map((item, index) => {
+            return (
+              <div key={index}>
+                <ChatElement
+                  index={index}
+                  userInfo={userInfo}
+                  data={item}
+                  socket={socket}
+                />
+              </div>
+            );
+          })}
+      </InfiniteScroll>
+    </div>
   );
 };
 
 const ListMessBox = (props) => {
-  const { setOpenSr, openSr, typing, socket } = props;
-  const messagesEndRef = useRef(null);
-  const [cookies, ,] = useCookies(["auth"]);
-  const [noMore, setnoMore] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { setOpenSr, openSr, typing, socket, scrollDown } = props;
+
   const [userInfo, setUserInfo] = useState("");
   const currentMessage = useSelector((state) => state.messConver);
   let { userId } = useParams();
-
-  const scrollToBottom = () => {
-    if (messagesEndRef?.current) {
-      messagesEndRef?.current.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
-    }
-  };
-  useEffect(() => {
-    scrollToBottom();
-  }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [currentMessage]);
 
   useEffect(() => {
     getUserInfo();
@@ -292,7 +325,7 @@ const ListMessBox = (props) => {
         <ConversationHeader.Back />
         <Avatar
           src={`https://mxhld.herokuapp.com/v1/image/${userInfo?.avatar}`}
-          status="available"
+          // status="available"
         />
         <ConversationHeader.Content
           userName={`${userInfo?.fullname}`}
@@ -309,35 +342,21 @@ const ListMessBox = (props) => {
       </ConversationHeader>
 
       <div
-        className="post-show px-5 pb-2"
+        className="post-show  "
         style={{
-          overflow: "auto",
+          overflow: "hidden",
           // display: "flex",
           // flexDirection: "column-reverse",
           height: 510,
         }}
       >
-        {/* {currentMessage?.data &&
-          currentMessage?.data.reverse().map((item, index) => {
-            console.log(item.id);
-            return (
-              <div key={index}>
-                <ChatElement userInfo={userInfo} data={item} socket={socket} />
-              </div>
-            );
-          })} */}
         <ListMess
           userInfo={userInfo}
           listMess={currentMessage?.data}
+          currentMessage={currentMessage}
           socket={socket}
+          scrollDown={scrollDown}
         />
-        <div ref={messagesEndRef} />
-
-        {notFound && (
-          <div className="fixed  z-50 transform -translate-x-1/2 mr-5 -translate-y-1/2 left-1/2 top-1/2 mt-5 ">
-            <p className=""></p>
-          </div>
-        )}
 
         {/* <MessageSeparator content="Saturday, 30 November 2019" /> */}
         {typing && <WasTyping userInfo={userInfo} />}

@@ -26,12 +26,12 @@ const RecordingVideo = (props) => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   console.log("blob", mediaBlob);
-  //   console.log("url", mediaBlobUrl);
-  //   console.log("videoFile", videoFile);
-  //   console.log("local", localStream);
-  // }, [mediaBlob, mediaBlobUrl]);
+  useEffect(() => {
+    console.log("blob", mediaBlob);
+    console.log("url", mediaBlobUrl);
+    // console.log("videoFile", videoFile);
+    // console.log("local", localStream);
+  }, [mediaBlobUrl]);
 
   useEffect(() => {
     setVideoFile(mediaBlob);
@@ -82,7 +82,6 @@ const RecordingVideo = (props) => {
 
   const onCloseVideo = () => {
     stopRecording();
-    // stopWebCam(localStream);
     clearBlobUrl();
     setVideoFile(null);
     onClose();
@@ -149,19 +148,12 @@ const RecordingVideo = (props) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() =>
-              // stopWebCam.bind(this)
-              handleVideo()
-            }
-          >
-            Send
-          </Button>
+          <Button onClick={() => handleVideo()}>Send</Button>
           <Button
             onClick={() => {
-              if (localStream !== null) {
-                stopWebCam(localStream);
-              }
+              // if (localStream !== null) {
+              stopWebCam(localStream);
+              // }
               onCloseVideo();
             }}
             autoFocus

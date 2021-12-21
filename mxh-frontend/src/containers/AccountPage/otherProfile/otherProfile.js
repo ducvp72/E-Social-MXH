@@ -17,8 +17,6 @@ import { chatApi } from "./../../../axiosApi/api/chatApi";
 import Skeleton from "react-loading-skeleton";
 import { useDispatch } from "react-redux";
 import { actGetMyConver } from "../../../reducers/converReducer";
-import Loading from "../../LoadingPage/index";
-import { toast, ToastContainer, Zoom } from "react-toastify";
 
 const OtherProfile = () => {
   const [following, setFollowing] = useState(false);

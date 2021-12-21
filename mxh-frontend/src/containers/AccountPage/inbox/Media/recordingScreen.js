@@ -5,7 +5,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-// import useScreenRecorder from "use-screen-recorder";
 import useScreenRecorder from "../../../../mylibrary/use-screen-recorder";
 import { toast, ToastContainer, Zoom } from "react-toastify";
 import "./styles.css";
@@ -35,6 +34,11 @@ const RecordingScreen = (props) => {
   useEffect(() => {
     setSelectedImage(blob);
   }, [blob]);
+
+  useEffect(() => {
+    resetRecording();
+    // videoRef?.current?.load();
+  }, []);
 
   // useEffect(() => {
   //   return () => {
@@ -78,12 +82,12 @@ const RecordingScreen = (props) => {
           <DialogContentText id="alert-dialog-description">
             <div className="wrapper">
               <div className="pills">
-                <Pill title="Status" value={status} />
-                <Pill
+                <Pill title="Status" style={{ flexGrow: 1 }} value={status} />
+                {/* <Pill
                   style={{ flexGrow: 1 }}
                   title="Blob URL"
                   value={blobUrl || "Waiting..."}
-                />
+                /> */}
               </div>
 
               <div>
@@ -159,6 +163,7 @@ const RecordingScreen = (props) => {
           </Button>
           <Button
             onClick={() => {
+              stopRecording();
               resetRecording();
               onClose();
             }}
