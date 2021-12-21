@@ -52,12 +52,6 @@ const OtherProfile = () => {
       .then((res) => {
         setLoading(false);
         dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
-        // toast.success("Creating successfully conversation with new friend !", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        //   autoClose: 2000,
-        //   hideProgressBar: true,
-        //   theme: "colored",
-        // });
         history.push(`/user/inbox/${q}`);
         return;
       })

@@ -1,13 +1,8 @@
 import { chatApi } from "./../axiosApi/api/chatApi";
 const initialState = {
   data: [],
-  next: [],
-  pageNext: 2,
-  totalPages: 0,
-  totalResults: 0,
-  loading: true,
+  total: 0,
   error: null,
-  more: true,
 };
 
 export const messageReducer = (
@@ -16,29 +11,22 @@ export const messageReducer = (
 ) => {
   switch (type) {
     case "GET_MESSAGE":
-      state.more = true;
-      // console.log("Vao Day");
       state.data = payload.results.reverse();
-      state.next = [];
-      state.pageNext = 2;
-      state.totalPages = payload.totalPages;
-      state.totalResults = payload.totalResults;
-      state.loading = false;
+      state.total = payload.totalResults;
       state.error = null;
-      if (state.pageNext > state.totalPages) state.more = false;
-      else state.more = true;
+
       return { ...state };
 
-    case "GET_MORE_MESS": {
-      state.next = payload.results;
-      if (state.pageNext > state.totalPages) state.more = false;
-      else {
-        state.data = [...state.data, ...state.next];
-        state.pageNext = state.pageNext + 1;
-        state.more = true;
-      }
-      return { ...state };
-    }
+    // case "GET_MORE_MESS": {
+    //   state.next = payload.results;
+    //   if (state.pageNext > state.totalPages) state.more = false;
+    //   else {
+    //     state.data = [...state.data, ...state.next];
+    //     state.pageNext = state.pageNext + 1;
+    //     state.more = true;
+    //   }
+    //   return { ...state };
+    // }
 
     case "ADD_MESSAGE": {
       state.data = [...state.data, { ...payload }];
@@ -65,12 +53,8 @@ export const messageReducer = (
 
     case "LOG_OUT_MESSAGE": {
       state.data = [];
-      state.next = [];
-      state.pageNext = 0;
-      state.totalPages = 0;
-      state.totalResults = 0;
+      state.total = 0;
       state.error = null;
-      state.more = true;
       return { ...state };
     }
 
@@ -96,21 +80,21 @@ export const actGetMess = (token, converId) => {
   };
 };
 
-export const actGetMoreMess = (token, converId, page, limit) => {
-  return (dispatch) => {
-    chatApi
-      .getMessByIdConverByPage(token, converId, page, limit)
-      .then((rs) => {
-        dispatch({
-          type: "GET_MORE_MESS",
-          payload: rs.data,
-        });
-      })
-      .catch((err) => {
-        console.log("Loi o day", err);
-      });
-  };
-};
+// export const actGetMoreMess = (token, converId, page, limit) => {
+//   return (dispatch) => {
+//     chatApi
+//       .getMessByIdConverByPage(token, converId, page, limit)
+//       .then((rs) => {
+//         dispatch({
+//           type: "GET_MORE_MESS",
+//           payload: rs.data,
+//         });
+//       })
+//       .catch((err) => {
+//         console.log("Loi o day", err);
+//       });
+//   };
+// };
 
 export const actAddMessage = (data) => {
   return (dispatch) => {
@@ -126,7 +110,7 @@ export const actRecallMessage = (value, index) => {
     value,
     index,
   };
-  console.log("temp", temp);
+  // console.log("temp", temp);
   return (dispatch) => {
     dispatch({
       type: "RECALL_MESSAGE",

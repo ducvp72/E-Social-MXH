@@ -448,15 +448,14 @@ const PostDialog = (props) => {
             } col-span-3 border-2 border-light-gray-700`}
           >
             <div
-              style={{
-                width: "550px",
-                height: "550px",
-              }}
-              className="flex justify-center items-center"
+              // style={{
+              //   width: "550px",
+              //   height: "550px",
+              // }}
+              className="flex justify-center items-center  w-full h-full"
             >
               {checkFile()}
-
-              <div className="absolute z-20">
+              <div className=" z-20">
                 <button
                   onClick={handleClick}
                   className={`${

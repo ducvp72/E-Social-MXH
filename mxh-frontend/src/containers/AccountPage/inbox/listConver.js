@@ -113,9 +113,6 @@ const ListConver = (props) => {
         10
       )
     );
-    if (currentConvers?.next?.length < 10) {
-      setnoMore(false);
-    }
   };
 
   const getIdConverRedux = (converId) => {
@@ -155,7 +152,7 @@ const ListConver = (props) => {
                 refreshFunction
                 dataLength={currentConvers?.data.length || 0}
                 next={fetchData}
-                hasMore={noMore}
+                hasMore={currentConvers.more}
                 loader={
                   <div className=" flex justify-center">
                     <div className="lds-ring flex items-center justify-center">
@@ -168,7 +165,7 @@ const ListConver = (props) => {
                 }
                 endMessage={
                   <p className="flex justify-center font-thin text-base">
-                    <b>Opp..! No Conversations more !</b>
+                    {/* <b>Opp..! No Conversations more !</b> */}
                   </p>
                 }
               >

@@ -2,20 +2,24 @@ import "./styles.css";
 import { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import axios from "axios";
-
+const randomWords = require("random-words");
 export const Suggestions = () => {
   const [openNew, setOpenNew] = useState(false);
   const [select, setSelect] = useState(null);
   const [open, setOpen] = useState(false);
   const [advice, setAdvice] = useState(null);
+  const [words, setWords] = useState(null);
 
   useEffect(() => {
-    return () => {
-      setAdvice(null);
-    };
-  }, []);
+    console.log("word", words);
+    // return () => {
+    //   setAdvice(null);
+    //   setWords(null);
+    // };
+  }, [words]);
 
   useEffect(() => {
+    randomVocabulary();
     axios({
       method: "get",
       url: "https://www.boredapi.com/api/activity",
@@ -27,6 +31,20 @@ export const Suggestions = () => {
         console.log(err);
       });
   }, []);
+
+  const randomVocabulary = async () => {
+    const random = await randomWords();
+    await axios({
+      method: "get",
+      url: `https://api.dictionaryapi.dev/api/v2/entries/en/${random}`,
+    })
+      .then((res) => {
+        setWords(res.data[0]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -93,18 +111,6 @@ export const Suggestions = () => {
             </ul>
           </div>
         </div>
-        {/* {select !== null && (
-          <div className="absolute right-0 cursor-pointer z-50 ml-2 transform translate-x-10">
-            <button
-              className=" focus:outline-none border text-sm text-blue-500 rounded border-blue-500"
-              onClick={() => {
-                setSelect(null);
-              }}
-            >
-              <p className="p-1">Hide</p>
-            </button>
-          </div>
-        )} */}
       </div>
       <Dialog maxWidth="xl" open={open} onClose={() => handleClose()}>
         <div className="post-show fixed w-full h-screen bg-transparent z-10 top-0 left-0 flex justify-end items-start">
@@ -129,16 +135,67 @@ export const Suggestions = () => {
         </div>
         {/* </div> */}
       </Dialog>
+
       <div className="text-sm justify-between mb-2 mt-5">
-        {/* <p className="font-bold text-gray-base">Suggestions for you</p> */}
         <div
-          className=" mt-4 post-show bg-red-300 flex items-center justify-center"
+          className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-md flex items-center justify-center text-center"
           style={{
-            height: "270px",
             width: "350px",
+            // height: "80px",
           }}
         >
-          <p className=" text-black text-xl font-avatar p-5">{advice}</p>
+          <p className=" text-white text-xl font-avatar p-5 flex gap-2 items-center justify-center">
+            <img
+              className="w-16 h-16"
+              src="/assets/image/think.png"
+              alt="think"
+            />
+            {advice}
+          </p>
+        </div>
+        {/* <p className="font-bold text-gray-base">Suggestions for you</p> */}
+        <div className=" rounded flex mt-4 post-show bg-transparent opacity-70 flex-col items-center justify-center">
+          <div
+            style={{
+              height: "270px",
+              width: "350px",
+            }}
+            className=" shadow-2xl border rounded border-gray-200  p-5 bg-transparent flex items-center justify-center flex-col gap-2"
+          >
+            {words && (
+              <>
+                <p className=" font-avatar text-2xl">
+                  {words?.word} ({" "}
+                  {words ? `${words?.meanings[0].partOfSpeech}` : null})
+                </p>
+
+                <p className="  text-2xl">
+                  {words ? `/${words?.phonetics[0].text}/` : null}
+                </p>
+                <p className=" italic text-sm font-light">
+                  Meaning:
+                  {words
+                    ? ` ${words?.meanings[0].definitions[0].definition}`
+                    : null}
+                </p>
+                <p className="">
+                  Ex:
+                  {words
+                    ? ` ${words?.meanings[0].definitions[0].example}`
+                    : null}
+                </p>
+                <audio
+                  className=" flex w-full items-center z-30 mt-2 "
+                  controls
+                >
+                  <source
+                    src={`https:${words?.phonetics[0].audio}`}
+                    type="audio/mp3"
+                  />
+                </audio>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

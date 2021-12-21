@@ -19,7 +19,7 @@ import RecordingVideo from "./Media/recordingVideo";
 import RecordingAudio from "./Media/recordingAudio";
 import { actRecallMessage } from "./../../../reducers/messageReducer";
 import RecordingScreen from "./Media/recordingScreen";
-
+import { toast, ToastContainer, Zoom } from "react-toastify";
 const ChatBox = (props) => {
   const { setOpenSr, openSr, socket } = props;
   const [cookies, ,] = useCookies(["auth"]);
@@ -74,7 +74,7 @@ const ChatBox = (props) => {
     // Nhận tin nhắn
     socket.current.on("getMessage", async (data) => {
       dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
-      scrollToBottom();
+
       setScroll(Date.now());
       console.log("onSender", data.senderId);
       console.log("userId", userId);
@@ -99,7 +99,7 @@ const ChatBox = (props) => {
     // Nhận hình ảnh hoặc ảnh kèm tin nhắn
     socket.current.on("getMedia", (data) => {
       console.log("on", data.text, " ", data.file);
-      scrollToBottom();
+
       setScroll(Date.now());
       if (userId !== data.senderId) return;
       if (data.text === "") {
@@ -158,7 +158,7 @@ const ChatBox = (props) => {
     //Nhận Icon
     socket.current.on("getIcon", (data) => {
       console.log("on", data.typeMessage);
-      scrollToBottom();
+
       setScroll(Date.now());
       dispatch(
         actAddMessage({
@@ -213,16 +213,6 @@ const ChatBox = (props) => {
     return () => setMessages([]);
   }, []);
 
-  const scrollToBottom = () => {
-    console.log("scroll to bottom", messagesEndRef);
-    if (messagesEndRef?.current) {
-      messagesEndRef?.current.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
-    }
-  };
-
   const getConverByUserId = async () => {
     chatApi
       .createConver(cookies.auth.tokens.access.token, userId)
@@ -236,7 +226,7 @@ const ChatBox = (props) => {
   };
 
   const handleChatSocket = (message, id) => {
-    console.log("socket handle" + message + " " + id);
+    // console.log("socket handle" + message + " " + id);
     const onchat = {
       senderId: cookies.auth.user.id,
       receiverId: userId,
@@ -347,8 +337,21 @@ const ChatBox = (props) => {
   };
 
   const imageFileHandler = (event) => {
-    const file = event.target.files[0];
-    setSelectedImage(file);
+    let file_size = event.target.files[0]?.size;
+    if (file_size > 500000000) {
+      console.log("size", file_size);
+      toast.error(`File size under 500000000`, {
+        position: toast.POSITION.BOTTOM_CENTER,
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
+      setSelectedImage(null);
+      document.getElementById("fileChoosen").value = "";
+    } else {
+      const file = event.target.files[0];
+      setSelectedImage(file);
+    }
+
     // const x = (window.URL || window.webkitURL).createObjectURL(file);
   };
 
@@ -441,7 +444,7 @@ const ChatBox = (props) => {
           };
           dispatch(actAddMessage(value));
           handleChatSocketMedia(value);
-          scrollToBottom();
+
           setScroll(Date.now());
         })
         .catch((err) => {
@@ -462,7 +465,7 @@ const ChatBox = (props) => {
       .createMessMedia(cookies.auth.tokens.access.token, formData, getProcess)
       .then((rs) => {
         setLoading(false);
-        console.log("ImgSend", rs.data.content);
+
         const value = {
           content: rs.data.content,
           conversationId: messData?.id,
@@ -516,7 +519,7 @@ const ChatBox = (props) => {
           handleChatSocketIcon("LOVE");
         });
     }
-    scrollToBottom();
+
     setScroll(Date.now());
   };
 
@@ -524,6 +527,7 @@ const ChatBox = (props) => {
     <>
       {userId ? (
         <>
+          <ToastContainer transition={Zoom} />
           <ChatContainer>
             {/* List chat here */}
             <div as={MessageList}>
@@ -614,7 +618,7 @@ const ChatBox = (props) => {
                   <input
                     className="cursor-pointer font-medium  text-blue-500 text-sm "
                     type="file"
-                    accept="video/*,audio/*,image/gif,image/jpeg,image/png,.gif,.jpeg,.jpg,.png"
+                    // accept="video/*,audio/*,image/gif,image/jpeg,image/png,.gif,.jpeg,.jpg,.png"
                     onChange={imageFileHandler}
                     id="fileChoosen"
                   />

@@ -93,7 +93,7 @@ export const SkeletonHeader = () => {
 export const SkeletonAvatarSideBar = () => {
   return (
     <div className="">
-      <Skeleton circle={true} width={65} height={65} />
+      <Skeleton circle={true} width={44} height={44} />
     </div>
   );
 };

@@ -7,7 +7,7 @@ const initialState = {
   pageNext: 2,
   totalPages: 0,
   totalResults: 0,
-  loading: true,
+  more: true,
   error: null,
 };
 
@@ -29,29 +29,20 @@ export const converReducer = (
       state.pageNext = 2;
       state.totalPages = payload.totalPages;
       state.totalResults = payload.totalResults;
-      state.loading = false;
       state.error = null;
+      if (state.pageNext > state.totalPages) state.more = false;
+      else state.more = true;
       return { ...state };
     }
 
     case "ADD_MORE": {
       state.next = payload.results;
-      if (state.next.length > 0) {
+      if (state.pageNext > state.totalPages) state.more = false;
+      else {
         state.data = [...state.data, ...state.next];
         state.pageNext = state.pageNext + 1;
+        state.more = true;
       }
-      return { ...state };
-    }
-
-    case "UPDATE_CONVER": {
-      // console.log("New", payload.results);
-      state.data = payload.results;
-      state.next = [];
-      state.pageNext = 2;
-      state.totalPages = payload.totalPages;
-      state.totalResults = payload.totalResults;
-      state.loading = false;
-      state.error = null;
       return { ...state };
     }
 
@@ -62,6 +53,7 @@ export const converReducer = (
       state.totalPages = 0;
       state.totalResults = 0;
       state.error = null;
+      state.more = true;
       return { ...state };
     }
 
@@ -93,29 +85,11 @@ export const actGetMyConver = (token, firstPage, limit) => {
   };
 };
 
-export const actUpdateting = (token, firstPage, limit) => {
-  return (dispatch) => {
-    chatApi
-      .getConverByToken(token, firstPage, limit)
-      .then((result) => {
-        // console.log("ReduxNew", result.data.results);
-        dispatch({
-          type: "UPDATE_CONVER",
-          payload: result.data,
-        });
-      })
-      .catch((error) => {
-        console.log("getUpdate", error);
-      });
-  };
-};
-
 export const actLoadMore = (token, firstPage, limit) => {
   return (dispatch) => {
     chatApi
       .getConverByToken(token, firstPage, limit)
       .then((result) => {
-        // console.log("ReduxMore", result.data.results);
         dispatch({
           type: "ADD_MORE",
           payload: result.data,

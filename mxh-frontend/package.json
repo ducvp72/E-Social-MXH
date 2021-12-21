@@ -29,6 +29,7 @@
     "moment": "^2.29.1",
     "multiselect-react-dropdown": "^2.0.7",
     "nsfwjs": "^2.4.1",
+    "random-words": "^1.1.1",
     "react": "^17.0.2",
     "react-autocomplete": "^1.8.1",
     "react-cookie": "^4.1.1",

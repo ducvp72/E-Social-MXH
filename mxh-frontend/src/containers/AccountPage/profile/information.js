@@ -36,13 +36,15 @@ const Information = (props) => {
           {" "}
           {state ? state?.story : null}
         </p>
-        <a
-          href="https://www.facebook.com/DerrickVo72"
+        <td
+          onClick={() => {
+            window.open(`${state?.fb}`, "_blank");
+          }}
           className="font-medium"
           style={{ color: "#00376b" }}
         >
           {state ? state?.fb : null}
-        </a>
+        </td>
         <p className=" font-medium"> {state ? state?.phone : null}</p>
       </div>
     </>

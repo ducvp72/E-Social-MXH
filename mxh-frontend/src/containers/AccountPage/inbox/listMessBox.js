@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./styles.css";
 import WasTyping from "./wasTyping";
-import InfiniteScroll from "react-infinite-scroll-component";
 import { chatApi } from "./../../../axiosApi/api/chatApi";
 import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
@@ -16,17 +15,15 @@ import {
   Message,
 } from "@chatscope/chat-ui-kit-react";
 import {
+  actGetMess,
   actRecallMessage,
-  actGetMoreMess,
 } from "./../../../reducers/messageReducer";
+// import { SkeletonAvatarSideBar } from "../../skeletons/Skeletons";
+import { SkeletonAvatarSideBar } from "../../../skeletons/Skeletons";
 
 const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   const [cookies, ,] = useCookies("auth");
   const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   console.log(data);
-  // }, [data]);
 
   const handleRecall = async () => {
     chatApi
@@ -36,7 +33,7 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
         data?.id
       )
       .then((rs) => {
-        console.log("CheckXoa", rs.data);
+        // console.log("CheckXoa", rs.data);
 
         dispatch(
           actRecallMessage(
@@ -95,6 +92,7 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
           }`,
           position: "last",
         }}
+
         // avatarSpacer={true}
       >
         {data?.sender !== cookies.auth.user.id && (
@@ -109,7 +107,6 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
             background: "none!important",
           }}
         >
-          {/* Neu la from thi la justify-end */}
           <div className="flex items-center gap-2 group">
             <div className="">
               <div
@@ -158,9 +155,6 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
                       alt="Akane avatar"
                       width={200}
                     />
-                    {data?.content.text === "TEXT" && (
-                      <div className=" max-w-xs">{data?.content.text}</div>
-                    )}
                   </>
                 )}
                 {data?.typeMessage === "VIDEO" && (
@@ -177,9 +171,6 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
                         src={`https://mxhld.herokuapp.com/v1/file/${data?.content.file}`}
                       />
                     </video>
-                    {data?.content.text === "TEXT" && (
-                      <div className=" max-w-xs">{data?.content.text}</div>
-                    )}
                   </>
                 )}
                 {data?.typeMessage === "AUDIO" && (
@@ -189,9 +180,6 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
                         src={`https://mxhld.herokuapp.com/v1/file/${data?.content.file}`}
                       />
                     </audio>
-                    {data?.content.text === "TEXT" && (
-                      <div className=" max-w-xs">{data?.content.text}</div>
-                    )}
                   </>
                 )}
               </div>
@@ -199,7 +187,7 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
               {data?.typeMessage === "RECALL" && (
                 <>
                   {data?.sender !== cookies.auth.user.id ? (
-                    <div className=" max-w-xs text-white font-normal italic">
+                    <div className=" max-w-xs text-gray-500  font-bold italic">
                       {userInfo?.fullname} was recall
                     </div>
                   ) : (
@@ -211,6 +199,29 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
                   )}
                 </>
               )}
+
+              {data?.typeMessage === "DOWNLOAD" && (
+                <div className=" max-w-xs">
+                  <td
+                    className={`
+                    ${
+                      data?.sender !== cookies.auth.user.id
+                        ? "text-blue-700"
+                        : "text-yellow-200"
+                    }
+                    cursor-pointer   underline decoration-1 italic`}
+                    onClick={() => {
+                      window.open(
+                        `https://mxhld.herokuapp.com/v1/file/${data?.content.file}`,
+                        "_blank"
+                      );
+                    }}
+                  >
+                    {data?.content.text}
+                  </td>
+                </div>
+              )}
+
               {data?.typeMessage === "TEXT" && (
                 <div className=" max-w-xs">{data?.content.text}</div>
               )}
@@ -223,14 +234,52 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   );
 });
 
-const ListMess = ({ listMess, userInfo, socket, scrollDown, scroll }) => {
+const ListMess = ({
+  listMess,
+  userInfo,
+  socket,
+  scrollDown,
+  scroll,
+  userId,
+  currentMessage,
+}) => {
+  const [cookies, ,] = useCookies(["auth"]);
+  const [wait, setWatting] = useState(true);
+  const messagesEndRef = useRef(null);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    getConverMess();
+    setWatting(true);
+  }, []);
+
+  const getConverMess = () => {
+    chatApi
+      .createConver(cookies.auth.tokens.access.token, userId)
+      .then((rs) => {
+        dispatch(actGetMess(cookies.auth.tokens.access.token, rs.data.id));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    setWatting(true);
+  }, [userId]);
+
   useEffect(() => {
     scrollToBottom();
   }, []);
-  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (listMess?.length >= 0) {
+      setWatting(false);
+    }
+    scrollToBottom();
+  }, [listMess]);
+
   useEffect(() => {
     scrollToBottom();
-    console.log("Scroll di", scroll);
   }, [scroll]);
 
   const scrollToBottom = () => {
@@ -242,54 +291,78 @@ const ListMess = ({ listMess, userInfo, socket, scrollDown, scroll }) => {
   };
 
   return (
-    <div
-      id="messDiv"
-      className=" post-show "
-      style={{
-        height: "520px",
-        overflow: "auto",
-      }}
-    >
-      <div className="px-5 pt-5 ">
-        {listMess &&
-          listMess.map((item, index) => {
-            return (
-              <div key={index}>
-                <ChatElement
-                  index={index}
-                  userInfo={userInfo}
-                  data={item}
-                  socket={socket}
-                />
-              </div>
-            );
-          })}
+    <div className="relative">
+      {wait && (
+        <div
+          className=" object-cover absolute w-full h-full z-50 bg-white  flex items-center justify-center"
+          style={{
+            overflow: "hidden",
+          }}
+        >
+          <img className="w-16 h-16" src="/assets/image/spin.gif" alt="spin" />
+        </div>
+      )}
+      <div
+        id="messDiv"
+        className=" post-show relative "
+        style={{
+          height: "520px",
+          overflow: "auto",
+        }}
+      >
+        {listMess?.length > 0 && (
+          <div className="px-5 pt-5 relative">
+            {listMess &&
+              listMess.map((item, index) => {
+                return (
+                  <div key={index}>
+                    <ChatElement
+                      index={index}
+                      userInfo={userInfo}
+                      data={item}
+                      socket={socket}
+                    />
+                  </div>
+                );
+              })}
+          </div>
+        )}
+        <div
+          className={`${listMess?.length > 0 && "mt-20"}`}
+          ref={messagesEndRef}
+        />
       </div>
-      <div className="mt-20" ref={messagesEndRef} />
     </div>
   );
 };
 
 const ListMessBox = (props) => {
   const { setOpenSr, openSr, typing, socket, scroll } = props;
-
-  const [userInfo, setUserInfo] = useState("");
+  const [userInfo, setUserInfo] = useState(null);
   const currentMessage = useSelector((state) => state.messConver);
+  const [loadAva, setAva] = useState(true);
   let { userId } = useParams();
 
   useEffect(() => {
     getUserInfo();
   }, [userId]);
 
-  const getUserInfo = () => {
-    userApi
+  useEffect(() => {
+    console.log("AVa", userInfo?.avatar);
+  }, [userInfo]);
+
+  const getUserInfo = async () => {
+    // console.log("UserId", userId, " ", userInfo?.avatar);
+    await userApi
       .getUserById(userId)
       .then((rs) => {
         setUserInfo(rs.data);
-        // console.log("header", rs.data);
+
+        // setAva(false);
       })
       .catch((err) => {
         console.log("header", err);
+        // setAva(false);
       });
   };
 
@@ -297,14 +370,12 @@ const ListMessBox = (props) => {
     <>
       <ConversationHeader>
         <ConversationHeader.Back />
+
         <Avatar
           src={`https://mxhld.herokuapp.com/v1/image/${userInfo?.avatar}`}
-          // status="available"
         />
-        <ConversationHeader.Content
-          userName={`${userInfo?.fullname}`}
-          // info="Active 10 mins ago"
-        />
+
+        <ConversationHeader.Content userName={`${userInfo?.fullname}`} />
         <ConversationHeader.Actions>
           <VoiceCallButton />
           <VideoCallButton />
@@ -316,11 +387,9 @@ const ListMessBox = (props) => {
       </ConversationHeader>
 
       <div
-        className="post-show  "
+        className="post-show"
         style={{
           overflow: "hidden",
-          // display: "flex",
-          // flexDirection: "column-reverse",
           height: 510,
         }}
       >
@@ -330,6 +399,7 @@ const ListMessBox = (props) => {
           currentMessage={currentMessage}
           socket={socket}
           scroll={scroll}
+          userId={userId}
         />
 
         {/* <MessageSeparator content="Saturday, 30 November 2019" /> */}

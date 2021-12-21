@@ -25,15 +25,15 @@ export const chatApi = {
     );
   },
 
-  getMessByIdConverByPage(token, idConver, page, limit) {
-    return axiosApi(
-      `message/${idConver}?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
-      `GET`,
-      null,
-      null,
-      token
-    );
-  },
+  // getMessByIdConverByPage(token, idConver, page, limit) {
+  //   return axiosApi(
+  //     `message/${idConver}?page=${page}&limit=${limit}&sortBy=createdAt:desc`,
+  //     `GET`,
+  //     null,
+  //     null,
+  //     token
+  //   );
+  // },
 
   createConver(token, idUser) {
     return axiosApi(
@@ -50,17 +50,6 @@ export const chatApi = {
       `conversation?page=${page}&limit=${limit}&sortBy=updatedAt:desc`,
       `GET`,
       null,
-      null,
-      token
-    );
-  },
-
-  //Same as "getMessByIdCover"
-  getMessPrivate(token, idUser, page, limit) {
-    return axiosApi(
-      `message/private&page=${page}&limit=${limit}`,
-      `GET`,
-      { userId: idUser },
       null,
       token
     );
