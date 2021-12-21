@@ -77,7 +77,6 @@ const Account = () => {
 
   // let { userName } = useParams();
   useEffect(() => {
-    console.log("auth", cookies.auth.user.gender);
     if (currentUser) {
       const birthday = currentUser.birthday.toString().split("/");
       setDob(birthday[1] + "/" + birthday[0] + "/" + birthday[2]);
@@ -114,18 +113,19 @@ const Account = () => {
 
   const imageFileHandler = (event) => {
     setSelectedImage(event.target.files[0]);
-    if (selectedImage?.length !== 0)
-      setUserImage(
-        (window.URL || window.webkitURL).createObjectURL(event.target.files[0])
-      );
+    // if (selectedImage?.length !== 0)
+    //   setUserImage(
+    //     (window.URL || window.webkitURL).createObjectURL(event.target.files[0])
+    //   );
+
+    setUserImage(window.URL.createObjectURL(event.target.files[0]));
   };
 
   const changeAvatar = () => {
-    console.log("file dc chon", selectedImage);
     let frmData = new FormData();
     frmData.append("file", selectedImage);
     // frmData.append("name", "userUpfile");
-    console.log("frmData", frmData);
+    // console.log("frmData", frmData);
     setLoading(true);
     userApi
       .changeUserAvatar(cookies.auth.tokens.access.token, frmData)
@@ -147,12 +147,12 @@ const Account = () => {
       })
       .catch((err) => {
         console.log("err", err.response.data.message);
-        Swal.fire({
-          icon: "error",
-          title: err.response.data.message,
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        // Swal.fire({
+        //   icon: "error",
+        //   title: err.response.data.message,
+        //   showConfirmButton: false,
+        //   timer: 1500,
+        // });
         setLoading(false);
       });
   };
@@ -252,9 +252,9 @@ const Account = () => {
                   <div className=" relative flex">
                     <button
                       onClick={handleClick}
-                      className=" mr-2 cursor-pointer border-2 border-gray-400 bg-white p-1 rounded-md text-gray-400 font-medium"
+                      className=" bg-blue-400 text-white mr-2 cursor-pointer border-2 border-gray-400  p-1 rounded-md  font-medium"
                     >
-                      Upload a file
+                      Upload file
                     </button>
                     <input
                       className=" hidden cursor-pointer left-0 top-1  font-medium absolute text-blue-500 text-sm "

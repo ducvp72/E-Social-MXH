@@ -1,10 +1,6 @@
 import "./styles.css";
 import { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
-import { SuggestionsProfiles } from "./suggestionsProfiles";
-import { SkeletonSuggest } from "./../../skeletons/Skeletons";
-import { userApi } from "./../../axiosApi/api/userApi";
-import { useCookies } from "react-cookie";
 import axios from "axios";
 
 export const Suggestions = () => {
@@ -14,12 +10,17 @@ export const Suggestions = () => {
   const [advice, setAdvice] = useState(null);
 
   useEffect(() => {
+    return () => {
+      setAdvice(null);
+    };
+  }, []);
+
+  useEffect(() => {
     axios({
       method: "get",
       url: "https://www.boredapi.com/api/activity",
     })
       .then((res) => {
-        console.log("advice", res.data.activity);
         setAdvice(res.data.activity);
       })
       .catch((err) => {

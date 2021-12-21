@@ -10,9 +10,8 @@ import {
   SendButton,
   MessageList,
 } from "@chatscope/chat-ui-kit-react";
-import Loading from "../../LoadingPage/index";
 import { useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import ListMessBox from "./listMessBox";
 import { actAddMessage } from "../../../reducers/messageReducer";
 import LoadingMedia from "./../../LoadingPage/LoadingChat/indexMedia";
@@ -40,6 +39,7 @@ const ChatBox = (props) => {
   const [recordAudio, setRecordAudio] = useState(false);
   const [recordScreen, setRecordScreen] = useState(false);
   const messagesEndRef = useRef(null);
+  const [scroll, setScroll] = useState(Date.now());
   //Biến dùng đẻ set Nội dung tin nhắn và thêm vào mảng tin nhắn hiện có
   const [messages, setMessages] = useState({});
 
@@ -68,13 +68,14 @@ const ChatBox = (props) => {
       console.log("connected error");
     });
     socket.current.on("error", (err) => {
-      console.log(err);
+      // console.log(err);//
     });
 
     // Nhận tin nhắn
     socket.current.on("getMessage", async (data) => {
       dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
       scrollToBottom();
+      setScroll(Date.now());
       console.log("onSender", data.senderId);
       console.log("userId", userId);
       console.log(userId !== data.senderId);
@@ -99,6 +100,7 @@ const ChatBox = (props) => {
     socket.current.on("getMedia", (data) => {
       console.log("on", data.text, " ", data.file);
       scrollToBottom();
+      setScroll(Date.now());
       if (userId !== data.senderId) return;
       if (data.text === "") {
         console.log("1");
@@ -157,6 +159,7 @@ const ChatBox = (props) => {
     socket.current.on("getIcon", (data) => {
       console.log("on", data.typeMessage);
       scrollToBottom();
+      setScroll(Date.now());
       dispatch(
         actAddMessage({
           content: null,
@@ -211,6 +214,7 @@ const ChatBox = (props) => {
   }, []);
 
   const scrollToBottom = () => {
+    console.log("scroll to bottom", messagesEndRef);
     if (messagesEndRef?.current) {
       messagesEndRef?.current.scrollIntoView({
         behavior: "smooth",
@@ -240,7 +244,8 @@ const ChatBox = (props) => {
       messageId: id,
     };
     socket.current.emit("sendMessage", onchat);
-    scrollToBottom();
+
+    setScroll(Date.now());
   };
 
   const focusTyping = async () => {
@@ -308,7 +313,6 @@ const ChatBox = (props) => {
       return;
     }
     if (msgInputValue.length > 0) {
-      // console.log("Text");
       sendTextOnly();
 
       unfocusTyping();
@@ -330,7 +334,6 @@ const ChatBox = (props) => {
 
   const press = async (event) => {
     if (event.keyCode === 13 && !event.shiftKey && msgInputValue.length === 0) {
-      // console.log("Return");
       event.preventDefault();
     }
     if (
@@ -347,7 +350,6 @@ const ChatBox = (props) => {
     const file = event.target.files[0];
     setSelectedImage(file);
     // const x = (window.URL || window.webkitURL).createObjectURL(file);
-    console.log("tren", file);
   };
 
   const sendTextOnly = async () => {
@@ -359,7 +361,7 @@ const ChatBox = (props) => {
       )
       .then((rs) => {
         handleChatSocket(msgInputValue, messData?.id);
-        // console.log(rs.data);
+
         dispatch(
           actAddMessage({
             content: rs.data?.content,
@@ -378,7 +380,6 @@ const ChatBox = (props) => {
   };
 
   const handleChatSocketMedia = (data) => {
-    console.log("socket handle Media");
     const onchat = {
       senderId: cookies.auth.user.id,
       receiverId: userId,
@@ -399,7 +400,8 @@ const ChatBox = (props) => {
       typeMessage,
     };
     socket.current.emit("sendIcon", onchat);
-    scrollToBottom();
+
+    setScroll(Date.now());
   };
 
   const sendMediaBlood = async () => {
@@ -420,7 +422,6 @@ const ChatBox = (props) => {
       console.log("ok2", filex);
       formData.append("file", filex);
       formData.append("conversationId", messData?.id);
-
       chatApi
         .createMessMedia(cookies.auth.tokens.access.token, formData, getProcess)
         .then((rs) => {
@@ -441,11 +442,13 @@ const ChatBox = (props) => {
           dispatch(actAddMessage(value));
           handleChatSocketMedia(value);
           scrollToBottom();
+          setScroll(Date.now());
         })
         .catch((err) => {
           setLoading(false);
           console.log(err);
         });
+      setScroll(Date.now());
     } else {
       console.log("TRY AGIAN");
     }
@@ -476,6 +479,7 @@ const ChatBox = (props) => {
         setLoading(false);
         console.log(err);
       });
+    setScroll(Date.now());
   };
 
   const handleEmotion = async (emotion) => {
@@ -513,6 +517,7 @@ const ChatBox = (props) => {
         });
     }
     scrollToBottom();
+    setScroll(Date.now());
   };
 
   return (
@@ -531,7 +536,7 @@ const ChatBox = (props) => {
                 openSr={openSr}
                 socket={socket}
                 recallMess={recallMess}
-                scrollDown={messagesEndRef}
+                scroll={scroll}
               />
               {/* <div className=" flex items-center justify-center bg-gray-400"> */}
               <div className="w-full" style={{ height: "10px" }}>
@@ -688,7 +693,6 @@ const ChatBox = (props) => {
                   onClick={() => {
                     setRecordScreen(true);
                   }}
-                  // ref={buttonMedia}
                 />
               </div>
 

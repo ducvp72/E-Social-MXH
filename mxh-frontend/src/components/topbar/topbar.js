@@ -39,7 +39,12 @@ export const Topbar = () => {
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
 
   useEffect(() => {
-    // console.log("Notify", myNotify);
+    return () => {
+      setPost([]);
+    };
+  }, []);
+
+  useEffect(() => {
     getFirstList();
     setSkt(true);
   }, []);

@@ -26,12 +26,11 @@ const RecordingVideo = (props) => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log("blob", mediaBlob);
-    console.log("url", mediaBlobUrl);
-    // console.log("videoFile", videoFile);
-    // console.log("local", localStream);
-  }, [mediaBlobUrl]);
+  // useEffect(() => {
+  //   console.log("blob", mediaBlob);
+  //   console.log("url", mediaBlobUrl);
+
+  // }, [mediaBlobUrl]);
 
   useEffect(() => {
     setVideoFile(mediaBlob);
@@ -101,8 +100,17 @@ const RecordingVideo = (props) => {
         <DialogTitle id="alert-dialog-title">
           {"Send Video to your Friend"}
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+        <DialogContent
+          sx={{
+            overflow: "hidden",
+          }}
+        >
+          <DialogContentText
+            sx={{
+              overflow: "hidden",
+            }}
+            id="alert-dialog-description"
+          >
             <div>
               {localStream && (
                 <video
@@ -118,7 +126,7 @@ const RecordingVideo = (props) => {
               <span className="text-red-400">{status}...</span>
               <div className=" flex gap-4 py-2 justify-center">
                 <button
-                  className=" rounded-md text-white bg-red-400 h-12"
+                  className=" rounded-md text-white bg-red-400 h-10"
                   onClick={startRecording}
                 >
                   <span onClick={startWebCam.bind(this)} className="p-2">
@@ -151,9 +159,8 @@ const RecordingVideo = (props) => {
           <Button onClick={() => handleVideo()}>Send</Button>
           <Button
             onClick={() => {
-              // if (localStream !== null) {
+              stopRecording();
               stopWebCam(localStream);
-              // }
               onCloseVideo();
             }}
             autoFocus

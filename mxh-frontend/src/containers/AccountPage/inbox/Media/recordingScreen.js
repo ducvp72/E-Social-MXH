@@ -163,7 +163,7 @@ const RecordingScreen = (props) => {
           </Button>
           <Button
             onClick={() => {
-              stopRecording();
+              // stopRecording();
               resetRecording();
               onClose();
             }}

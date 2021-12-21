@@ -223,61 +223,34 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   );
 });
 
-const ListMess = ({
-  listMess,
-  userInfo,
-  socket,
-  currentMessage,
-  scrollDown,
-}) => {
-  const [cookies, ,] = useCookies(["auth"]);
-  const dispatch = useDispatch();
+const ListMess = ({ listMess, userInfo, socket, scrollDown, scroll }) => {
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
+  const messagesEndRef = useRef(null);
+  useEffect(() => {
+    scrollToBottom();
+    console.log("Scroll di", scroll);
+  }, [scroll]);
 
-  const fetchMess = async () => {
-    dispatch(
-      actGetMoreMess(
-        cookies.auth.tokens.access.token,
-        currentMessage.data[0].conversationId,
-        currentMessage?.pageNext,
-        20
-      )
-    );
+  const scrollToBottom = () => {
+    var height =
+      document.documentElement.scrollHeight -
+      document.documentElement.clientHeight;
+    window.scroll(1, height);
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <div
-      id="scrollableDivChat"
+      id="messDiv"
+      className=" post-show "
       style={{
+        height: "520px",
         overflow: "auto",
-        display: "flex",
-        height: 520,
-        flexDirection: "column-reverse",
       }}
-      className=" post-show p-5"
     >
-      <div ref={scrollDown}></div>
-      <InfiniteScroll
-        dataLength={listMess?.length}
-        next={fetchMess}
-        style={{
-          display: "flex",
-          flexDirection: "column-reverse",
-        }}
-        inverse={true}
-        // scrollThreshold={0.2}
-        hasMore={currentMessage.more}
-        loader={
-          <div className=" flex justify-center">
-            <div className="lds-ring flex items-center justify-center">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-          </div>
-        }
-        scrollableTarget="scrollableDivChat"
-      >
+      <div className="px-5 pt-5 ">
         {listMess &&
           listMess.map((item, index) => {
             return (
@@ -291,13 +264,14 @@ const ListMess = ({
               </div>
             );
           })}
-      </InfiniteScroll>
+      </div>
+      <div className="mt-20" ref={messagesEndRef} />
     </div>
   );
 };
 
 const ListMessBox = (props) => {
-  const { setOpenSr, openSr, typing, socket, scrollDown } = props;
+  const { setOpenSr, openSr, typing, socket, scroll } = props;
 
   const [userInfo, setUserInfo] = useState("");
   const currentMessage = useSelector((state) => state.messConver);
@@ -355,7 +329,7 @@ const ListMessBox = (props) => {
           listMess={currentMessage?.data}
           currentMessage={currentMessage}
           socket={socket}
-          scrollDown={scrollDown}
+          scroll={scroll}
         />
 
         {/* <MessageSeparator content="Saturday, 30 November 2019" /> */}

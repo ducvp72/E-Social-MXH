@@ -47,13 +47,19 @@ const ListConver = (props) => {
   const [online, setOnline] = useState([]);
 
   useEffect(() => {
+    return () => {
+      setOnline([]);
+    };
+  }, []);
+
+  useEffect(() => {
     socket?.current?.on("online", (users) => {
       // console.log("ArrUser", users);
       setOnline(users);
     });
 
     socket?.current?.on("error", (err) => {
-      console.log(err);
+      // console.log(err);
     });
   }, [socket, currentConvers]);
 
@@ -113,7 +119,7 @@ const ListConver = (props) => {
   };
 
   const getIdConverRedux = (converId) => {
-    dispatch(actGetMess(cookies.auth.tokens.access.token, converId, 1, 20));
+    dispatch(actGetMess(cookies.auth.tokens.access.token, converId));
   };
 
   return (

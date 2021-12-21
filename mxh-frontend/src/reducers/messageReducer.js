@@ -18,24 +18,19 @@ export const messageReducer = (
     case "GET_MESSAGE":
       state.more = true;
       // console.log("Vao Day");
-      state.data = payload.results;
-      // state.data = payload.results;
+      state.data = payload.results.reverse();
       state.next = [];
       state.pageNext = 2;
       state.totalPages = payload.totalPages;
       state.totalResults = payload.totalResults;
       state.loading = false;
       state.error = null;
-      // const length = payload.results.length;
-
-      // console.log("aaaaaa", length);
       if (state.pageNext > state.totalPages) state.more = false;
       else state.more = true;
       return { ...state };
 
     case "GET_MORE_MESS": {
       state.next = payload.results;
-      const length = payload.results.length;
       if (state.pageNext > state.totalPages) state.more = false;
       else {
         state.data = [...state.data, ...state.next];
@@ -46,21 +41,25 @@ export const messageReducer = (
     }
 
     case "ADD_MESSAGE": {
-      state.data = [{ ...payload }, ...state.data];
+      state.data = [...state.data, { ...payload }];
       return { ...state };
     }
 
     case "RECALL_MESSAGE": {
       // console.log("payload", payload);
-      state.data[payload.index] = {
-        content: null,
-        incomming: true,
-        conversationId: payload.value.conversationId,
-        createdAt: payload.value.createdAt,
-        id: payload.value.id,
-        sender: payload.value.sender,
-        typeMessage: "RECALL",
-      };
+      const length = state.data.length;
+      if (length > payload.index) {
+        state.data[payload.index] = {
+          content: null,
+          incomming: true,
+          conversationId: payload.value.conversationId,
+          createdAt: payload.value.createdAt,
+          id: payload.value.id,
+          sender: payload.value.sender,
+          typeMessage: "RECALL",
+        };
+      }
+
       return { ...state };
     }
 
@@ -81,12 +80,11 @@ export const messageReducer = (
   }
 };
 
-export const actGetMess = (token, converId, page, limit) => {
+export const actGetMess = (token, converId) => {
   return (dispatch) => {
     chatApi
-      .getMessByIdConverByPage(token, converId, page, limit)
+      .getMessByIdConver(token, converId)
       .then((rs) => {
-        // console.log("ListConversaa", rs.data.results);
         dispatch({
           type: "GET_MESSAGE",
           payload: rs.data,
@@ -115,7 +113,6 @@ export const actGetMoreMess = (token, converId, page, limit) => {
 };
 
 export const actAddMessage = (data) => {
-  console.log("actAdd", data);
   return (dispatch) => {
     dispatch({
       type: "ADD_MESSAGE",

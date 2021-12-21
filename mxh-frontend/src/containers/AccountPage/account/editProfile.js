@@ -69,7 +69,6 @@ const EditProfile = (props) => {
       setErrDob(true);
       return;
     }
-    console.log("User updated!", data);
     setUserInfo({
       ...data,
     });
@@ -87,13 +86,13 @@ const EditProfile = (props) => {
         });
       })
       .catch((error) => {
-        console.log("Error neu co NHE", error.response);
-        Swal.fire({
-          icon: "error",
-          title: error.response.data.message,
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        // Swal.fire({
+        //   icon: "error",
+        //   title: error.response.data.message,
+        //   showConfirmButton: false,
+        //   timer: 1500,
+        // });
+        console.log("err", error.response.data.message);
       });
     onClose();
   };
