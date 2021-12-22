@@ -340,16 +340,11 @@ const ListMessBox = (props) => {
   const { setOpenSr, openSr, typing, socket, scroll } = props;
   const [userInfo, setUserInfo] = useState(null);
   const currentMessage = useSelector((state) => state.messConver);
-  const [loadAva, setAva] = useState(true);
   let { userId } = useParams();
 
   useEffect(() => {
     getUserInfo();
   }, [userId]);
-
-  useEffect(() => {
-    console.log("AVa", userInfo?.avatar);
-  }, [userInfo]);
 
   const getUserInfo = async () => {
     // console.log("UserId", userId, " ", userInfo?.avatar);

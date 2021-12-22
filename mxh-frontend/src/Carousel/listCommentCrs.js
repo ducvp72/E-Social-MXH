@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import { Footer } from "./../components/post/footer";

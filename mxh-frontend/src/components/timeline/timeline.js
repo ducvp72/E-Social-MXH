@@ -24,15 +24,15 @@ export const Timeline = () => {
   const [cookies, ,] = useCookies("auth");
   const actionCurrent = useSelector((state) => state.changePost);
 
-  // const openChangePost = useSelector((state) => state.changePost);
   useEffect(() => {
     getFirstPage();
-    // console.log("openChangePost", openChangePost.showChange);
     return () => setPost(null);
   }, []);
 
   const getFirstPage = async () => {
-    // console.log("render first");
+    console.log(
+      "Hello!  👨‍💻...🚀 »»————-　★ Save your work safely ! Don't worry ! ★　————-««\n"
+    );
     postApi
       .getMyPost(cookies.auth.tokens.access.token, 1, 5)
       .then((rs) => {
@@ -82,8 +82,7 @@ export const Timeline = () => {
     }
     return arr;
   };
-  // console.log("PostApi...", post);
-  // console.log(actionCurrent);
+
   return (
     <div className="md:col-span-2 sm:col-start-1 sm:col-end-7 md:py-16 md:px-0 lg:px-12 xl:p-16  py-16">
       <PostDialog
@@ -91,7 +90,7 @@ export const Timeline = () => {
         open={createPost.show}
         onClose={onClose}
       />
-      {/* <ChangePost open={openChangePost.showChange} /> */}
+
       <DialogActionPost
         item={actionCurrent.data}
         open={actionCurrent.showAction}

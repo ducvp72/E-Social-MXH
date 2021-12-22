@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Picker from "emoji-picker-react";
 import { useOnClickOutside } from "./../../utils/handleRefresh";
 import "./style.css";

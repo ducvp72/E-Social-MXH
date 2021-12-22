@@ -24,23 +24,17 @@ export default function DialogActionPost(props) {
   } = props;
   const [cookies, ,] = useCookies("auth");
   const openChangePost = useSelector((state) => state.changePost);
-  const [status, SetStatus] = useState();
+  const [status, SetStatus] = useState(null);
   const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   console.log(
-  //     "dialog render",
-  //     item,
-  //     status?.user.userId,
-  //     cookies.auth.user.id
-  //   );
-  // }, []);
+  const [load, setLoad] = useState(false);
+  useEffect(() => {
+    return () => {
+      SetStatus(null);
+    };
+  }, []);
 
   useEffect(() => {
     checkStatus();
-    // return () => {
-    //   SetStatus();
-    // };
   }, [state, item]);
 
   const checkStatus = () => {
@@ -54,17 +48,37 @@ export default function DialogActionPost(props) {
     }
   };
 
+  const animation = () => {
+    return (
+      <>
+        <div className="flex items-center justify-center gap-2">
+          <img
+            className="w-16 h-16"
+            src="/assets/image/phantich.gif"
+            alt="analyzing"
+          />
+          <span className=" font-avatar text-xl">Deleting</span>
+        </div>
+      </>
+    );
+  };
+
   const handleDelete = async () => {
+    setLoad(true);
     try {
-      onClose();
+      // onClose();
+      //Dong cua sổ
+      dispatch(setDialogCloseAll());
+
+      toast.success(animation(), {
+        hideProgressBar: true,
+        position: toast.POSITION.TOP_RIGHT,
+        theme: "light",
+      });
       await postApi.deleteMyPost(cookies.auth.tokens.access.token, {
         postId: status?.id,
       });
-      toast.success("You delete the post 😀", {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 1500,
-        hideProgressBar: true,
-      });
+      setLoad(false);
 
       if (state) {
         await getUserPost();
@@ -73,13 +87,16 @@ export default function DialogActionPost(props) {
         }, 1000);
         handleCloseCaro();
       }
-
       if (item) {
-        getFirstPage();
+        await getFirstPage();
+        setTimeout(() => {
+          toast.success("Let see your Post 😎 !", {
+            hideProgressBar: true,
+            position: toast.POSITION.TOP_RIGHT,
+            theme: "light",
+          });
+        }, 4000);
       }
-
-      //Dong cua sổ
-      dispatch(setDialogCloseAll());
     } catch (error) {
       onClose();
       toast.error(`${error}`, {
@@ -88,11 +105,14 @@ export default function DialogActionPost(props) {
         hideProgressBar: true,
       });
       handleCloseCaro();
+      setLoad(false);
     }
   };
 
   return (
     <>
+      {load && <ToastContainer transition={Zoom} icon={false} />}
+
       <Dialog open={open} onClose={onClose}>
         <ChangePost
           open={openChangePost.showChange}
@@ -102,7 +122,7 @@ export default function DialogActionPost(props) {
           getSummary={getUserPost}
           handleCloseCaro={handleCloseCaro}
         />
-        <ToastContainer transition={Zoom} />
+
         <div className="w-64 divide-y divide-gray-300">
           {status?.user.userId === cookies.auth.user.id && (
             <>

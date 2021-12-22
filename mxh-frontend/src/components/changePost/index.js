@@ -17,11 +17,7 @@ import { useCookies } from "react-cookie";
 import Loading from "./../../containers/LoadingPage/index";
 import { useOnClickOutside } from "./../../utils/handleRefresh";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setDialogChange,
-  setDialogCloseAll,
-} from "../../reducers/changePostDialog";
-import { SkeletonImagePostProfile } from "../../skeletons/Skeletons";
+import { setDialogCloseAll } from "../../reducers/changePostDialog";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {

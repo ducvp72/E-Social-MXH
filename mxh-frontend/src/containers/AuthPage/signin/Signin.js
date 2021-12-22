@@ -163,7 +163,7 @@ const Signin = (props) => {
                   }}
                   label={
                     <span className=" text-red-500 font-bold text-md">
-                      Ghi nhớ mật khẩu
+                      Remember account
                     </span>
                   }
                   labelPlacement="end"

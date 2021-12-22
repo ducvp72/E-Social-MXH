@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import DialogActionPost from "./dialogAction";
 import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
@@ -9,10 +9,6 @@ export const Footer = (props) => {
   const [expand, setExpand] = useState(false);
   const [action, setAction] = useState(false);
 
-  // useEffect(() => {
-  //   console.log("footer", item?.user.fullname);
-  //   console.log("footer2", item?.user.avatar);
-  // }, []);
   const onClose = () => {
     setAction(false);
   };

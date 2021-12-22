@@ -9,7 +9,6 @@ import { SkeletonImagePostProfile } from "../skeletons/Skeletons";
 import moment from "moment";
 import DialogActionPost from "./../components/post/dialogAction";
 import { useSelector, useDispatch } from "react-redux";
-import { setDialogCloseAll } from "../reducers/changePostDialog";
 import { setDialogAction2 } from "./../reducers/changePostDialog";
 
 const CarouselElement = (props) => {
@@ -171,21 +170,16 @@ const CarouselElement = (props) => {
               </div>
               <div className="col-span-2 ">
                 <div className="flex items-center mt-2 pl-2">
-                  {/* {skt ? (
-                    <SkeletonHeader />
-                  ) : ( */}
                   <img
-                    className="rounded-full w-10 mr-3"
+                    className="rounded-full w-12 h-12 mr-3"
                     src={`https://mxhld.herokuapp.com/v1/image/${state?.user?.avatar}`}
                     alt=""
                   />
-                  {/* )} */}
 
                   <div className="flex-1 pr-4 flex items-center justify-between">
                     <p className="font-bold text-md">{state?.user?.fullname}</p>
                     <p
                       onClick={() => {
-                        // setAction(!action);
                         dispatch(setDialogAction2(true));
                       }}
                       className=" font-black text-2xl cursor-pointer text-gray-400"

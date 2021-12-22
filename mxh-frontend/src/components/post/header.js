@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import DialogActionPost from "./dialogAction";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  setDialogAction2,
-  setDialogCloseAll,
-} from "./../../reducers/changePostDialog";
+import { useDispatch } from "react-redux";
+import { setDialogAction2 } from "./../../reducers/changePostDialog";
 
 export const Header = (props) => {
   const { item } = props;

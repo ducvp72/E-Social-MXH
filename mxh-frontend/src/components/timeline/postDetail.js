@@ -120,7 +120,7 @@ const PostDetail = (props) => {
           <div className="post-show col-span-2">
             <div className="flex items-center mt-2 pl-2">
               <img
-                className="rounded-full w-10 mr-3"
+                className="rounded-full w-12 h-12 mr-3"
                 src={`https://mxhld.herokuapp.com/v1/image/${item?.user.avatar}`}
                 alt="img"
               />

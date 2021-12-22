@@ -214,7 +214,7 @@ const EditProfile = (props) => {
                     </LocalizationProvider>
                     {errDob && (
                       <div className=" ml-4 text-red-500 text-xs">
-                        Người dùng phải từ 13 tuổi trở lên !
+                        Over 13 years old !
                       </div>
                     )}
                   </div>

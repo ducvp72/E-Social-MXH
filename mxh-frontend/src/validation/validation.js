@@ -24,13 +24,13 @@ export const userSignUpSchema = yup.object().shape({
     ),
   confirm: yup
     .string()
-    .required("Hãy xác nhận mật khẩu !")
+    .required()
     .matches()
     .oneOf([yup.ref("password"), null], "Password does not match !"),
 });
 
 export const userforgotPassword = yup.object().shape({
-  email: yup.string().email().required("Trường email không được bỏ trống !"),
+  email: yup.string().email().required("required !"),
 });
 
 export const userLogin = yup.object().shape({
@@ -76,14 +76,14 @@ export const changeInfomation = yup.object().shape({
 export const changePassword = yup.object().shape({
   oldpassword: yup
     .string()
-    .required("Mật khẩu không được bỏ trống !")
+    .required()
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
       "Password must more than 8 characters, included at least 1 Upcase and 1 Lowcase"
     ),
   password: yup
     .string()
-    .required("Mật khẩu không được bỏ trống !")
+    .required()
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
       "Password must more than 8 characters, included at least 1 Upcase and 1 Lowcase"
@@ -98,7 +98,7 @@ export const changePassword = yup.object().shape({
 export const recoverPassword = yup.object().shape({
   password: yup
     .string()
-    .required("Mật khẩu không được bỏ trống !")
+    .required()
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
       "Password must more than 8 characters, included at least 1 Upcase and 1 Lowcase"

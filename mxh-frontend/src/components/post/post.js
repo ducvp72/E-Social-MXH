@@ -7,7 +7,6 @@ import Caption from "./caption";
 import PostDetail from "./../timeline/postDetail";
 import { CurrentComment } from "./currentlistComment";
 import CommentOutSide from "./commentOutSide";
-import { useSelector } from "react-redux";
 import { postApi } from "./../../axiosApi/api/postApi";
 
 export const Post = (props) => {

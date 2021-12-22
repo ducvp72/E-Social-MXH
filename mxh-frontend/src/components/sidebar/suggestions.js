@@ -11,14 +11,6 @@ export const Suggestions = () => {
   const [words, setWords] = useState(null);
 
   useEffect(() => {
-    console.log("word", words);
-    // return () => {
-    //   setAdvice(null);
-    //   setWords(null);
-    // };
-  }, [words]);
-
-  useEffect(() => {
     randomVocabulary();
     axios({
       method: "get",
@@ -157,7 +149,6 @@ export const Suggestions = () => {
         <div className=" rounded flex mt-4 post-show bg-transparent opacity-70 flex-col items-center justify-center">
           <div
             style={{
-              height: "270px",
               width: "350px",
             }}
             className=" shadow-2xl border rounded border-gray-200  p-5 bg-transparent flex items-center justify-center flex-col gap-2"

@@ -151,7 +151,6 @@ const PostDialog = (props) => {
       selectedImage?.type === "video/mp4"
     ) {
       predictions = await model.current.classify(img);
-      console.log("hinh: ", predictions);
       if (
         (predictions[0].className === "Porn" ||
           predictions[0].className === "Hentai" ||
@@ -167,7 +166,6 @@ const PostDialog = (props) => {
       };
       resolveAfter = new Promise(async (resolve) => {
         predictions = await model.current.classifyGif(img, myConfig);
-        console.log("gif", predictions);
         predictions.forEach((p) => {
           if (
             (p[0].className === "Porn" ||
@@ -207,8 +205,7 @@ const PostDialog = (props) => {
       });
       await resolveAfter;
     }
-    console.log("loadAfter", load);
-    console.log("Degree", degree);
+
     if (degree) {
       toast.error(
         <div className="flex items-center justify-center">
