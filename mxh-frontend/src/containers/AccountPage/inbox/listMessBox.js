@@ -18,9 +18,7 @@ import {
   actGetMess,
   actRecallMessage,
 } from "./../../../reducers/messageReducer";
-// import { SkeletonAvatarSideBar } from "../../skeletons/Skeletons";
-import { SkeletonAvatarSideBar } from "../../../skeletons/Skeletons";
-
+import { actGetMyConver } from "../../../reducers/converReducer";
 const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   const [cookies, ,] = useCookies("auth");
   const dispatch = useDispatch();
@@ -54,6 +52,9 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
           messageId: rs.data.id,
           index,
         });
+        setTimeout(() => {
+          dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
+        }, 2000);
       })
       .catch((err) => {
         console.log(err);

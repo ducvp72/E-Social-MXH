@@ -57,7 +57,6 @@ const ChatBox = (props) => {
 
   useEffect(() => {
     if (!socket.current) return;
-    console.count("socket connect");
 
     // #region Log Status
     socket.current.on("connect", () => {
@@ -68,7 +67,7 @@ const ChatBox = (props) => {
       console.log("connected error");
     });
     socket.current.on("error", (err) => {
-      // console.log(err);//
+      console.log(err);
     });
 
     // Nhận tin nhắn
@@ -76,9 +75,9 @@ const ChatBox = (props) => {
       dispatch(actGetMyConver(cookies.auth.tokens.access.token, 1, 10));
 
       setScroll(Date.now());
-      console.log("onSender", data.senderId);
-      console.log("userId", userId);
-      console.log(userId !== data.senderId);
+      // console.log("onSender", data.senderId);
+      // console.log("userId", userId);
+      // console.log(userId !== data.senderId);
 
       if (userId !== data.senderId) return;
       dispatch(
@@ -98,12 +97,11 @@ const ChatBox = (props) => {
 
     // Nhận hình ảnh hoặc ảnh kèm tin nhắn
     socket.current.on("getMedia", (data) => {
-      console.log("on", data.text, " ", data.file);
+      // console.log("on", data.text, " ", data.file);
 
       setScroll(Date.now());
       if (userId !== data.senderId) return;
       if (data.text === "") {
-        console.log("1");
         dispatch(
           actAddMessage({
             content: {
@@ -119,7 +117,6 @@ const ChatBox = (props) => {
           })
         );
       } else {
-        console.log("2");
         dispatch(
           actAddMessage({
             content: {
@@ -138,7 +135,7 @@ const ChatBox = (props) => {
     });
     //Thu hồi tin nhẵn
     socket.current.on("getRecall", (data) => {
-      console.log("on", "getRecall");
+      // console.log("on", "getRecall");
       dispatch(
         actRecallMessage(
           {
@@ -157,7 +154,7 @@ const ChatBox = (props) => {
 
     //Nhận Icon
     socket.current.on("getIcon", (data) => {
-      console.log("on", data.typeMessage);
+      // console.log("on", data.typeMessage);
 
       setScroll(Date.now());
       dispatch(
@@ -174,7 +171,7 @@ const ChatBox = (props) => {
     });
     // Đang gõ
     socket.current.on("typing", (data) => {
-      console.log("on", "typing");
+      // console.log("on", "typing");
       // console.log(idCheck, "+", data.senderId);
       if (userId === data.senderId) {
         setTyping(true);

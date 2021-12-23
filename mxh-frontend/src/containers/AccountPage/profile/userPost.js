@@ -36,14 +36,14 @@ const UserPost = (props) => {
         return (
           <>
             <div
-              className="flex items-center justify-center cursor-pointer"
+              className="flex  items-center justify-center cursor-pointer"
               style={{ border: "1px solid #efefef" }}
               onClick={() => setPopup(true)}
             >
               <img
                 src={`https://mxhld.herokuapp.com/v1/file/${state?.file}`}
                 alt="userpost"
-                className="w-full"
+                className="w-full object-cover"
                 style={{
                   height: " 250px",
                 }}
@@ -54,10 +54,10 @@ const UserPost = (props) => {
       }
       if (state?.fileTypes === "VIDEO") {
         return (
-          <div className="flex items-center justify-center cursor-pointer bg-black ">
+          <div className="flex  items-center justify-center cursor-pointer bg-black ">
             <video
               onClick={() => setPopup(true)}
-              className="w-full outline-none h-full "
+              className="w-full outline-none h-full object-cover"
               controls
             >
               <source
