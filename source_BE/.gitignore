@@ -1,0 +1,17 @@
+# Dependencies
+node_modules
+
+# yarn error logs
+yarn-error.log
+
+# Environment varibales
+!.env*.example
+
+# Code coverage
+coverage
+
+#.vsocde
+.vscode
+
+#.DS_Store
+.DS_Store

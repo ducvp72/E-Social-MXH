@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+  - '12'
+services:
+  - mongodb
+cache: yarn
+branches:
+  only:
+    - master
+env:
+  global:
+    - PORT=3000
+    - MONGODB_URL=mongodb://admin:1234567890@cluster0-shard-00-00.7v0w5.mongodb.net:27017,cluster0-shard-00-01.7v0w5.mongodb.net:27017,cluster0-shard-00-02.7v0w5.mongodb.net:27017/test?authSource=admin&replicaSet=atlas-tzwxdc-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true
+    - JWT_SECRET=thisisasamplesecret
+    - JWT_ACCESS_EXPIRATION_MINUTES=30
+    - JWT_REFRESH_EXPIRATION_DAYS=30
+script:
+  - yarn lint
+  - yarn test
+after_success: yarn coverage:coveralls
