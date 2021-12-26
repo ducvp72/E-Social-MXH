@@ -1,7 +1,7 @@
-# E-Social-MXH
+# Vn-Social Network
 ## Build a Social Network with MERN STACK platform 
-## TIỂU LUẬN CHUYÊN NGÀNH KHOÁ K18 2021/2022 ĐH SƯ PHẠM KỸ THUẬT TP.HCM
-#### Feature of our social:
+## Tiểu luận chuyên ngành khoá K18 hệ CLC Tiếng Việt trường Đại học Sư Phạm Kỹ Thuật TP.Hồ Chí Minh
+#### Feature of our Vn-Social:
 - Create your Posts.
 - Private conversation.
 - Send diversity of files type what ever you want.
