@@ -1,0 +1,31 @@
+[contenteditable="true"] {
+    background: #ffffff;
+    -moz-box-sizing: border-box;
+    border: 1px solid #CBD5DD;
+    border-radius: 2px;
+    max-height: 70px;
+    max-width: 450px;
+    word-wrap: break-word;
+    margin: 0;
+    min-height: 33px;
+    overflow: auto;
+    position: relative;
+    width: 450px;
+    padding-left: 5px;
+    vertical-align: top;
+    box-sizing: border-box;
+  }
+
+  .cus-textarea {
+    max-width: 400px;
+    max-height: 200px;
+    border: 1px solid gray;
+  
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+  }
+  .cus-textarea ::-webkit-scrollbar { /* WebKit */
+    width: 0px;
+  }
+  

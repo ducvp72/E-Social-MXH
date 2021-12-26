@@ -1,0 +1,86 @@
+{
+  "_from": "use-screen-recorder",
+  "_id": "use-screen-recorder@1.0.2",
+  "_inBundle": false,
+  "_integrity": "sha512-QpTtEdYhbGDPzw6p1m5Wrmc20qmEaJEDsFhaH82PkwkFN/4F05hNAtUBRkFSnWOsfqEhI30Wsjt9+HTOkUMVGw==",
+  "_location": "/use-screen-recorder",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "use-screen-recorder",
+    "name": "use-screen-recorder",
+    "escapedName": "use-screen-recorder",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/use-screen-recorder/-/use-screen-recorder-1.0.2.tgz",
+  "_shasum": "e2606920c3530d4a2f313aac9d3c6e9d2b5ad1c7",
+  "_spec": "use-screen-recorder",
+  "_where": "E:\\GitHub\\E-Social-MXH\\mxh-frontend",
+  "author": {
+    "name": "ishan-chhabra"
+  },
+  "bugs": {
+    "url": "https://github.com/ishan-chhabra/use-screen-recorder/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "React hook for easily recording screen using MediaStream APIs.",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/runtime": "^7.3.1",
+    "@rollup/plugin-babel": "^5.2.0",
+    "@rollup/plugin-commonjs": "^15.0.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@rollup/plugin-typescript": "^5.0.2",
+    "@rollup/plugin-url": "^5.0.1",
+    "@testing-library/react-hooks": "^3.2.1",
+    "@types/dom-mediacapture-record": "^1.0.7",
+    "@types/jest": "^23.3.13",
+    "@types/react": "^16.7.22",
+    "cross-env": "^5.2.0",
+    "gh-pages": "^2.0.1",
+    "react": "^16.9.0",
+    "react-scripts": "^3.4.0",
+    "react-test-renderer": "^16.9.0",
+    "rollup": "^2.26.9",
+    "rollup-plugin-peer-deps-external": "^2.2.0",
+    "tslib": "^2.0.1",
+    "typescript": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "homepage": "https://github.com/ishan-chhabra/use-screen-recorder#readme",
+  "jsnext:main": "dist/index.es.js",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "name": "use-screen-recorder",
+  "peerDependencies": {
+    "react": "^16.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ishan-chhabra/use-screen-recorder.git"
+  },
+  "scripts": {
+    "build": "rollup -c && tsc -d --emitDeclarationOnly --noEmit false --declarationDir dist",
+    "deploy": "gh-pages -d example/build",
+    "predeploy": "cd example && yarn install && yarn run build",
+    "prepare": "yarn run build",
+    "start": "rollup -c -w",
+    "test": "cross-env CI=1 react-scripts test --env=jsdom",
+    "test:watch": "react-scripts test --env=jsdom"
+  },
+  "types": "dist/index.d.ts",
+  "version": "1.0.2"
+}
