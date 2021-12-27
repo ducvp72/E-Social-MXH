@@ -8,6 +8,7 @@ const { uploadF } = require('../config/uploadFile');
 const uploadImage = (req, res, next) => {
   const uploadS = uploadE.single('file');
   uploadS(req, res, function (err) {
+    if (!req.user) res.status(httpStatus.UNAUTHORIZED).send('Please authenticate');
     if (err instanceof multer.MulterError) {
       return res.status(400).send('File too large');
     }

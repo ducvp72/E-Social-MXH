@@ -7,7 +7,7 @@ const auth = require('../../middlewares/auth');
 const router = express.Router();
 const fileMiddleware = require('../../middlewares/fileMiddleware');
 
-router.put('/changeAvatar', auth(''), fileMiddleware.uploadImage, profileController.changeAvatar);
+router.put('/changeAvatar', fileMiddleware.uploadImage, auth(''), profileController.changeAvatar);
 router.put('/change-profile', auth(''), validate(profileValidation.changeProfile), profileController.changeProfile);
 router.get('/:id', validate(profileValidation.findProfileById), profileController.findProfileById);
 router.put('/change-password', auth(''), validate(profileValidation.resetPassword), profileController.resetPassword);

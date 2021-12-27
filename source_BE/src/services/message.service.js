@@ -4,6 +4,8 @@ const { Message, Conversation } = require('../models');
 const { fileTypes } = require('../config/file');
 const { fileService } = require('.');
 
+const wordFilter = require('../config/bad_words');
+
 const isUserInConversation = async (userId, conversationId) => {
   try {
     const conversation = await Conversation.findOne({
@@ -21,12 +23,13 @@ const isUserInConversation = async (userId, conversationId) => {
 const createMessageText = async (userId, conversationId, text) => {
   const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
+  const  textClean = text ? wordFilter.clean(text):'';
   const newMessage = new Message({
     conversationId,
     sender: userId,
     typeMessage: fileTypes.TEXT,
     content: {
-      text,
+      text:textClean,
     },
   });
   try {
@@ -73,12 +76,13 @@ const createMessageMedia = async (file, userId, conversationId, text) => {
   const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   const fileTypes = file.contentType.split('/')[0].toUpperCase();
+  const  textClean = text ? wordFilter.clean(text):'';
   const newMessage = new Message({
     conversationId,
     sender: userId,
     typeMessage: fileTypes,
     content: {
-      text,
+      text: textClean,
       file: file.id,
     },
   });
