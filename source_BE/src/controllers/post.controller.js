@@ -7,12 +7,10 @@ const wordFilter = require('../config/bad_words');
 
 const createPostText = catchAsync(async (req, res) => {
   const Post = await postService.createPostT(req.user, req.body.text);
-  if(Post.text) Post.text = wordFilter.clean(Post.text);
   res.status(httpStatus.OK).send(Post);
 });
 const createPostFile = catchAsync(async (req, res) => {
   const Post = await postService.createPostFile(req.file, req.user, req.body.text);
-  if(Post.text) Post.text = wordFilter.clean(Post.text);
   res.status(httpStatus.OK).send(Post);
 });
 const editTextForPost = catchAsync(async (req, res) => {
@@ -105,6 +103,7 @@ const getMyPosts = catchAsync(async (req, res) => {
     const newUser = {};
     const { id, file, owner, fileTypes, text, createdAt } = post;
     // eslint-disable-next-line no-await-in-loop
+    const cleanText = wordFilter.clean(text);
     const { fullname, avatar } = owner;
     const userId = owner.id;
     const user = {
@@ -121,7 +120,7 @@ const getMyPosts = catchAsync(async (req, res) => {
       Object.assign(newUser, {
         id,
         user,
-        text,
+        text: cleanText,
         file,
         fileTypes,
         hasLike,

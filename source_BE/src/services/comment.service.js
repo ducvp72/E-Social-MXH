@@ -3,12 +3,15 @@ const { Comment, Post } = require('../models');
 const ApiError = require('../utils/ApiError');
 const notificationService = require('./notification.service');
 
+const wordFilter = require('../config/bad_words');
+
 const createComment = async (user, postId, text) => {
   const post = await Post.findOne({ _id: postId });
+  const  textClean = text ? wordFilter.clean(text):'';
   const newComment = new Comment({
     user: user.id,
     postId,
-    text,
+    text: textClean,
   });
   const comment = await newComment.save();
   const notif = `${user.fullname} commented your post: ${text}`;
