@@ -27,23 +27,3 @@ export const setDialogAction = (show) => {
     payload: show,
   };
 };
-
-// export const ChangePostDialogReducer = (
-//   state = stateInit,
-//   { type, payload }
-// ) => {
-//   switch (type) {
-//     case DIALOG_CHANGE:
-//       console.log(payload);
-//       return { showChange: payload };
-//     default:
-//       return { ...state };
-//   }
-// };
-
-// export const setDialogChange = (show) => {
-//   return {
-//     type: DIALOG_CHANGE,
-//     payload: show,
-//   };
-// };

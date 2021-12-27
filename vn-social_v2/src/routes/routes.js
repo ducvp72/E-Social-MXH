@@ -20,11 +20,12 @@ import Inbox from "./../containers/AccountPage/inbox/Inbox";
 import { NewPassword } from "./../containers/AuthPage/forgot/newPassword";
 import CheckActive from "./helper/checkActive";
 import OtherProfile from "./../containers/AccountPage/otherProfile/otherProfile";
-import QuestAuthRoute from "./helper/QuestAuthRoute";
 import AdminController from "./../containers/AdminPage/adminControler/adminController";
 import AdminLogin from "./../containers/AdminPage/adminLogin/index";
 import SearchAuth from "./helper/SearchAuth";
 import ListUserSearch from "./../containers/HomePage/home/ListUserSearch";
+import VideoCall from "../containers/AccountPage/inbox/componentCall/index";
+import CallLayout from "../layout/callLayout";
 
 const Routes = () => {
   return (
@@ -38,6 +39,7 @@ const Routes = () => {
         <Route path="/recover-password" exact component={NewPassword} />
         <Route path="/change-password" exact component={NewPassword} />
         <Route path="/404" component={NotFound} />
+
         <UserAuthRoute path="/user">
           <DefaultLayout>
             <Switch>
@@ -52,6 +54,22 @@ const Routes = () => {
             </Switch>
           </DefaultLayout>
         </UserAuthRoute>
+
+        <UserAuthRoute path="/contact">
+          <CallLayout>
+            <Switch>
+              <Route
+                path="/contact/videocall/:userId"
+                exact
+                component={VideoCall}
+              />
+              <Route path="*" exact>
+                <Redirect to="/404" />
+              </Route>
+            </Switch>
+          </CallLayout>
+        </UserAuthRoute>
+
         <UserAuthRoute path="/profile">
           <DefaultLayout>
             <Switch>
@@ -73,6 +91,7 @@ const Routes = () => {
             </Switch>
           </SearchLayout>
         </UserAuthRoute>
+
         <AdminAuthRoute path="/admin">
           <Switch>
             <Route path="/admin" component={AdminController} />
@@ -81,6 +100,7 @@ const Routes = () => {
             </Route>
           </Switch>
         </AdminAuthRoute>
+
         <CheckActive>
           <Switch>
             <Route path="/auth" exact component={AdminLogin} />
@@ -92,6 +112,7 @@ const Routes = () => {
             </Route>
           </Switch>
         </CheckActive>
+
         <Route path="*" exact>
           <Redirect to="/404" />
         </Route>

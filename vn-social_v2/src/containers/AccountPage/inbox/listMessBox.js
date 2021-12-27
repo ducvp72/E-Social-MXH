@@ -19,6 +19,9 @@ import {
   actRecallMessage,
 } from "./../../../reducers/messageReducer";
 import { actGetMyConver } from "../../../reducers/converReducer";
+import { setWindowCall } from "../../../reducers/callReducer";
+import { parse, stringify, toJSON } from "flatted";
+
 const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   const [cookies, ,] = useCookies("auth");
   const dispatch = useDispatch();
@@ -341,7 +344,10 @@ const ListMessBox = (props) => {
   const { setOpenSr, openSr, typing, socket, scroll } = props;
   const [userInfo, setUserInfo] = useState(null);
   const currentMessage = useSelector((state) => state.messConver);
+  const [openCall, setOpenCall] = useState(false);
+  const dispatch = useDispatch();
   let { userId } = useParams();
+  let callPopup;
 
   useEffect(() => {
     getUserInfo();
@@ -361,20 +367,54 @@ const ListMessBox = (props) => {
         // setAva(false);
       });
   };
+  const currentCall = useSelector((state) => state.windowCall.openCall);
+
+  useEffect(() => {
+    console.log("CurrentCalls", currentCall?.flag);
+  }, [currentCall?.flag]);
+
+  const handleCall = (w, h) => {
+    setOpenCall(true);
+    const left = window.screen.width / 2 - w / 2;
+    const top = window.screen.height / 2 - h / 2;
+    callPopup = window.open(
+      `/contact/videocall/${userId}`,
+      `ContactDirect`,
+      `toolbar=no, location=no, directories=no, 
+          status=no, menubar=no, scrollbars=no,
+         resizable=no, copyhistory=no, 
+         width=${w}, height=${h}, top=${
+        top - 50
+      }, left=${left}, alwaysRaised=yes`
+    );
+    console.log("callPopup", typeof callPopup);
+    dispatch(setWindowCall({ show: true, check: callPopup }));
+  };
+
+  const handleCloseCall = () => {
+    callPopup?.close();
+  };
 
   return (
     <>
       <ConversationHeader>
         <ConversationHeader.Back />
-
         <Avatar
           src={`https://mxhld.herokuapp.com/v1/image/${userInfo?.avatar}`}
         />
 
         <ConversationHeader.Content userName={`${userInfo?.fullname}`} />
         <ConversationHeader.Actions>
-          <VoiceCallButton />
-          <VideoCallButton />
+          <VoiceCallButton
+            onClick={() => {
+              handleCloseCall();
+            }}
+          />
+          <VideoCallButton
+            onClick={() => {
+              handleCall(1200, 650);
+            }}
+          />
           <EllipsisButton
             orientation="vertical"
             onClick={() => setOpenSr(!openSr)}

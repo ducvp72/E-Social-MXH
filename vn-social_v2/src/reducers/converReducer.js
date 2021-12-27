@@ -1,5 +1,4 @@
 import { chatApi } from "./../axiosApi/api/chatApi";
-import { REHYDRATE } from "redux-persist";
 
 const initialState = {
   data: [],

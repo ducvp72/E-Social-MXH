@@ -10,6 +10,7 @@ import { actLogout } from "./../../../reducers/authReducer";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { actLogoutConver } from "./../../../reducers/converReducer";
 import { actLogoutMess } from "../../../reducers/messageReducer";
+import { setWindowCall } from "../../../reducers/callReducer";
 
 const Home = () => {
   const [cookies, setCookie, removeCookie] = useCookies([
@@ -23,6 +24,7 @@ const Home = () => {
   const history = useHistory();
 
   useEffect(() => {
+    dispatch(setWindowCall({ show: true, check: null }));
     userApi
       .getAuthentication(cookies.auth.tokens.access.token)
       .then((rs) => {
