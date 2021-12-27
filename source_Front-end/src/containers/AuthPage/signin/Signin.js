@@ -17,7 +17,7 @@ import Loading from "../../LoadingPage";
 import Swal from "sweetalert2";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { actGetMyConver } from "../../../reducers/converReducer";
-import { actGetMyNotify } from "../../../reducers/notificationReducer";
+
 const useStyles = makeStyles(() => ({
   label: {
     fontSize: "20px",
