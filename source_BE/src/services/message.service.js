@@ -23,13 +23,13 @@ const isUserInConversation = async (userId, conversationId) => {
 const createMessageText = async (userId, conversationId, text) => {
   const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
-  const  textClean = text ? wordFilter.clean(text):'';
+  const textClean = text ? wordFilter.clean(text) : '';
   const newMessage = new Message({
     conversationId,
     sender: userId,
     typeMessage: fileTypes.TEXT,
     content: {
-      text:textClean,
+      text: textClean,
     },
   });
   try {
@@ -76,7 +76,7 @@ const createMessageMedia = async (file, userId, conversationId, text) => {
   const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   const fileTypes = file.contentType.split('/')[0].toUpperCase();
-  const  textClean = text ? wordFilter.clean(text):'';
+  const textClean = text ? wordFilter.clean(text) : '';
   const newMessage = new Message({
     conversationId,
     sender: userId,
@@ -98,7 +98,14 @@ const getMessagesFromConversation = async (userId, conversationId, options) => {
   const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   try {
-    const messages = await Message.paginate({ conversationId }, options);
+    let messages;
+    if (options.typeMessage) {
+      const { typeMessage } = options;
+      messages = await Message.paginate({ conversationId, typeMessage }, options);
+    } else {
+      messages = await Message.paginate({ conversationId }, options);
+    }
+
     return messages;
   } catch (err) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
