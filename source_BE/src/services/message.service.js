@@ -24,9 +24,9 @@ const createMessageText = async (userId, conversationId, text) => {
   const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   let textClean;
-  try{
-    textClean = text ? wordFilter.clean(text):'';
-  }catch(err){
+  try {
+    textClean = text ? wordFilter.clean(text) : '';
+  } catch (err) {
     textClean = text;
   }
   const newMessage = new Message({
@@ -82,20 +82,34 @@ const createMessageMedia = async (file, userId, conversationId, text) => {
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   const fileTypes = file.contentType.split('/')[0].toUpperCase();
   let textClean;
-  try{
-    textClean = text ? wordFilter.clean(text):'';
-  }catch(err){
+  try {
+    textClean = text ? wordFilter.clean(text) : '';
+  } catch (err) {
     textClean = text;
   }
-  const newMessage = new Message({
-    conversationId,
-    sender: userId,
-    typeMessage: fileTypes,
-    content: {
-      text: textClean,
-      file: file.id,
-    },
-  });
+  let newMessage;
+  if (fileTypes === 'IMAGE' || fileTypes === 'AUDIO' || fileTypes === 'VIDEO') {
+    newMessage = new Message({
+      conversationId,
+      sender: userId,
+      typeMessage: fileTypes,
+      content: {
+        text: textClean,
+        file: file.id,
+      },
+    });
+  } else {
+    newMessage = new Message({
+      conversationId,
+      sender: userId,
+      typeMessage: 'DOWNLOAD',
+      content: {
+        text: file.filename,
+        file: file.id,
+      },
+    });
+  }
+
   try {
     const message = await newMessage.save();
     await Conversation.updateOne({ _id: conversationId }, { updatedAt: new Date() });
