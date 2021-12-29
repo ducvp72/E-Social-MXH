@@ -67,7 +67,7 @@ const ChatBox = (props) => {
       console.log("connected error");
     });
     socket.current.on("error", (err) => {
-      console.log(err);
+      // console.log(err);
     });
 
     // Nhận tin nhắn
@@ -186,7 +186,6 @@ const ChatBox = (props) => {
 
     //Hiển thị recall tin nhắn theo ID
     socket.current.on("getRecall", (item) => {
-      console.log("onIT", item);
       setRecallMess(item.messageId);
     });
 
@@ -360,7 +359,7 @@ const ChatBox = (props) => {
         msgInputValue
       )
       .then((rs) => {
-        handleChatSocket(msgInputValue, messData?.id);
+        handleChatSocket(rs.data?.content.text, messData?.id);
 
         dispatch(
           actAddMessage({

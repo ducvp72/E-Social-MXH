@@ -362,9 +362,9 @@ export const Topbar = () => {
                                       className=" w-10 h-10 rounded-full"
                                     />
                                     <div className="flex-col ">
-                                      <Link to={`/profile/${item?.other?.id}`}>
-                                        <p className="text-sm">{item?.text}</p>
-                                      </Link>
+                                      {/* <Link to={`/profile/${item?.other?.id}`}> */}
+                                      <p className="text-sm">{item?.text}</p>
+                                      {/* </Link> */}
 
                                       <p className="text-xs text-blue-400">
                                         {moment(item?.createdAt).fromNow()}
