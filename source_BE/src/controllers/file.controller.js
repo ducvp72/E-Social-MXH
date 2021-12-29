@@ -37,7 +37,7 @@ const getFiles = catchAsync(async (req, res) => {
           .pipe(sharp().resize({ width: w, height: h, fit: sharp.fit.inside }).png())
           .pipe(res);
       }
-    } else if ((fileTypes === 'IMAGE', fileTypes === 'AUDIO', fileTypes === 'VIDEO')) {
+    } else if (fileTypes === 'AUDIO' || fileTypes === 'VIDEO') {
       const { range } = req.headers;
       const { length } = files;
       const CHUNK_SIZE = 10 ** 6;
@@ -68,13 +68,21 @@ const getFiles = catchAsync(async (req, res) => {
       fileReadStream.on('end', () => res.end());
     } else {
       const { length } = files;
-      res.set({
-        'Content-Length': length,
-        'Content-Disposition': `attachment; filename=${files.filename}`,
-        'Content-Type': files.contentType,
-        'Content-Transfer-Encoding': 'binary',
-        'Accept-Ranges': 'bytes',
-      });
+      if (files.contentType === 'application/pdf') {
+        res.set({
+          'Content-Length': length,
+          'Content-Type': files.contentType,
+          'Content-Transfer-Encoding': 'binary',
+          'Accept-Ranges': 'bytes',
+        });
+      } else
+        res.set({
+          'Content-Length': length,
+          'Content-Disposition': `attachment; filename=${files.filename}`,
+          'Content-Type': files.contentType,
+          'Content-Transfer-Encoding': 'binary',
+          'Accept-Ranges': 'bytes',
+        });
       gfs.createReadStream(_id).pipe(res);
     }
   });
