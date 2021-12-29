@@ -7,11 +7,16 @@ const wordFilter = require('../config/bad_words');
 
 const createComment = async (user, postId, text) => {
   const post = await Post.findOne({ _id: postId });
-  const  textClean = text ? wordFilter.clean(text):'';
+  let cleanText;
+  try{
+    cleanText = wordFilter.clean(text);
+  }catch(err){
+    cleanText = text;
+  }
   const newComment = new Comment({
     user: user.id,
     postId,
-    text: textClean,
+    text: cleanText,
   });
   const comment = await newComment.save();
   const notif = `${user.fullname} commented your post: ${text}`;

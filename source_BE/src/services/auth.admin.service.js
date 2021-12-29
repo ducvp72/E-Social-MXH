@@ -93,7 +93,7 @@ const verifyEmail = async (verifyEmailToken) => {
 const resetPasswordPage = async (user, oldPassword, newPassword) => {
   const userR = await adminService.getAdminById(user._id);
   if (!userR || !(await userR.isPasswordMatch(oldPassword))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Incorrect email or password');
   }
   try {
     await adminService.updateAdminById(user._id, { password: newPassword });

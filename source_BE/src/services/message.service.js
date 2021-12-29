@@ -23,7 +23,12 @@ const isUserInConversation = async (userId, conversationId) => {
 const createMessageText = async (userId, conversationId, text) => {
   const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
-  const textClean = text ? wordFilter.clean(text) : '';
+  let textClean;
+  try{
+    textClean = text ? wordFilter.clean(text):'';
+  }catch(err){
+    textClean = text;
+  }
   const newMessage = new Message({
     conversationId,
     sender: userId,
@@ -76,7 +81,12 @@ const createMessageMedia = async (file, userId, conversationId, text) => {
   const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
   const fileTypes = file.contentType.split('/')[0].toUpperCase();
-  const textClean = text ? wordFilter.clean(text) : '';
+  let textClean;
+  try{
+    textClean = text ? wordFilter.clean(text):'';
+  }catch(err){
+    textClean = text;
+  }
   const newMessage = new Message({
     conversationId,
     sender: userId,

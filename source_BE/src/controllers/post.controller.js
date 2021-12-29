@@ -45,7 +45,13 @@ const getPosts = catchAsync(async (req, res) => {
   for (const post of result.results) {
     const newUser = {};
     const { id, file, owner, fileTypes, text, createdAt } = post;
-    const cleanText = wordFilter.clean(text);
+    let cleanText;
+    try{
+      cleanText = wordFilter.clean(text);
+    }catch(err){
+      cleanText = text;
+    }
+   
     if (!owner) continue;
     // eslint-disable-next-line no-await-in-loop
     const { fullname, avatar } = owner;
@@ -103,7 +109,12 @@ const getMyPosts = catchAsync(async (req, res) => {
     const newUser = {};
     const { id, file, owner, fileTypes, text, createdAt } = post;
     // eslint-disable-next-line no-await-in-loop
-    const cleanText = wordFilter.clean(text);
+    let cleanText;
+    try{
+      cleanText = wordFilter.clean(text);
+    }catch(err){
+      cleanText = text;
+    }
     const { fullname, avatar } = owner;
     const userId = owner.id;
     const user = {
