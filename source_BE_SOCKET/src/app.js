@@ -7,9 +7,11 @@ const ApiError = require('./utils/ApiError');
 // initialize exoress
 const app = express();
 
+app.get('/', (req, res) => {
+  res.send('Running');
+});
 app.use(cors());
 app.options('*', cors());
-
 // jwt authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);

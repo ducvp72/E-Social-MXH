@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('./config/config');
 const logger = require('./config/logger');
+require('./socket');
 
 let server;
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
@@ -31,5 +32,3 @@ process.on('SIGTERM', () => {
     server.close();
   }
 });
-
-require('./socket');
