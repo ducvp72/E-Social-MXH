@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
 import { useCookies } from "react-cookie";
 
 const Inbox = () => {
-  const [openSr, setOpenSr] = useState(false);
+  const [openSr, setOpenSr] = useState(true);
   const [cookies, ,] = useCookies(["auth"]);
   const socket = useRef();
   useEffect(() => {

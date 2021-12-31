@@ -55,6 +55,16 @@ export const chatApi = {
     );
   },
 
+  getFileByToken(token, converId, page, limit, type) {
+    return axiosApi(
+      `message/${converId}?page=${page}&limit=${limit}&sortBy=createdAt:desc&typeMessage=${type}`,
+      `GET`,
+      null,
+      null,
+      token
+    );
+  },
+
   likeMess(token, idConver) {
     return axiosApi(`message/like/${idConver}`, "POST", null, null, token);
   },

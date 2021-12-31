@@ -48,6 +48,9 @@
     }
   }
 
+  .cs-expansion-panel__content {
+    padding: unset;
+  }
 
   .lds-ring {
     display: inline-block;

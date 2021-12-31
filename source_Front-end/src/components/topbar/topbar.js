@@ -16,6 +16,8 @@ import { actLogoutMess } from "./../../reducers/messageReducer";
 import { postApi } from "./../../axiosApi/api/postApi";
 import InfiniteScroll from "react-infinite-scroll-component";
 import moment from "moment";
+import { actLogoutFile } from "../../reducers/fileReducer";
+import { actLogoutMedia } from "../../reducers/mediaReducer";
 
 export const Topbar = () => {
   const [skt, setSkt] = useState(true);
@@ -104,6 +106,8 @@ export const Topbar = () => {
       dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
       dispatch(actLogoutConver());
       dispatch(actLogoutMess());
+      dispatch(actLogoutFile());
+      dispatch(actLogoutMedia());
       removeCookie("auth", { path: "/" });
     } catch (err) {
       console.log(err);

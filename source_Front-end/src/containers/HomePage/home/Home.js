@@ -10,6 +10,8 @@ import { actLogout } from "./../../../reducers/authReducer";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { actLogoutConver } from "./../../../reducers/converReducer";
 import { actLogoutMess } from "../../../reducers/messageReducer";
+import { actLogoutFile } from "../../../reducers/fileReducer";
+import { actLogoutMedia } from "../../../reducers/mediaReducer";
 
 const Home = () => {
   const [cookies, setCookie, removeCookie] = useCookies([
@@ -48,6 +50,8 @@ const Home = () => {
       dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
       dispatch(actLogoutConver());
       dispatch(actLogoutMess());
+      dispatch(actLogoutFile());
+      dispatch(actLogoutMedia());
       removeCookie("auth", { path: "/" });
     } catch (err) {
       console.log(err);
