@@ -39,6 +39,11 @@ export const fileReducer = (
       return { ...state };
     }
 
+    case "ADD_FILE": {
+      state.data = [{ ...payload }, ...state.data];
+      return { ...state };
+    }
+
     case "LOG_OUT_FILE": {
       state.data = [];
       state.next = [];
@@ -88,6 +93,29 @@ export const actLoadMoreFile = (token, converId, firstPage, limit, type) => {
       .catch((error) => {
         console.log("getMoreConver", error);
       });
+  };
+};
+
+export const actAddFile = (data) => {
+  return (dispatch) => {
+    dispatch({
+      type: "ADD_FILE",
+      payload: data,
+    });
+  };
+};
+
+export const actRecallFile = (value, index) => {
+  const temp = {
+    value,
+    index,
+  };
+  // console.log("temp", temp);
+  return (dispatch) => {
+    dispatch({
+      type: "RECALL_FILE",
+      payload: temp,
+    });
   };
 };
 

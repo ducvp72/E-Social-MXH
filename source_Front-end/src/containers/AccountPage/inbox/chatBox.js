@@ -20,6 +20,8 @@ import RecordingAudio from "./Media/recordingAudio";
 import { actRecallMessage } from "./../../../reducers/messageReducer";
 import RecordingScreen from "./Media/recordingScreen";
 import { toast, ToastContainer, Zoom } from "react-toastify";
+import { actAddFile } from "../../../reducers/fileReducer";
+import { actAddMedia } from "../../../reducers/mediaReducer";
 const ChatBox = (props) => {
   const { setOpenSr, openSr, socket } = props;
   const [cookies, ,] = useCookies(["auth"]);
@@ -98,14 +100,27 @@ const ChatBox = (props) => {
     // Nhận hình ảnh hoặc ảnh kèm tin nhắn
     socket.current.on("getMedia", (data) => {
       // console.log("on", data.text, " ", data.file);
-
       setScroll(Date.now());
       if (userId !== data.senderId) return;
-      if (data.text === "") {
+      dispatch(
+        actAddMessage({
+          content: {
+            text: data.text,
+            file: data.file,
+          },
+          incomming: true,
+          conversationId: messData?.id,
+          createdAt: Date.now(),
+          id: data.messageId,
+          sender: data.senderId,
+          typeMessage: data.typeMessage,
+        })
+      );
+      if (data.typeMessage === "DOWNLOAD") {
         dispatch(
-          actAddMessage({
+          actAddFile({
             content: {
-              text: "",
+              text: data.text,
               file: data.file,
             },
             incomming: true,
@@ -118,9 +133,9 @@ const ChatBox = (props) => {
         );
       } else {
         dispatch(
-          actAddMessage({
+          actAddMedia({
             content: {
-              text: data.text,
+              text: "",
               file: data.file,
             },
             incomming: true,
@@ -472,6 +487,13 @@ const ChatBox = (props) => {
           typeMessage: rs.data?.typeMessage,
         };
         dispatch(actAddMessage(value));
+
+        if (value?.typeMessage === "DOWNLOAD") {
+          dispatch(actAddFile(value));
+        } else {
+          dispatch(actAddMedia(value));
+        }
+
         handleChatSocketMedia(value);
       })
       .catch((err) => {

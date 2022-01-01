@@ -39,6 +39,11 @@ export const mediaReducer = (
       return { ...state };
     }
 
+    case "ADD_MEDIA": {
+      state.data = [{ ...payload }, ...state.data];
+      return { ...state };
+    }
+
     case "LOG_OUT_MEDIA": {
       state.data = [];
       state.next = [];
@@ -94,6 +99,29 @@ export const actLoadMoreMedia = (token, converId, firstPage, limit, type) => {
       .catch((error) => {
         console.log("getMoreConver", error);
       });
+  };
+};
+
+export const actAddMedia = (data) => {
+  return (dispatch) => {
+    dispatch({
+      type: "ADD_MEDIA",
+      payload: data,
+    });
+  };
+};
+
+export const actRecallMedia = (value, index) => {
+  const temp = {
+    value,
+    index,
+  };
+  // console.log("temp", temp);
+  return (dispatch) => {
+    dispatch({
+      type: "RECALL_MEDIA",
+      payload: temp,
+    });
   };
 };
 
