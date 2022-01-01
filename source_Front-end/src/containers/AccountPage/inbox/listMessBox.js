@@ -19,10 +19,95 @@ import {
   actRecallMessage,
 } from "./../../../reducers/messageReducer";
 import { actGetMyConver } from "../../../reducers/converReducer";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
+
+const MediaDetail = ({ popup, handleCloses, item }) => {
+  const checkMedia = (item) => {
+    if (item) {
+      if (item?.typeMessage === "IMAGE") {
+        return (
+          <>
+            <div
+              className="flex  items-center justify-center cursor-pointer outline-none"
+              style={{ border: "1px solid #efefef" }}
+            >
+              <img
+                src={`https://mxhld.herokuapp.com/v1/file/${item?.content.file}`}
+                alt="userpost"
+                className="w-full object-cover h-full"
+              />
+            </div>
+          </>
+        );
+      }
+      if (item?.typeMessage === "VIDEO") {
+        return (
+          <div className="flex outline-none items-center justify-center object-cover cursor-pointer bg-black ">
+            <video
+              style={{ width: "700px" }}
+              className="outline-none h-full w-full "
+              controls
+            >
+              <source
+                src={`https://mxhld.herokuapp.com/v1/file/${item?.content.file}`}
+              />
+            </video>
+          </div>
+        );
+      }
+      if (item?.typeMessage === "AUDIO") {
+        return (
+          <div
+            style={{ width: "400px" }}
+            className=" items-center justify-center cursor-pointer outline-none "
+          >
+            <audio className=" flex w-full items-center z-30 mt-2 " controls>
+              <source
+                src={`https://mxhld.herokuapp.com/v1/file/${item?.content.file}`}
+                type="audio/mp3"
+              />
+            </audio>
+          </div>
+        );
+      }
+    }
+  };
+  return (
+    <>
+      <Dialog
+        open={popup}
+        onClose={handleCloses}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="sm"
+      >
+        <DialogTitle id="alert-dialog-title">
+          <DialogActions>
+            <Button onClick={handleCloses} color="error" variant="outlined">
+              Close
+            </Button>
+          </DialogActions>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {checkMedia(item)}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
 const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   const [cookies, ,] = useCookies("auth");
   const dispatch = useDispatch();
-
+  const [popup, setPopup] = useState(false);
+  const [temp, setTemp] = useState(null);
   const handleRecall = async () => {
     chatApi
       .recallMess(
@@ -32,7 +117,6 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
       )
       .then((rs) => {
         // console.log("CheckXoa", rs.data);
-
         dispatch(
           actRecallMessage(
             {
@@ -81,8 +165,18 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
     }
   };
 
+  const handleClickOpens = () => {
+    setPopup(true);
+  };
+
+  const handleCloses = () => {
+    setPopup(false);
+    setTemp(null);
+  };
+
   return (
     <>
+      <MediaDetail item={temp} popup={popup} handleCloses={handleCloses} />
       <Message
         model={{
           message: "",
@@ -152,20 +246,30 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
                 {data?.typeMessage === "IMAGE" && (
                   <>
                     <img
+                      onClick={() => {
+                        handleClickOpens();
+                        setTemp(data);
+                      }}
                       src={`https://mxhld.herokuapp.com/v1/file/${data?.content?.file}`}
                       alt="Akane avatar"
                       width={200}
+                      className=" cursor-pointer"
                     />
                   </>
                 )}
                 {data?.typeMessage === "VIDEO" && (
                   <>
                     <video
+                      onClick={() => {
+                        handleClickOpens();
+                        setTemp(data);
+                      }}
                       style={{
                         width: "400px",
                         height: "400px",
                       }}
                       // className="z-30"
+                      className=" cursor-pointer"
                       controls
                     >
                       <source
@@ -176,11 +280,20 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
                 )}
                 {data?.typeMessage === "AUDIO" && (
                   <>
-                    <audio controls>
-                      <source
-                        src={`https://mxhld.herokuapp.com/v1/file/${data?.content.file}`}
-                      />
-                    </audio>
+                    <div>
+                      <audio
+                        onClick={() => {
+                          handleClickOpens();
+                          setTemp(data);
+                        }}
+                        controls
+                        className=" cursor-pointer"
+                      >
+                        <source
+                          src={`https://mxhld.herokuapp.com/v1/file/${data?.content.file}`}
+                        />
+                      </audio>
+                    </div>
                   </>
                 )}
               </div>

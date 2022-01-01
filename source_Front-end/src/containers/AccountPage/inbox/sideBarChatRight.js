@@ -77,6 +77,7 @@ const MediaDetail = ({ popup, handleCloses, item }) => {
         onClose={handleCloses}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        maxWidth="sm"
       >
         <DialogTitle id="alert-dialog-title">
           <DialogActions>
