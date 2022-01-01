@@ -34,7 +34,6 @@ export const messageReducer = (
     }
 
     case "RECALL_MESSAGE": {
-      // console.log("payload", payload);
       const length = state.data.length;
       if (length > payload.index) {
         state.data[payload.index] = {
@@ -47,7 +46,6 @@ export const messageReducer = (
           typeMessage: "RECALL",
         };
       }
-
       return { ...state };
     }
 

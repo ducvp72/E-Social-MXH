@@ -13,15 +13,24 @@ const onError = function (error) {
   if (window.location.pathname !== "/login") {
     if (error.response) {
       const { code } = error.response.data;
-      if (code === 401 || code === 503 || code === 403)
+      if (code === 401) {
         Swal.fire({
           icon: "error",
           title: "Your token was expired, please login again !",
           showConfirmButton: false,
           timer: 1500,
         });
-      cookies?.remove("auth", { path: "/" });
-      window.location.replace("/");
+        cookies?.remove("auth", { path: "/" });
+        window.location.replace("/");
+      }
+      if (code === 500) {
+        Swal.fire({
+          icon: "error",
+          title: "Server was on busy, please try again !",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
     } else {
       console.error("Error Message:", error.message);
     }

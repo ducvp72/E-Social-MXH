@@ -16,6 +16,8 @@ import moment from "moment";
 import { Link, useParams } from "react-router-dom";
 import { actLoadMore } from "./../../../reducers/converReducer";
 import { actGetMess } from "./../../../reducers/messageReducer";
+import { actGetFileByConver } from "../../../reducers/fileReducer";
+import { actGetMediaByConver } from "../../../reducers/mediaReducer";
 
 const SkeletonConversation = () => {
   let arr = [];
@@ -117,6 +119,25 @@ const ListConver = (props) => {
 
   const getIdConverRedux = (converId) => {
     dispatch(actGetMess(cookies.auth.tokens.access.token, converId));
+    dispatch(
+      actGetFileByConver(
+        cookies.auth.tokens.access.token,
+        converId,
+        1,
+        10,
+        "DOWNLOAD"
+      )
+    );
+
+    dispatch(
+      actGetMediaByConver(
+        cookies.auth.tokens.access.token,
+        converId,
+        1,
+        10,
+        "MEDIA"
+      )
+    );
   };
 
   return (
@@ -212,12 +233,6 @@ const ListConver = (props) => {
                   })}
               </InfiniteScroll>
             )}
-
-            {/* {!notFound && (
-              <div className="flex justify-center items-center">
-                <p className="">Loading....</p>
-              </div>
-            )} */}
 
             {currentConvers?.data?.length <= 0 && !skt && (
               <div className="flex justify-center items-center">

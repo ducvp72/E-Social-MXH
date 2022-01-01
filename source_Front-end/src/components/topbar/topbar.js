@@ -16,6 +16,8 @@ import { actLogoutMess } from "./../../reducers/messageReducer";
 import { postApi } from "./../../axiosApi/api/postApi";
 import InfiniteScroll from "react-infinite-scroll-component";
 import moment from "moment";
+import { actLogoutFile } from "../../reducers/fileReducer";
+import { actLogoutMedia } from "../../reducers/mediaReducer";
 
 export const Topbar = () => {
   const [skt, setSkt] = useState(true);
@@ -104,6 +106,8 @@ export const Topbar = () => {
       dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
       dispatch(actLogoutConver());
       dispatch(actLogoutMess());
+      dispatch(actLogoutFile());
+      dispatch(actLogoutMedia());
       removeCookie("auth", { path: "/" });
     } catch (err) {
       console.log(err);
@@ -362,9 +366,9 @@ export const Topbar = () => {
                                       className=" w-10 h-10 rounded-full"
                                     />
                                     <div className="flex-col ">
-                                      <Link to={`/profile/${item?.other?.id}`}>
-                                        <p className="text-sm">{item?.text}</p>
-                                      </Link>
+                                      {/* <Link to={`/profile/${item?.other?.id}`}> */}
+                                      <p className="text-sm">{item?.text}</p>
+                                      {/* </Link> */}
 
                                       <p className="text-xs text-blue-400">
                                         {moment(item?.createdAt).fromNow()}

@@ -20,6 +20,11 @@ import RecordingAudio from "./Media/recordingAudio";
 import { actRecallMessage } from "./../../../reducers/messageReducer";
 import RecordingScreen from "./Media/recordingScreen";
 import { toast, ToastContainer, Zoom } from "react-toastify";
+import { actAddFile, actGetFileByConver } from "../../../reducers/fileReducer";
+import {
+  actAddMedia,
+  actGetMediaByConver,
+} from "../../../reducers/mediaReducer";
 const ChatBox = (props) => {
   const { setOpenSr, openSr, socket } = props;
   const [cookies, ,] = useCookies(["auth"]);
@@ -67,7 +72,7 @@ const ChatBox = (props) => {
       console.log("connected error");
     });
     socket.current.on("error", (err) => {
-      console.log(err);
+      // console.log(err);
     });
 
     // Nhận tin nhắn
@@ -98,14 +103,27 @@ const ChatBox = (props) => {
     // Nhận hình ảnh hoặc ảnh kèm tin nhắn
     socket.current.on("getMedia", (data) => {
       // console.log("on", data.text, " ", data.file);
-
       setScroll(Date.now());
       if (userId !== data.senderId) return;
-      if (data.text === "") {
+      dispatch(
+        actAddMessage({
+          content: {
+            text: data.text,
+            file: data.file,
+          },
+          incomming: true,
+          conversationId: messData?.id,
+          createdAt: Date.now(),
+          id: data.messageId,
+          sender: data.senderId,
+          typeMessage: data.typeMessage,
+        })
+      );
+      if (data.typeMessage === "DOWNLOAD") {
         dispatch(
-          actAddMessage({
+          actAddFile({
             content: {
-              text: "",
+              text: data.text,
               file: data.file,
             },
             incomming: true,
@@ -118,9 +136,9 @@ const ChatBox = (props) => {
         );
       } else {
         dispatch(
-          actAddMessage({
+          actAddMedia({
             content: {
-              text: data.text,
+              text: "",
               file: data.file,
             },
             incomming: true,
@@ -134,23 +152,48 @@ const ChatBox = (props) => {
       }
     });
     //Thu hồi tin nhẵn
-    socket.current.on("getRecall", (data) => {
-      // console.log("on", "getRecall");
-      dispatch(
-        actRecallMessage(
-          {
-            content: null,
-            incomming: true,
-            conversationId: messData?.id,
-            createdAt: Date.now(),
-            id: data?.messageId,
-            sender: data.senderId,
-            typeMessage: "RECALL",
-          },
-          data.index
-        )
-      );
-    });
+    socket.current.on(
+      "getRecall",
+      (data) => {
+        // console.log("on", "getRecall");
+        dispatch(
+          actRecallMessage(
+            {
+              content: null,
+              incomming: true,
+              conversationId: messData?.id,
+              createdAt: Date.now(),
+              id: data?.messageId,
+              sender: data.senderId,
+              typeMessage: "RECALL",
+            },
+            data.index
+          )
+        );
+        setTimeout(() => {
+          dispatch(
+            actGetFileByConver(
+              cookies.auth.tokens.access.token,
+              messData?.id,
+              1,
+              10,
+              "DOWNLOAD"
+            )
+          );
+
+          dispatch(
+            actGetMediaByConver(
+              cookies.auth.tokens.access.token,
+              messData?.id,
+              1,
+              10,
+              "MEDIA"
+            )
+          );
+        });
+      },
+      4000
+    );
 
     //Nhận Icon
     socket.current.on("getIcon", (data) => {
@@ -186,7 +229,6 @@ const ChatBox = (props) => {
 
     //Hiển thị recall tin nhắn theo ID
     socket.current.on("getRecall", (item) => {
-      console.log("onIT", item);
       setRecallMess(item.messageId);
     });
 
@@ -360,7 +402,7 @@ const ChatBox = (props) => {
         msgInputValue
       )
       .then((rs) => {
-        handleChatSocket(msgInputValue, messData?.id);
+        handleChatSocket(rs.data?.content.text, messData?.id);
 
         dispatch(
           actAddMessage({
@@ -473,6 +515,13 @@ const ChatBox = (props) => {
           typeMessage: rs.data?.typeMessage,
         };
         dispatch(actAddMessage(value));
+
+        if (value?.typeMessage === "DOWNLOAD") {
+          dispatch(actAddFile(value));
+        } else {
+          dispatch(actAddMedia(value));
+        }
+
         handleChatSocketMedia(value);
       })
       .catch((err) => {

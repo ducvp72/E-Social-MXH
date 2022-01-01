@@ -1,4 +1,4 @@
-import { chatApi } from "./../axiosApi/api/chatApi";
+import { chatApi } from "../axiosApi/api/chatApi";
 
 const initialState = {
   data: [],
@@ -11,12 +11,12 @@ const initialState = {
 };
 
 // Child reducer
-export const converReducer = (
+export const mediaReducer = (
   state = initialState,
   { type, payload, ...action }
 ) => {
   switch (type) {
-    case "GET_SUCCES_CONVER": {
+    case "GET_SUCCES_MEDIA": {
       state.data = payload.results;
       state.next = [];
       state.pageNext = 2;
@@ -28,7 +28,7 @@ export const converReducer = (
       return { ...state };
     }
 
-    case "ADD_MORE": {
+    case "ADD_MORE_MEDIA": {
       state.next = payload.results;
       if (state.pageNext > state.totalPages) state.more = false;
       else {
@@ -39,7 +39,12 @@ export const converReducer = (
       return { ...state };
     }
 
-    case "LOG_OUT_CONVER": {
+    case "ADD_MEDIA": {
+      state.data = [{ ...payload }, ...state.data];
+      return { ...state };
+    }
+
+    case "LOG_OUT_MEDIA": {
       state.data = [];
       state.next = [];
       state.pageNext = 0;
@@ -47,11 +52,7 @@ export const converReducer = (
       state.totalResults = 0;
       state.error = null;
       state.more = true;
-      return { ...state };
-    }
 
-    case "GET_FAIL": {
-      state.data = [];
       return { ...state };
     }
 
@@ -61,14 +62,20 @@ export const converReducer = (
   }
 };
 
-export const actGetMyConver = (token, firstPage, limit) => {
+export const actGetMediaByConver = (
+  token,
+  converId,
+  firstPage,
+  limit,
+  type
+) => {
   return (dispatch) => {
     chatApi
-      .getConverByToken(token, firstPage, limit)
+      .getFileByToken(token, converId, firstPage, limit, type)
       .then((result) => {
         // console.log("ReduxConver", result.data.results);
         dispatch({
-          type: "GET_SUCCES_CONVER",
+          type: "GET_SUCCES_MEDIA",
           payload: result.data,
         });
       })
@@ -78,13 +85,14 @@ export const actGetMyConver = (token, firstPage, limit) => {
   };
 };
 
-export const actLoadMore = (token, firstPage, limit) => {
+export const actLoadMoreMedia = (token, converId, firstPage, limit, type) => {
   return (dispatch) => {
     chatApi
-      .getConverByToken(token, firstPage, limit)
+      .getFileByToken(token, converId, firstPage, limit, type)
       .then((result) => {
+        console.log("re", result.data);
         dispatch({
-          type: "ADD_MORE",
+          type: "ADD_MORE_MEDIA",
           payload: result.data,
         });
       })
@@ -94,10 +102,19 @@ export const actLoadMore = (token, firstPage, limit) => {
   };
 };
 
-export const actLogoutConver = () => {
+export const actAddMedia = (data) => {
   return (dispatch) => {
     dispatch({
-      type: "LOG_OUT_CONVER",
+      type: "ADD_MEDIA",
+      payload: data,
+    });
+  };
+};
+
+export const actLogoutMedia = () => {
+  return (dispatch) => {
+    dispatch({
+      type: "LOG_OUT_MEDIA",
     });
   };
 };

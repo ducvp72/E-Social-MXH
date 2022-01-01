@@ -80,7 +80,6 @@ const SearchText = () => {
   };
 
   const handleFetchUsers = () => {
-    console.log("key", temp);
     return new Promise((resolve, reject) => {
       userApi
         .getUserName(cookies.auth.tokens.access.token, temp, page, 5)

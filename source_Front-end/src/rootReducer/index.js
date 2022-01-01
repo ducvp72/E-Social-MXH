@@ -9,6 +9,8 @@ import { ChangePostDialogReducer } from "./../reducers/changePostDialog";
 import { converReducer } from "./../reducers/converReducer";
 import { notifyReducer } from "./../reducers/notificationReducer";
 import { messageReducer } from "./../reducers/messageReducer";
+import { fileReducer } from "../reducers/fileReducer";
+import { mediaReducer } from "../reducers/mediaReducer";
 const rootPersistConfig = {
   key: "root",
   storage: storage,
@@ -37,13 +39,28 @@ const messagePersistConfig = {
   whiteList: ["message"],
 };
 
+const filePersistConfig = {
+  key: "file",
+  storage: storage,
+  stateReconciler: autoMergeLevel2,
+  whiteList: ["file"],
+};
+
+const MediaPersistConfig = {
+  key: "media",
+  storage: storage,
+  stateReconciler: autoMergeLevel2,
+  whiteList: ["media"],
+};
+
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   myconver: persistReducer(converPersistConfig, converReducer),
-  // mynotify: notifyReducer,
   messConver: persistReducer(messagePersistConfig, messageReducer),
   dialog: createPostDialogReducer,
   changePost: ChangePostDialogReducer,
+  fileConver: persistReducer(filePersistConfig, fileReducer),
+  mediaConver: persistReducer(MediaPersistConfig, mediaReducer),
 });
 
 export default persistReducer(rootPersistConfig, rootReducer);
