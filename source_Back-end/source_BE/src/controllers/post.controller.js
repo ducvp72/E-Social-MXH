@@ -3,6 +3,8 @@ const catchAsync = require('../utils/catchAsync');
 const pick = require('../utils/pick');
 const { postService, commentService, followService } = require('../services');
 
+const wordFilter = require('../config/bad_words');
+
 const createPostText = catchAsync(async (req, res) => {
   const Post = await postService.createPostT(req.user, req.body.text);
   res.status(httpStatus.OK).send(Post);
@@ -43,7 +45,14 @@ const getPosts = catchAsync(async (req, res) => {
   for (const post of result.results) {
     const newUser = {};
     const { id, file, owner, fileTypes, text, createdAt } = post;
-    if(!owner) continue;
+    let cleanText;
+    try{
+      cleanText = wordFilter.clean(text);
+    }catch(err){
+      cleanText = text;
+    }
+   
+    if (!owner) continue;
     // eslint-disable-next-line no-await-in-loop
     const { fullname, avatar } = owner;
     const userId = owner.id;
@@ -61,7 +70,7 @@ const getPosts = catchAsync(async (req, res) => {
       Object.assign(newUser, {
         id,
         user,
-        text,
+        text: cleanText,
         file,
         fileTypes,
         likes,
@@ -83,7 +92,7 @@ const getPosts = catchAsync(async (req, res) => {
 const getMyPosts = catchAsync(async (req, res) => {
   const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
   options.populate = 'owner';
-  const usersHasFollowed = await followService.getUserFollowing(req.user.id)||[];
+  const usersHasFollowed = (await followService.getUserFollowing(req.user.id)) || [];
   usersHasFollowed.push(req.user.id);
   const result = await postService.queryPosts(
     {
@@ -100,6 +109,12 @@ const getMyPosts = catchAsync(async (req, res) => {
     const newUser = {};
     const { id, file, owner, fileTypes, text, createdAt } = post;
     // eslint-disable-next-line no-await-in-loop
+    let cleanText;
+    try{
+      cleanText = wordFilter.clean(text);
+    }catch(err){
+      cleanText = text;
+    }
     const { fullname, avatar } = owner;
     const userId = owner.id;
     const user = {
@@ -116,7 +131,7 @@ const getMyPosts = catchAsync(async (req, res) => {
       Object.assign(newUser, {
         id,
         user,
-        text,
+        text: cleanText,
         file,
         fileTypes,
         hasLike,

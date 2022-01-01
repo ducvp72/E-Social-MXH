@@ -20,7 +20,7 @@ const loveIcon = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(message);
 });
 const getMessagesFromConversation = catchAsync(async (req, res) => {
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page', 'typeMessage']);
   const message = await messageService.getMessagesFromConversation(req.user.id, req.params.conversationId, options);
   res.status(httpStatus.OK).send(message);
 });

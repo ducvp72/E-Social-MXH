@@ -47,11 +47,11 @@ const findProfileById = async (id) => {
   return userR;
 };
 const resetPassword = async (user, oldPassword, newPassword) => {
+  const userR = await userService.getUserById(user._id);
+  if (!userR || !(await userR.isPasswordMatch(oldPassword))) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Incorrect email or password');
+  }
   try {
-    const userR = await userService.getUserById(user._id);
-    if (!userR || !(await userR.isPasswordMatch(oldPassword))) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
-    }
     await userService.updateUserById(user._id, { password: newPassword }, { new: true, useFindAndModify: false });
   } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Password reset failed');

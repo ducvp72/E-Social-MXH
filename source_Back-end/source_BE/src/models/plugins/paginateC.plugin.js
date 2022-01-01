@@ -54,7 +54,7 @@ const paginate = (schema) => {
       }
     } else {
       countPromise = this.countDocuments(filter).exec();
-      docsPromise = this.find(filter);
+      docsPromise = this.find(filter).sort(sort);
       if (options.populate) {
         options.populate.split(',').forEach((populateOption) => {
           docsPromise = docsPromise.populate(

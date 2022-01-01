@@ -49,6 +49,11 @@
         "prettier"
     ],
     "dependencies": {
+<<<<<<< HEAD:source_Back-end/source_BE/package.json
+=======
+        "@joi/date": "^2.1.0",
+        "bad-words": "^3.0.4",
+>>>>>>> origin/BE:source_BE/package.json
         "bcryptjs": "^2.4.3",
 <<<<<<< HEAD:source_BE/package.json
         "body-parser": "^1.19.0",

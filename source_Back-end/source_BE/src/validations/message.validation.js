@@ -16,9 +16,17 @@ const getMessagesFromConversation = {
   params: Joi.object().keys({
     conversationId: Joi.string().custom(objectId).required(),
   }),
+  query: Joi.object().keys({
+    owner: Joi.string().custom(objectId),
+    sortBy: Joi.string(),
+    populate: Joi.string(),
+    typeMessage: Joi.string().valid('DOWNLOAD', 'VIDEO', 'AUDIO', 'IMAGE'),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
+  }),
 };
 const recallMessagesFromConversation = {
- body: Joi.object().keys({
+  body: Joi.object().keys({
     conversationId: Joi.string().custom(objectId).required(),
     messageId: Joi.string().custom(objectId).required(),
   }),

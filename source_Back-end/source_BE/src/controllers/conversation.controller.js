@@ -20,7 +20,7 @@ const getUser = catchAsync(async (req, res) => {
         users = user[0];
     }
     else{
-      users = members[0];
+      continue;
     }
    
    const userId = users.id;
