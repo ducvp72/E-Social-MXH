@@ -111,20 +111,6 @@ export const actAddMedia = (data) => {
   };
 };
 
-export const actRecallMedia = (value, index) => {
-  const temp = {
-    value,
-    index,
-  };
-  // console.log("temp", temp);
-  return (dispatch) => {
-    dispatch({
-      type: "RECALL_MEDIA",
-      payload: temp,
-    });
-  };
-};
-
 export const actLogoutMedia = () => {
   return (dispatch) => {
     dispatch({

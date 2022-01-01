@@ -20,8 +20,11 @@ import RecordingAudio from "./Media/recordingAudio";
 import { actRecallMessage } from "./../../../reducers/messageReducer";
 import RecordingScreen from "./Media/recordingScreen";
 import { toast, ToastContainer, Zoom } from "react-toastify";
-import { actAddFile } from "../../../reducers/fileReducer";
-import { actAddMedia } from "../../../reducers/mediaReducer";
+import { actAddFile, actGetFileByConver } from "../../../reducers/fileReducer";
+import {
+  actAddMedia,
+  actGetMediaByConver,
+} from "../../../reducers/mediaReducer";
 const ChatBox = (props) => {
   const { setOpenSr, openSr, socket } = props;
   const [cookies, ,] = useCookies(["auth"]);
@@ -149,23 +152,48 @@ const ChatBox = (props) => {
       }
     });
     //Thu hồi tin nhẵn
-    socket.current.on("getRecall", (data) => {
-      // console.log("on", "getRecall");
-      dispatch(
-        actRecallMessage(
-          {
-            content: null,
-            incomming: true,
-            conversationId: messData?.id,
-            createdAt: Date.now(),
-            id: data?.messageId,
-            sender: data.senderId,
-            typeMessage: "RECALL",
-          },
-          data.index
-        )
-      );
-    });
+    socket.current.on(
+      "getRecall",
+      (data) => {
+        // console.log("on", "getRecall");
+        dispatch(
+          actRecallMessage(
+            {
+              content: null,
+              incomming: true,
+              conversationId: messData?.id,
+              createdAt: Date.now(),
+              id: data?.messageId,
+              sender: data.senderId,
+              typeMessage: "RECALL",
+            },
+            data.index
+          )
+        );
+        setTimeout(() => {
+          dispatch(
+            actGetFileByConver(
+              cookies.auth.tokens.access.token,
+              messData?.id,
+              1,
+              10,
+              "DOWNLOAD"
+            )
+          );
+
+          dispatch(
+            actGetMediaByConver(
+              cookies.auth.tokens.access.token,
+              messData?.id,
+              1,
+              10,
+              "MEDIA"
+            )
+          );
+        });
+      },
+      4000
+    );
 
     //Nhận Icon
     socket.current.on("getIcon", (data) => {

@@ -105,20 +105,6 @@ export const actAddFile = (data) => {
   };
 };
 
-export const actRecallFile = (value, index) => {
-  const temp = {
-    value,
-    index,
-  };
-  // console.log("temp", temp);
-  return (dispatch) => {
-    dispatch({
-      type: "RECALL_FILE",
-      payload: temp,
-    });
-  };
-};
-
 export const actLogoutFile = () => {
   return (dispatch) => {
     dispatch({

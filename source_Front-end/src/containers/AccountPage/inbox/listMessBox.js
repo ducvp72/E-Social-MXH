@@ -25,6 +25,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import { actGetMediaByConver } from "../../../reducers/mediaReducer";
+import { actGetFileByConver } from "../../../reducers/fileReducer";
 
 const MediaDetail = ({ popup, handleCloses, item }) => {
   const checkMedia = (item) => {
@@ -127,6 +129,26 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
               typeMessage: "RECALL",
             },
             index
+          )
+        );
+
+        dispatch(
+          actGetFileByConver(
+            cookies.auth.tokens.access.token,
+            rs?.data?.conversationId,
+            1,
+            10,
+            "DOWNLOAD"
+          )
+        );
+
+        dispatch(
+          actGetMediaByConver(
+            cookies.auth.tokens.access.token,
+            rs?.data?.conversationId,
+            1,
+            10,
+            "MEDIA"
           )
         );
 

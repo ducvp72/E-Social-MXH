@@ -215,7 +215,7 @@ export const SideBarChatRight = () => {
       <ExpansionPanel title="Media" className="text-2xl">
         <div
           style={{
-            height: `${currentMedia?.data?.length <= 0 ? `100%` : `400px`}`,
+            height: `${currentMedia?.data?.length <= 0 ? `100%` : `350px`}`,
           }}
           className="post-show overflow-y-auto overflow-x-hidden cursor-pointer rounded text-blue-600  "
           id="scrollableDivMedia"
@@ -334,7 +334,10 @@ export const SideBarChatRight = () => {
           )}
         </div>
       </ExpansionPanel>
-      <ExpansionPanel title="Options" className="text-2xl">
+      <ExpansionPanel
+        title="Options (will be update its to next version, it's just UI)"
+        className="text-2xl"
+      >
         <div className=" cursor-pointer rounded  hover:bg-gray-200 hover:opacity-80">
           <div className="flex items-center gap-2 text-gray-600">
             <i className="fas fa-trash ml-1"></i>
