@@ -49,6 +49,7 @@
         "prettier"
     ],
     "dependencies": {
+        "@socket.io/pm2": "^5.1.0",
         "bcryptjs": "^2.4.3",
 <<<<<<< HEAD:source_BE/package.json
         "body-parser": "^1.19.0",
@@ -77,12 +78,15 @@
         "morgan": "^1.9.1",
         "passport": "^0.4.0",
         "passport-jwt": "^4.0.0",
+<<<<<<< HEAD:source_Back-end/source_BE_SOCKET/package.json
         "pm2": "^5.1.0",
 <<<<<<< HEAD:source_BE/package.json
         "serve-favicon": "^2.5.0",
         "sharp": "^0.29.3",
 =======
 >>>>>>> BE_SOCKET:source_BE_SOCKET/package.json
+=======
+>>>>>>> origin/BE_SOCKET:source_BE_SOCKET/package.json
         "socket.io": "^4.3.2",
         "validator": "^13.0.0",
         "winston": "^3.2.1"

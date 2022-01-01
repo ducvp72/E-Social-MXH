@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 const config = require('./config/config');
 const logger = require('./config/logger');
+<<<<<<< HEAD:source_Back-end/source_BE/src/index.js
 const app = require('./app');
+=======
+require('./socket');
+>>>>>>> origin/BE_SOCKET:source_BE_SOCKET/src/index.js
 
 let server;
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
@@ -35,4 +39,7 @@ process.on('SIGTERM', () => {
     server.close();
   }
 });
+<<<<<<< HEAD:source_Back-end/source_BE/src/index.js
 
+=======
+>>>>>>> origin/BE_SOCKET:source_BE_SOCKET/src/index.js
