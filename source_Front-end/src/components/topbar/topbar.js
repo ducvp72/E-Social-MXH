@@ -103,11 +103,14 @@ export const Topbar = () => {
 
   const handlelogout = () => {
     try {
-      dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
-      dispatch(actLogoutConver());
-      dispatch(actLogoutMess());
-      dispatch(actLogoutFile());
-      dispatch(actLogoutMedia());
+      // dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
+      // dispatch(actLogoutConver());
+      // dispatch(actLogoutMess());
+      // dispatch(actLogoutFile());
+      // dispatch(actLogoutMedia());
+      localStorage.clear();
+      // localStorage.removeItem('persist:root')
+      // localStorage.removeItem('persist:auth')
       removeCookie("auth", { path: "/" });
     } catch (err) {
       console.log(err);
