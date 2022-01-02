@@ -1,11 +1,27 @@
 const httpStatus = require('http-status');
-const { Follow, User } = require('../models');
+const { Follow, User, Conversation } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { userService } = require('.');
 const notificationService = require('./notification.service');
-
 const follow = async (user, followingId) => {
   let followR;
+  const conversation = await Conversation.findOne({
+    members: {
+      $all: [user._id, followingId],
+    },
+  })
+  if(!conversation){
+    const newConversation = new Conversation({
+      members: [user._id, followingId],
+      conversationType: 'private',
+    });
+    try {
+       await newConversation.save();
+    } catch (err) {
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
+    }
+  }
+
   const existFollow = await userService.existUserById(followingId);
   if (!existFollow) throw new ApiError(httpStatus.NOT_FOUND, 'Not found  following');
   if (user._id == followingId) throw new ApiError(httpStatus.BAD_REQUEST, 'Can not follow yourself!');
@@ -47,7 +63,7 @@ const follow = async (user, followingId) => {
     });
   } else {
     const notif = `${user.fullname} follows you`;
-    await notificationService.createNotification(followingId, notif);
+    await notificationService.createNotification(followingId, notif, user._id);
     await Follow.findOneAndUpdate(
       { user: user._id },
       {
