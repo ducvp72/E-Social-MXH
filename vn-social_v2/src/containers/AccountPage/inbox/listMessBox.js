@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./styles.css";
 import WasTyping from "./wasTyping";
 import { chatApi } from "./../../../axiosApi/api/chatApi";
@@ -6,6 +6,7 @@ import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 import { userApi } from "./../../../axiosApi/api/userApi";
 import { useDispatch, useSelector } from "react-redux";
+import { v1 as uuid } from "uuid";
 import {
   Avatar,
   ConversationHeader,
@@ -22,8 +23,6 @@ import { actGetMyConver } from "../../../reducers/converReducer";
 import { setWindowCall } from "../../../reducers/callReducer";
 import { parse, stringify, toJSON } from "flatted";
 import VideoCall from "./componentCall/index";
-import { SocketContext } from "../../../Context";
-import { ContextProvider } from "../../../Context";
 const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
   const [cookies, ,] = useCookies("auth");
   const dispatch = useDispatch();
@@ -347,7 +346,6 @@ const ListMessBox = (props) => {
   const [userInfo, setUserInfo] = useState(null);
   const currentMessage = useSelector((state) => state.messConver);
   const [openCall, setOpenCall] = useState(false);
-  // const { callAccepted, callEnded, leaveCall, callUser } =useContext(SocketContext);
   const dispatch = useDispatch();
   let { userId } = useParams();
   let callPopup;
@@ -380,8 +378,9 @@ const ListMessBox = (props) => {
     setOpenCall(true);
     const left = window.screen.width / 2 - w / 2;
     const top = window.screen.height / 2 - h / 2;
+    const id = uuid();
     callPopup = window.open(
-      `/contact/videocall/${userId}`,
+      `/contact/videocall/${id}`,
       `ContactDirect`,
       `toolbar=no, location=no, directories=no, 
           status=no, menubar=no, scrollbars=no,

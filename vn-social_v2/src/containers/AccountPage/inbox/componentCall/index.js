@@ -1,26 +1,159 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setWindowCall } from "../../../../reducers/callReducer";
-import { SocketContext } from "../../../../Context";
+import { io } from "socket.io-client";
+import { useCookies } from "react-cookie";
 const VideoCall = () => {
   const [localStream, setLocaStream] = useState(null);
   const [change, setChange] = useState(true);
   const [mute, setMute] = useState(true);
   const [show, setShow] = useState(true);
-  // const { userId } = useParams();
+  const [cookies, ,] = useCookies(["auth"]);
+  const socket = useRef();
+  const userStream = useRef();
+  const partnerVideo = useRef();
+  const peerRef = useRef();
+  const otherUser = useRef();
+   const { userId } = useParams();
+  useEffect(() => {
+    startWebCam();
+    socket.current = io("https://socket-mxhld.herokuapp.com", {
+      // transports: ["websocket", "polling"],
+      // pingTimeout: 60000,
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            Authorization: `Bearer ${cookies.auth.tokens.access.token}`,
+          },
+        },
+      },
+    });
+    socket.current.emit('whoami',data=>console.log(data));
+    socket.current.emit("join room", userId);
+
+    socket.current.on('other user', userID => {
+        callUser(userID);
+        otherUser.current = userID;
+    });
+
+    socket.current.on("user joined", userID => {
+        otherUser.current = userID;
+    });
+
+    socket.current.on("offer", handleRecieveCall);
+
+    socket.current.on("answer", handleAnswer);
+
+    socket.current.on("ice-candidate", handleNewICECandidateMsg);
+  }, []);
+  function callUser(userID) {
+    peerRef.current = createPeer(userID);
+    userStream.current.getTracks().forEach(track => peerRef.current.addTrack(track,  userStream.current));
+}
+
+function createPeer(userID) {
+    const peer = new RTCPeerConnection({
+        iceServers: [
+            {
+                urls: "stun:stun2.l.google.com:19302"
+            },
+            {
+              urls: 'turn:numb.viagenie.ca',
+              credential: 'muazkh',
+              username: 'webrtc@live.com'
+          },    
+        ]
+    });
+
+    peer.onicecandidate = handleICECandidateEvent;
+    peer.ontrack = handleTrackEvent;
+    peer.onnegotiationneeded = () => handleNegotiationNeededEvent(userID);
+
+    return peer;
+}
+
+function handleNegotiationNeededEvent(userID) {
+    peerRef.current.createOffer().then(offer => {
+        return peerRef.current.setLocalDescription(offer);
+    }).then(() => {
+        const payload = {
+            target: userID,
+            caller: socket.current.id,
+            sdp: peerRef.current.localDescription
+        };
+        socket.current.emit("offer", payload);
+    }).catch(e => console.log(e));
+}
+
+function handleRecieveCall(incoming) {
+    peerRef.current = createPeer();
+    const desc = new RTCSessionDescription(incoming.sdp);
+    peerRef.current.setRemoteDescription(desc).then(() => {
+      userStream.current.getTracks().forEach(track => peerRef.current.addTrack(track,userStream.current));
+    }).then(() => {
+        return peerRef.current.createAnswer();
+    }).then(answer => {
+        return peerRef.current.setLocalDescription(answer);
+    }).then(() => {
+        const payload = {
+            target: incoming.caller,
+            caller: socket.current.id,
+            sdp: peerRef.current.localDescription
+        }
+        socket.current.emit("answer", payload);
+    })
+}
+
+function handleAnswer(message) {
+    const desc = new RTCSessionDescription(message.sdp);
+    peerRef.current.setRemoteDescription(desc).catch(e => console.log(e));
+}
+
+function handleICECandidateEvent(e) {
+    if (e.candidate) {
+        const payload = {
+            target: otherUser.current,
+            candidate: e.candidate,
+        }
+        socket.current.emit("ice-candidate", payload);
+    }
+}
+
+function handleNewICECandidateMsg(incoming) {
+    const candidate = new RTCIceCandidate(incoming);
+
+    peerRef.current.addIceCandidate(candidate)
+        .catch(e => console.log(e));
+}
+
+function handleTrackEvent(e) {
+    partnerVideo.current.srcObject = e.streams[0];
+};
+
   // const dispatch = useDispatch();
   // const currentCall = useSelector((state) => state.windowCall.openCall);
   document.body.style.overflow = "hidden";
-
   const startWebCam = () => {
     navigator.mediaDevices
       .getUserMedia({
-        audio: true,
-        video: true,
+        audio: {
+          echoCancellationType: 'system',
+          echoCancellation: false,
+          sampleRate:24000,
+          sampleSize:16,
+          channelCount:2,
+          volume:0.5
+        },
+        video: {
+          width:320,
+          height:240,
+          frameRate:{ideal:60, min:10}
+        }
       })
       .then((stream) => {
         setLocaStream(stream);
+        userStream.current = stream;
       });
     setChange(false);
   };
@@ -142,7 +275,7 @@ const VideoCall = () => {
                           <video
                             style={{ height: "220px", width: "350px" }}
                             className=" w-full object-cover m-0"
-                            autoPlay
+                            autoPlay muted 
                             // ref={myVideo}
                             ref={(video) => {
                               if (video) {
@@ -171,11 +304,7 @@ const VideoCall = () => {
           <video
             className=" w-full object-cover m-0"
             autoPlay
-            ref={(video) => {
-              if (video) {
-                video.srcObject = localStream;
-              }
-            }}
+            ref={partnerVideo}
           />
 
           {/* <div className="flex flex-col justify-center">
