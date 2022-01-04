@@ -8,4 +8,4 @@ cd build
 cp index.html 200.html
 
 # Push domain
-surge . vn-mxh.surge.sh
+surge . vn2-mxh.surge.sh

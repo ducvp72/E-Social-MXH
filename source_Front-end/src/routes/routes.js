@@ -25,6 +25,8 @@ import AdminController from "./../containers/AdminPage/adminControler/adminContr
 import AdminLogin from "./../containers/AdminPage/adminLogin/index";
 import SearchAuth from "./helper/SearchAuth";
 import ListUserSearch from "./../containers/HomePage/home/ListUserSearch";
+import CallLayout from "./../layout/callLayoute";
+import VideoCall from "./../containers/AccountPage/inbox/componentCall/index";
 
 const Routes = () => {
   return (
@@ -61,6 +63,21 @@ const Routes = () => {
               </Route>
             </Switch>
           </DefaultLayout>
+        </UserAuthRoute>
+
+        <UserAuthRoute path="/contact">
+          <CallLayout>
+            <Switch>
+              <Route
+                path="/contact/videocall/:userId"
+                exact
+                component={VideoCall}
+              />
+              <Route path="*" exact>
+                <Redirect to="/404" />
+              </Route>
+            </Switch>
+          </CallLayout>
         </UserAuthRoute>
 
         <UserAuthRoute path="/search">
