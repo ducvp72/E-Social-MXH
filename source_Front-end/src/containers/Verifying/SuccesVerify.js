@@ -54,7 +54,8 @@ const SuccesVerify = () => {
       });
       removeCookie("tempTokens");
       dispatch(actLoginSuccess(resData.data));
-      history.push("/user/home");
+      // history.push("/user/home");
+      window.location.replace("/user/home");
     } catch (error) {
       return;
     }

@@ -30,11 +30,11 @@ const Signup = () => {
   );
   const [errDob, setErrDob] = useState(true);
   const initRegisterUser = {
-    fullname: "Dinh Long Nguyen",
-    gender: "male",
-    email: "vophuduc0702@gmail.com",
-    password: "123456789Du",
-    confirm: "123456789Du",
+    fullname: "",
+    gender: "",
+    email: "",
+    password: "",
+    confirm: "",
   };
   let history = useHistory();
   const handleSubmit = async (data, props) => {
