@@ -16,12 +16,21 @@ const VideoCall = () => {
   const [info, setShowInfor] = useState(false);
   const { userId } = useParams();
   const [awaiting, setAwating] = useState(true);
+  const [offp, setOffp] = useState(false);
+  const [share, setShare] = useState(false);
 
   useEffect(() => {
     setShowInfor(info);
     setAwating(awaiting);
     setLocaStream(localStream);
-  }, [info, awaiting, localStream]);
+    setShare(share);
+    console.log("Share", share);
+    localStream?.getVideoTracks()[0].addEventListener("ended", () => {
+      setShare(false);
+      setChange(false);
+      console.log("off Media");
+    });
+  }, [info, awaiting, localStream, share]);
 
   useEffect(() => {
     startWebCam();
@@ -65,6 +74,9 @@ const VideoCall = () => {
     socket.current.on("answer", handleAnswer);
 
     socket.current.on("ice-candidate", handleNewICECandidateMsg);
+    socket.current.on("video-off", (data) => {
+      setOffp(true);
+    });
   }, []);
   function callUser(userID) {
     peerRef.current = createPeer(userID);
@@ -77,12 +89,16 @@ const VideoCall = () => {
     const peer = new RTCPeerConnection({
       iceServers: [
         {
-          urls: "stun:stun2.l.google.com:19302",
+          urls: ["stun:eu-turn4.xirsys.com"],
         },
         {
-          urls: "turn:numb.viagenie.ca",
-          credential: "muazkh",
-          username: "webrtc@live.com",
+          username:
+            "ml0jh0qMKZKd9P_9C0UIBY2G0nSQMCFBUXGlk6IXDJf8G2uiCymg9WwbEJTMwVeiAAAAAF2__hNSaW5vbGVl",
+          credential: "4dd454a6-feee-11e9-b185-6adcafebbb45",
+          urls: [
+            "turn:eu-turn4.xirsys.com:80?transport=udp",
+            "turn:eu-turn4.xirsys.com:3478?transport=tcp",
+          ],
         },
       ],
     });
@@ -169,20 +185,29 @@ const VideoCall = () => {
   document.body.style.overflow = "hidden";
   const startWebCam = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
+      video: {
+        facingMode: "user",
+      },
       audio: true,
     });
     setLocaStream(stream);
+
     userStream.current = stream;
+    callUser(otherUser.current);
     setChange(false);
   };
 
   const stopWebCam = () => {
-    localStream?.getTracks().forEach((track) => {
+    const videoTracks = localStream.getVideoTracks();
+    videoTracks.forEach((track) => {
       track.stop();
+      localStream.removeTrack(track);
     });
-    setLocaStream(null);
     setChange(true);
+    socket.current.emit("video-off", {
+      senderId: cookies.auth.user.id,
+      receiverId: otherUser.current,
+    });
   };
 
   const muteMic = () => {
@@ -198,9 +223,9 @@ const VideoCall = () => {
       setMute(true);
     }
   };
-  // className=" w-full h-full flex items-end justify-end object-cover"
 
   const shareSceen = async () => {
+    setShare(true);
     var displayMediaOptions = {
       video: {
         cursor: "always",
@@ -212,6 +237,23 @@ const VideoCall = () => {
     );
     setLocaStream(stream);
     userStream.current = stream;
+    callUser(otherUser.current);
+  };
+
+  const unshareSceen = async () => {
+    setShare(false);
+    var displayMediaOptions = {
+      video: {
+        cursor: "always",
+      },
+      audio: false,
+    };
+    const stream = await navigator.mediaDevices.getDisplayMedia(
+      displayMediaOptions
+    );
+    setLocaStream(stream);
+    userStream.current = stream;
+    callUser(otherUser.current);
   };
 
   return (
@@ -222,18 +264,34 @@ const VideoCall = () => {
             <div className=" flex items-center justify-center"></div>
             <div className=" flex items-center justify-center">
               <div className=" flex items-center justify-center gap-4 mb-2 ">
-                <button
-                  onClick={() => {
-                    shareSceen();
-                  }}
-                  className=" focus:outline-none rounded-full bg-gray-300 w-12 h-12 flex items-center justify-center"
-                >
-                  <img
-                    className="w-8 h-8"
-                    src="/assets/image/present.png"
-                    alt="present"
-                  />
-                </button>
+                {share ? (
+                  <button
+                    onClick={() => {
+                      unshareSceen();
+                    }}
+                    className=" focus:outline-none rounded-full bg-red-500 w-12 h-12 flex items-center justify-center"
+                  >
+                    <img
+                      className="w-8 h-8"
+                      src="/assets/image/present.png"
+                      alt="present"
+                    />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      shareSceen();
+                    }}
+                    className=" focus:outline-none rounded-full bg-gray-300 w-12 h-12 flex items-center justify-center"
+                  >
+                    <img
+                      className="w-8 h-8"
+                      src="/assets/image/present.png"
+                      alt="present"
+                    />
+                  </button>
+                )}
+
                 {change ? (
                   <>
                     <button
@@ -250,7 +308,7 @@ const VideoCall = () => {
                 ) : (
                   <>
                     <button
-                      className=" focus:outline-none rounded-full bg-gray-300 w-12 h-12 flex items-center justify-center"
+                      className=" focus:outline-none rounded-full bg-red-500 w-12 h-12 flex items-center justify-center"
                       onClick={stopWebCam.bind(this)}
                     >
                       <img
@@ -265,12 +323,12 @@ const VideoCall = () => {
                 {mute ? (
                   <>
                     <button
-                      className=" focus:outline-none rounded-full bg-gray-300 w-12 h-12 flex items-center justify-center"
+                      className=" focus:outline-none rounded-full bg-red-500 w-12 h-12 flex items-center justify-center"
                       onClick={muteMic.bind(this)}
                     >
                       <img
                         className="w-8 h-8"
-                        src="/assets/image/microphone.png"
+                        src="/assets/image/mute.png"
                         alt="mute"
                       />
                     </button>
@@ -283,12 +341,13 @@ const VideoCall = () => {
                     >
                       <img
                         className="w-8 h-8"
-                        src="/assets/image/mute.png"
+                        src="/assets/image/microphone.png"
                         alt="unmute"
                       />
                     </button>
                   </>
                 )}
+
                 {partnerVideo !== null && (
                   <button className=" focus:outline-none rounded-full bg-red-500 w-12 h-12 flex items-center justify-center">
                     <img
@@ -359,6 +418,7 @@ const VideoCall = () => {
             <video
               className=" w-full object-cover m-0"
               autoPlay
+              id="partnerVideo"
               ref={partnerVideo}
             />
           )}
@@ -367,6 +427,14 @@ const VideoCall = () => {
             <div className=" absolute flex flex-col justify-center">
               <p className=" text-red-500 font-bold text-2xl">
                 The other rejects your call....
+              </p>
+            </div>
+          )}
+
+          {offp && (
+            <div className=" absolute flex flex-col justify-center">
+              <p className=" text-white-500 font-bold text-2xl">
+                The other was turn off camera
               </p>
             </div>
           )}
