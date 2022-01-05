@@ -18,19 +18,21 @@ const VideoCall = () => {
   const [awaiting, setAwating] = useState(true);
   const [offp, setOffp] = useState(false);
   const [share, setShare] = useState(false);
+  const [end, setEnd] = useState(false);
 
   useEffect(() => {
     setShowInfor(info);
     setAwating(awaiting);
     setLocaStream(localStream);
     setShare(share);
-    console.log("Share", share);
-    localStream?.getVideoTracks()[0].addEventListener("ended", () => {
-      setShare(false);
-      setChange(false);
-      console.log("off Media");
-    });
-  }, [info, awaiting, localStream, share]);
+    setOffp(offp);
+    setEnd(end);
+  }, [info, awaiting, localStream, share, offp, end]);
+
+  useEffect(() => {
+    console.log("Parnert", partnerVideo);
+    console.log("other", otherUser);
+  }, [partnerVideo, otherUser]);
 
   useEffect(() => {
     startWebCam();
@@ -77,7 +79,14 @@ const VideoCall = () => {
     socket.current.on("video-off", (data) => {
       setOffp(true);
     });
+    socket.current.on("video-on", (data) => {
+      setOffp(false);
+    });
+    socket.current.on("callEnded", (data) => {
+      setEnd(true);
+    });
   }, []);
+
   function callUser(userID) {
     peerRef.current = createPeer(userID);
     userStream.current
@@ -193,6 +202,23 @@ const VideoCall = () => {
     setLocaStream(stream);
 
     userStream.current = stream;
+    setChange(false);
+  };
+
+  const startWebCam2 = async () => {
+    socket.current.emit("video-on", {
+      senderId: cookies.auth.user.id,
+      receiverId: otherUser.current,
+    });
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "user",
+      },
+      audio: true,
+    });
+    setLocaStream(stream);
+
+    userStream.current = stream;
     callUser(otherUser.current);
     setChange(false);
   };
@@ -204,6 +230,7 @@ const VideoCall = () => {
       localStream.removeTrack(track);
     });
     setChange(true);
+    console.log("other", otherUser.current);
     socket.current.emit("video-off", {
       senderId: cookies.auth.user.id,
       receiverId: otherUser.current,
@@ -230,30 +257,37 @@ const VideoCall = () => {
       video: {
         cursor: "always",
       },
-      audio: false,
+      audio: true,
     };
-    const stream = await navigator.mediaDevices.getDisplayMedia(
-      displayMediaOptions
-    );
-    setLocaStream(stream);
-    userStream.current = stream;
-    callUser(otherUser.current);
+    let audioTrack, videoTrack, stream;
+    navigator.mediaDevices
+      .getDisplayMedia(displayMediaOptions)
+      .then(async (displayStream) => {
+        [videoTrack] = displayStream.getVideoTracks();
+        const audioStream = await navigator.mediaDevices
+          .getUserMedia({ audio: true })
+          .catch((e) => {
+            throw e;
+          });
+        [audioTrack] = audioStream.getAudioTracks();
+        displayStream.addTrack(audioTrack); // do stuff
+        stream = new MediaStream([videoTrack, audioTrack]); // do stuff)
+
+        stream.getVideoTracks()[0].onended = function () {
+          unshareSceen();
+        };
+
+        setLocaStream(stream);
+        userStream.current = null;
+        userStream.current = stream;
+        callUser(otherUser.current);
+        setChange(true);
+      });
   };
 
   const unshareSceen = async () => {
     setShare(false);
-    var displayMediaOptions = {
-      video: {
-        cursor: "always",
-      },
-      audio: false,
-    };
-    const stream = await navigator.mediaDevices.getDisplayMedia(
-      displayMediaOptions
-    );
-    setLocaStream(stream);
-    userStream.current = stream;
-    callUser(otherUser.current);
+    startWebCam2();
   };
 
   return (
@@ -296,7 +330,7 @@ const VideoCall = () => {
                   <>
                     <button
                       className=" focus:outline-none rounded-full bg-gray-300 w-12 h-12 flex items-center justify-center"
-                      onClick={startWebCam.bind(this)}
+                      onClick={startWebCam2.bind(this)}
                     >
                       <img
                         className="w-8 h-8"
@@ -432,10 +466,15 @@ const VideoCall = () => {
           )}
 
           {offp && (
-            <div className=" absolute flex flex-col justify-center">
-              <p className=" text-white-500 font-bold text-2xl">
+            <div className=" w-full h-full absolute flex flex-col items-center  justify-center z-50 bg-black">
+              <p className=" text-white font-bold text-2xl">
                 The other was turn off camera
               </p>
+            </div>
+          )}
+          {end && (
+            <div className=" w-full h-full absolute flex flex-col items-center  justify-center z-50 bg-black">
+              <p className=" text-white font-bold text-2xl">The call was End</p>
             </div>
           )}
         </div>

@@ -58,10 +58,7 @@ const NotifyCall = ({ notify, reject, userInfo, answerCall }) => {
 
             <div className=" z-50">
               <audio autoPlay preload="auto" loop>
-                <source
-                  src="/assets/image/Super-idol-meme.mp3"
-                  type="audio/ogg"
-                />
+                <source src="/assets/image/ringtone.mp3" type="audio/ogg" />
               </audio>
             </div>
 
