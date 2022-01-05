@@ -21,10 +21,69 @@ import { actRecallMessage } from "./../../../reducers/messageReducer";
 import RecordingScreen from "./Media/recordingScreen";
 import { toast, ToastContainer, Zoom } from "react-toastify";
 import { actAddFile, actGetFileByConver } from "../../../reducers/fileReducer";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
+import { userApi } from "./../../../axiosApi/api/userApi";
 import {
   actAddMedia,
   actGetMediaByConver,
 } from "../../../reducers/mediaReducer";
+import { v1 as uuid } from "uuid";
+import { setWindowCall } from "../../../reducers/callReducer";
+
+const NotifyCall = ({ notify, reject, userInfo, answerCall }) => {
+  return (
+    <>
+      <Dialog
+        open={notify}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="sm"
+      >
+        <DialogTitle id="alert-dialog-title">
+          <div className="flex flex-col items-center justify-center">
+            <img
+              className="w-32 h-32"
+              src={`https://mxhld.herokuapp.com/v1/image/${userInfo?.avatar}`}
+              alt="friend"
+            />
+
+            <div className="flex">
+              <p className="">{userInfo?.fullname} is calling you...</p>
+            </div>
+
+            <div className=" z-50">
+              <audio autoPlay preload="auto" loop>
+                <source src="/assets/image/ringtone.mp3" type="audio/ogg" />
+              </audio>
+            </div>
+
+            <img
+              className="w-32 h-32 object-cover"
+              src="https://i.pinimg.com/originals/20/b6/86/20b6860e2f5560e6fae086a51051bdbc.gif"
+              alt="callyou"
+            />
+          </div>
+          <DialogActions>
+            <div className="flex items-center justify-center gap-28">
+              <Button onClick={answerCall} color="success" variant="outlined">
+                Accept
+              </Button>
+              <Button onClick={reject} color="error" variant="outlined">
+                Reject
+              </Button>
+            </div>
+          </DialogActions>
+        </DialogTitle>
+      </Dialog>
+    </>
+  );
+};
+
 const ChatBox = (props) => {
   const { setOpenSr, openSr, socket } = props;
   const [cookies, ,] = useCookies(["auth"]);
@@ -43,7 +102,8 @@ const ChatBox = (props) => {
   const [recordVideo, setRecordVideo] = useState(false);
   const [recordAudio, setRecordAudio] = useState(false);
   const [recordScreen, setRecordScreen] = useState(false);
-  const messagesEndRef = useRef(null);
+  const [notify, setShowNotify] = useState(false);
+  const [roomIder, setRoomIder] = useState(null);
   const [scroll, setScroll] = useState(Date.now());
   //Biến dùng đẻ set Nội dung tin nhắn và thêm vào mảng tin nhắn hiện có
   const [messages, setMessages] = useState({});
@@ -56,9 +116,12 @@ const ChatBox = (props) => {
   const [recallMess, setRecallMess] = useState(null);
   const dispatch = useDispatch();
   let { userId } = useParams();
-
   useOnClickOutside(buttonRef, modalRef, () => setActive(false));
   useOnClickOutside(buttonMedia, modalMedia, () => setMedia(false));
+
+  useEffect(() => {
+    setRoomIder(roomIder);
+  }, [roomIder]);
 
   useEffect(() => {
     if (!socket.current) return;
@@ -73,6 +136,13 @@ const ChatBox = (props) => {
     });
     socket.current.on("error", (err) => {
       // console.log(err);
+    });
+
+    //Nhận cuộc gọi
+    socket.current.on("getCallUser", async (data) => {
+      console.log("show", data);
+      setRoomIder(data.roomId);
+      setShowNotify(true);
     });
 
     // Nhận tin nhắn
@@ -569,8 +639,70 @@ const ChatBox = (props) => {
     setScroll(Date.now());
   };
 
+  const answerCall = () => {
+    const onchat = {
+      senderId: cookies.auth.user.id,
+      receiverId: userId,
+    };
+    socket.current.emit("answerCall", onchat);
+    setShowNotify(false);
+    handleCall();
+  };
+
+  const reject = () => {
+    const onchat = {
+      senderId: cookies.auth.user.id,
+      receiverId: userId,
+    };
+    socket.current.emit("rejectCall", onchat);
+    setShowNotify(false);
+  };
+
+  const handleCall = (w, h) => {
+    const left = window.screen.width / 2 - w / 2;
+    const top = window.screen.height / 2 - h / 2;
+    let callPopup = window.open(
+      `/contact/videocall/${roomIder}`,
+      `ContactDirect`,
+      `toolbar=no, location=no, directories=no, 
+          status=no, menubar=no, scrollbars=no,
+         resizable=no, copyhistory=no, 
+         width=${w}, height=${h}, top=${
+        top - 50
+      }, left=${left}, alwaysRaised=yes`
+    );
+    dispatch(setWindowCall({ show: true, check: callPopup }));
+  };
+
+  const [userInfo, setUserInfo] = useState(null);
+  useEffect(() => {
+    getUserInfo();
+  }, [userId]);
+
+  const getUserInfo = async () => {
+    // console.log("UserId", userId, " ", userInfo?.avatar);
+    await userApi
+      .getUserById(userId)
+      .then((rs) => {
+        setUserInfo(rs.data);
+
+        // setAva(false);
+      })
+      .catch((err) => {
+        console.log("header", err);
+        // setAva(false);
+      });
+  };
+
   return (
     <>
+      <NotifyCall
+        notify={notify}
+        reject={reject}
+        userInfo={userInfo}
+        answerCall={answerCall}
+      />
+      ;
       {userId ? (
         <>
           <ToastContainer transition={Zoom} />

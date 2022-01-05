@@ -27,6 +27,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import { actGetMediaByConver } from "../../../reducers/mediaReducer";
 import { actGetFileByConver } from "../../../reducers/fileReducer";
+import { v1 as uuid } from "uuid";
+import { setWindowCall } from "../../../reducers/callReducer";
 
 const MediaDetail = ({ popup, handleCloses, item }) => {
   const checkMedia = (item) => {
@@ -336,6 +338,38 @@ const ChatElement = React.memo(({ data, userInfo, socket, index }) => {
                 </>
               )}
 
+              {data?.typeMessage === "CALL" && (
+                <>
+                  {data?.sender !== cookies.auth.user.id ? (
+                    <div className=" max-w-xs text-gray-500  font-bold italic">
+                      {userInfo?.fullname} is calling you
+                    </div>
+                  ) : (
+                    <div className=" max-w-xs">
+                      <p className=" text-white font-normal italic">
+                        You are calling {userInfo?.fullname}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {data?.typeMessage === "ANSWER" && (
+                <>
+                  {data?.sender !== cookies.auth.user.id ? (
+                    <div className=" max-w-xs text-gray-500  font-bold italic">
+                      Connected {userInfo?.fullname}
+                    </div>
+                  ) : (
+                    <div className=" max-w-xs">
+                      <p className=" text-white font-normal italic">
+                        Connected {userInfo?.fullname}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+
               {data?.typeMessage === "DOWNLOAD" && (
                 <div className=" max-w-xs">
                   <td
@@ -476,7 +510,11 @@ const ListMessBox = (props) => {
   const { setOpenSr, openSr, typing, socket, scroll } = props;
   const [userInfo, setUserInfo] = useState(null);
   const currentMessage = useSelector((state) => state.messConver);
+  const [openCall, setOpenCall] = useState(false);
+  const [cookies, ,] = useCookies("auth");
   let { userId } = useParams();
+  const dispatch = useDispatch();
+  let callPopup;
 
   useEffect(() => {
     getUserInfo();
@@ -497,6 +535,36 @@ const ListMessBox = (props) => {
       });
   };
 
+  const handleCall = (w, h) => {
+    setOpenCall(true);
+    const left = window.screen.width / 2 - w / 2;
+    const top = window.screen.height / 2 - h / 2;
+    const id = uuid();
+    callPopup = window.open(
+      `/contact/videocall/${id}`,
+      `ContactDirect`,
+      `toolbar=no, location=no, directories=no, 
+          status=no, menubar=no, scrollbars=no,
+         resizable=no, copyhistory=no, 
+         width=${w}, height=${h}, top=${
+        top - 50
+      }, left=${left}, alwaysRaised=yes`
+    );
+    dispatch(setWindowCall({ show: true, check: callPopup }));
+    const onchat = {
+      senderId: cookies.auth.user.id,
+      receiverId: userId,
+      roomId: id,
+    };
+    setTimeout(() => {
+      socket.current.emit("callUser", onchat);
+    }, 4000);
+  };
+
+  const handleCloseCall = () => {
+    callPopup?.close();
+  };
+
   return (
     <>
       <ConversationHeader>
@@ -508,8 +576,12 @@ const ListMessBox = (props) => {
 
         <ConversationHeader.Content userName={`${userInfo?.fullname}`} />
         <ConversationHeader.Actions>
-          <VoiceCallButton />
-          <VideoCallButton />
+          {/* <VoiceCallButton /> */}
+          <VideoCallButton
+            onClick={() => {
+              handleCall(1200, 650);
+            }}
+          />
           <EllipsisButton
             orientation="vertical"
             onClick={() => setOpenSr(!openSr)}

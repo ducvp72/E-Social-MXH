@@ -18,6 +18,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import moment from "moment";
 import { actLogoutFile } from "../../reducers/fileReducer";
 import { actLogoutMedia } from "../../reducers/mediaReducer";
+import { setWindowCall } from "../../reducers/callReducer";
 
 export const Topbar = () => {
   const [skt, setSkt] = useState(true);
@@ -101,6 +102,8 @@ export const Topbar = () => {
     }, 1500);
   }, [currentUser]);
 
+  const currentCall = useSelector((state) => state.windowCall);
+
   const handlelogout = () => {
     try {
       // dispatch(actLogout(cookies.auth.tokens.refresh.token, history));
@@ -108,9 +111,12 @@ export const Topbar = () => {
       // dispatch(actLogoutMess());
       // dispatch(actLogoutFile());
       // dispatch(actLogoutMedia());
+      // currentCall.flag?.close();
+      // dispatch(setWindowCall({ show: false, check: null }));
       localStorage.clear();
       // localStorage.removeItem('persist:root')
       // localStorage.removeItem('persist:auth')
+
       removeCookie("auth", { path: "/" });
     } catch (err) {
       console.log(err);

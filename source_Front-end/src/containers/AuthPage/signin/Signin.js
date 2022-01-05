@@ -163,7 +163,7 @@ const Signin = (props) => {
                   }}
                   label={
                     <span className=" text-red-500 font-bold text-md">
-                      Remember account
+                      Remember me
                     </span>
                   }
                   labelPlacement="end"
