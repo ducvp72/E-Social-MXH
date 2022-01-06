@@ -17,6 +17,11 @@ router.get(
   validate(messageValidation.getMessagesFromConversation),
   messageController.getMessagesFromConversation
 );
-router.put('/',auth(''), validate(messageValidation.recallMessagesFromConversation),messageController.recallMessagesFromConversation);
+router.put(
+  '/',
+  auth(''),
+  validate(messageValidation.recallMessagesFromConversation),
+  messageController.recallMessagesFromConversation
+);
 
 module.exports = router;

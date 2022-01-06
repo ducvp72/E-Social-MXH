@@ -19,6 +19,15 @@ const loveIcon = catchAsync(async (req, res) => {
   const message = await messageService.loveIcon(req.user.id, req.params.conversationId);
   res.status(httpStatus.OK).send(message);
 });
+const callUser = catchAsync(async (req, res) => {
+  const message = await messageService.callUser(req.user.id, req.params.conversationId);
+  res.status(httpStatus.OK).send(message);
+});
+const answerCall = catchAsync(async (req, res) => {
+  const message = await messageService.recallMessagesFromConversation(req.user.id,req.body.conversationId,req.body.messageId);
+  res.status(httpStatus.OK).send(message);
+});
+
 const getMessagesFromConversation = catchAsync(async (req, res) => {
   const options = pick(req.query, ['sortBy', 'limit', 'page', 'typeMessage']);
   const message = await messageService.getMessagesFromConversation(req.user.id, req.params.conversationId, options);
@@ -35,4 +44,6 @@ module.exports = {
   recallMessagesFromConversation,
   likeIcon,
   loveIcon,
+  callUser,
+  answerCall,
 };
