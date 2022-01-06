@@ -22,12 +22,16 @@ const messageSchema = new Schema(
       required: true,
     },
     content: {
-      text:{
+      text: {
         type: String,
       },
-      file:{
+      file: {
         type: String,
-      }
+      },
+    },
+    index: {
+      type: Number,
+      required: true,
     },
   },
   {

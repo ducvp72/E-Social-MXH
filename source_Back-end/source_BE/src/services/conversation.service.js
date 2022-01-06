@@ -30,28 +30,8 @@ const getPrivate = async (userId, peopleId) => {
     },
   }).populate('members', ['avatar', 'fullname']);
 
-  if (!conversation) {
-    if (userId == peopleId) throw new ApiError(httpStatus.BAD_REQUEST, 'Conversation can be not created with myself');
-    const newConversation = new Conversation({
-      members: [userId, peopleId],
-      conversationType: 'private',
-    });
-    try {
-      await newConversation.populate('members', ['avatar', 'fullname']).save();
-      const sconversation = await Conversation.findOne({
-        members: {
-          $all: [userId, peopleId],
-        },
-      }).populate('members', ['avatar', 'fullname']);
-      const { members, id, conversationType } = sconversation;
-      const senderr = members.filter((member) => member.id == userId);
-      const user = senderr[0];
-      const ret = { id, conversationType, user };
-      return ret;
-    } catch (err) {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
-    }
-  }
+  if (!conversation)  throw new ApiError(httpStatus.BAD_REQUEST, 'Conversation has been created');
+  if (userId == peopleId) throw new ApiError(httpStatus.BAD_REQUEST, 'Conversation can be not created with myself');
   const { members, id, conversationType } = conversation;
   const senderr = members.filter((member) => member.id == userId);
   const user = senderr[0];

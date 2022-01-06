@@ -20,7 +20,7 @@ const getMessagesFromConversation = {
     owner: Joi.string().custom(objectId),
     sortBy: Joi.string(),
     populate: Joi.string(),
-    typeMessage: Joi.string().valid('DOWNLOAD', 'VIDEO', 'AUDIO', 'IMAGE'),
+    typeMessage: Joi.string().valid('DOWNLOAD', 'VIDEO', 'AUDIO', 'IMAGE', 'MEDIA'),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
   }),

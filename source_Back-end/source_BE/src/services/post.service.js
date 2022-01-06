@@ -25,19 +25,23 @@ const createPostT = async (user, text) => {
   });
   const followers = await getUserFollowers(user._id);
   // eslint-disable-next-line no-restricted-syntax
-  for (const follower of followers) {
-    const notif = `${user.fullname} posted 1 post text`;
-    await notificationService.createNotification(follower._id, notif, user.id);
+  if(followers){
+    for (const follower of followers) {
+      const notif = `${user.fullname} posted 1 post text`;
+      await notificationService.createNotification(follower._id, notif, user.id);
+    }
   }
-  let postN;
-  await newPost
-    .save()
-    .then((post) => {
-      postN = post;
-    })
-    .catch((err) => {
-      throw new ApiError(httpStatus.BAD_REQUEST, err);
-    });
+    let postN;
+    await newPost
+      .save()
+      .then((post) => {
+        postN = post;
+      })
+      .catch((err) => {
+        throw new ApiError(httpStatus.BAD_REQUEST, err);
+      });
+  
+  
   return postN;
 };
 const createPostFile = async (file, user, text) => {
@@ -45,10 +49,13 @@ const createPostFile = async (file, user, text) => {
   const followers = await getUserFollowers(user._id);
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const follower of followers) {
-    const notif = `${user.fullname} posted 1 post media`;
-    await notificationService.createNotification(follower._id, notif, user.id);
+  if(followers){
+    for (const follower of followers) {
+      const notif = `${user.fullname} posted 1 post media`;
+      await notificationService.createNotification(follower._id, notif, user.id);
+    }
   }
+  
   const newPost = new Post({
     owner: user._id,
     text,

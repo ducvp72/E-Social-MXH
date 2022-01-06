@@ -29,6 +29,14 @@ const createMessageText = async (userId, conversationId, text) => {
   } catch (err) {
     textClean = text;
   }
+  const lastMessage = await Message.findOne({
+    conversationId,
+  }).sort({ createdAt: -1 });
+  let index;
+  if (!lastMessage) index = 0;
+  else {
+    index = lastMessage.index + 1;
+  }
   const newMessage = new Message({
     conversationId,
     sender: userId,
@@ -36,6 +44,7 @@ const createMessageText = async (userId, conversationId, text) => {
     content: {
       text: textClean,
     },
+    index,
   });
   try {
     const message = await newMessage.save();
@@ -48,10 +57,19 @@ const createMessageText = async (userId, conversationId, text) => {
 const likeIcon = async (userId, conversationId) => {
   const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
+  const lastMessage = await Message.findOne({
+    conversationId,
+  }).sort({ createdAt: -1 });
+  let index;
+  if (!lastMessage) index = 0;
+  else {
+    index = lastMessage.index + 1;
+  }
   const newMessage = new Message({
     conversationId,
     sender: userId,
     typeMessage: fileTypes.LIKE,
+    index,
   });
   try {
     const message = await newMessage.save();
@@ -64,10 +82,35 @@ const likeIcon = async (userId, conversationId) => {
 const loveIcon = async (userId, conversationId) => {
   const isIncludes = await isUserInConversation(userId, conversationId);
   if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
+  const lastMessage = await Message.findOne({
+    conversationId,
+  }).sort({ createdAt: -1 });
+  let index;
+  if (!lastMessage) index = 0;
+  else {
+    index = lastMessage.index + 1;
+  }
   const newMessage = new Message({
     conversationId,
     sender: userId,
     typeMessage: fileTypes.LOVE,
+    index,
+  });
+  try {
+    const message = await newMessage.save();
+    await Conversation.updateOne({ _id: conversationId }, { updatedAt: new Date() });
+    return message;
+  } catch (err) {
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err);
+  }
+};
+const callUser = async (userId, conversationId) => {
+  const isIncludes = await isUserInConversation(userId, conversationId);
+  if (!isIncludes) throw new ApiError(httpStatus.FORBIDDEN, 'You muss be in a conversation!');
+  const newMessage = new Message({
+    conversationId,
+    sender: userId,
+    typeMessage: fileTypes.CALL,
   });
   try {
     const message = await newMessage.save();
@@ -87,6 +130,14 @@ const createMessageMedia = async (file, userId, conversationId, text) => {
   } catch (err) {
     textClean = text;
   }
+  const lastMessage = await Message.findOne({
+    conversationId,
+  }).sort({ createdAt: -1 });
+  let index;
+  if (!lastMessage) index = 0;
+  else {
+    index = lastMessage.index + 1;
+  }
   let newMessage;
   if (fileTypes === 'IMAGE' || fileTypes === 'AUDIO' || fileTypes === 'VIDEO') {
     newMessage = new Message({
@@ -97,6 +148,7 @@ const createMessageMedia = async (file, userId, conversationId, text) => {
         text: textClean,
         file: file.id,
       },
+      index,
     });
   } else {
     newMessage = new Message({
@@ -107,6 +159,7 @@ const createMessageMedia = async (file, userId, conversationId, text) => {
         text: file.filename,
         file: file.id,
       },
+      index,
     });
   }
 
@@ -124,6 +177,7 @@ const getMessagesFromConversation = async (userId, conversationId, options) => {
   try {
     let messages;
     if (options.typeMessage) {
+      if (options.typeMessage === 'MEDIA') options.typeMessage = ['IMAGE', 'VIDEO', 'AUDIO'];
       const { typeMessage } = options;
       messages = await Message.paginate({ conversationId, typeMessage }, options);
     } else {
@@ -178,4 +232,5 @@ module.exports = {
   getLastMessageFromConversation,
   likeIcon,
   loveIcon,
+  callUser,
 };
