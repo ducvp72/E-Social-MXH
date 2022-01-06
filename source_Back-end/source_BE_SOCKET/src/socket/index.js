@@ -18,7 +18,7 @@ server.listen(config.port, () => {
   logger.info(`Listening to port ${config.port}`);
 });
 let users = [];
-
+const rooms = {};
 const addUser = (userId, socketId) => {
   if (!users.some((user) => user.userId === userId)) {
     socketId = [socketId];
@@ -36,7 +36,11 @@ const addUser = (userId, socketId) => {
 const removeUser = (socketId) => {
   // users = users.filter((user) => user.socketId !== socketId);
   for (i of users) {
-    for (j of i.socketId) if (j == socketId) users = users.filter((user) => user.socketId !== i.socketId);
+    for (j of i.socketId)
+      if (j == socketId) {
+        i.socketId = i.socketId.filter((s) => s !== socketId);
+        if (i.socketId.length === 0) users = users.filter((user) => user.socketId.length !== 0);
+      }
   }
 };
 
@@ -45,7 +49,7 @@ const getUser = (userId) => {
 };
 const io = socketio(server, {
   cors: {
-    origin: ['http://localhost:3000', 'http://localhost:5500', 'https://vn-mxh.surge.sh'],
+    origin: ['http://localhost:3000', 'http://localhost:5500', 'https://vn-mxh.surge.sh', 'https://vn2-mxh.surge.sh'],
     methods: ['GET', 'POST', 'PUT', 'OPTIONS'],
   },
 });
@@ -57,6 +61,7 @@ io.on('connection', (socket) => {
   // eslint-disable-next-line no-console
   logger.info(`Socket connection: ${socket.id}`);
   addUser(socket.request.user.id, socket.id);
+  console.log(users);
   socket.on('whoami', (cb) => {
     cb(socket.request.user);
   });
@@ -184,19 +189,27 @@ io.on('connection', (socket) => {
       socket.emit('error', error);
     }
   });
-  socket.on('callUser', ({ userIdToCall, signalData, from }) => {
-    const user = getUser(userIdToCall);
+  socket.on('callUser', ({ senderId, roomId, receiverId }) => {
+    const user = getUser(receiverId);
     try {
-      io.to(user.socketId).emit('callUser', { signal: signalData, from });
+      io.to(user.socketId).emit('getCallUser', { senderId, roomId });
     } catch (err) {
       socket.emit('error', error);
     }
   });
 
-  socket.on('answerCall', (data) => {
-    const user = getUser(data.to);
+  socket.on('answerCall', ({ senderId, receiverId }) => {
+    const user = getUser(receiverId);
     try {
-      io.to(user.socketId).emit('callAccepted', data.signal);
+      io.to(user.socketId).emit('callAccepted', { senderId });
+    } catch (err) {
+      socket.emit('error', error);
+    }
+  });
+  socket.on('rejectCall', ({ senderId, receiverId }) => {
+    const user = getUser(receiverId);
+    try {
+      io.to(user.socketId).emit('callRejected', { senderId });
     } catch (err) {
       socket.emit('error', error);
     }
@@ -208,6 +221,77 @@ io.on('connection', (socket) => {
     } catch (err) {
       socket.emit('error', error);
     }
+  });
+  socket.on('join room', (roomID) => {
+    if (rooms[roomID]) {
+      rooms[roomID].push(socket.id);
+    } else {
+      rooms[roomID] = [socket.id];
+    }
+    const otherUser = rooms[roomID].find((id) => id !== socket.id);
+    if (otherUser) {
+      socket.emit('other user', otherUser);
+      socket.to(otherUser).emit('user joined', socket.id);
+    }
+  });
+
+  socket.on('offer', (payload) => {
+    io.to(payload.target).emit('offer', payload);
+  });
+
+  socket.on('answer', (payload) => {
+    io.to(payload.target).emit('answer', payload);
+  });
+  socket.on('video-off', ({ senderId, receiverId }) => {
+   // const user = getUser(receiverId);
+    try {
+      io.to(receiverId).emit('video-off', { senderId });
+    } catch (err) {
+      socket.emit('error', error);
+    }
+  });
+  socket.on('video-on', ({ senderId, receiverId }) => {
+    //const user = getUser(receiverId);
+    try {
+      io.to(receiverId).emit('video-on', { senderId });
+    } catch (err) {
+      socket.emit('error', error);
+    }
+  });
+  socket.on('audio-off', ({ senderId, receiverId }) => {
+    //const user = getUser(receiverId);
+    try {
+      io.to(receiverId).emit('audio-off', { senderId });
+    } catch (err) {
+      socket.emit('error', error);
+    }
+  });
+  socket.on('audio-on', ({ senderId, receiverId }) => {
+    // const user = getUser(receiverId);
+    try {
+      io.to(receiverId).emit('audio-on', { senderId });
+    } catch (err) {
+      socket.emit('error', error);
+    }
+  });
+  socket.on('screen-on', ({ senderId, receiverId }) => {
+    // const user = getUser(receiverId);
+    try {
+      io.to(receiverId).emit('screen-on', { senderId });
+    } catch (err) {
+      socket.emit('error', error);
+    }
+  });
+  socket.on('screen-off', ({ senderId, receiverId }) => {
+    //const user = getUser(receiverId);
+    try {
+      io.to(receiverId).emit('screen-off', { senderId });
+    } catch (err) {
+      socket.emit('error', error);
+    }
+  });
+  socket.on('ice-candidate', (incoming) => {
+    io.to(incoming.target).emit('ice-candidate', incoming.candidate);
   });
   socket.on('disconnect', () => {
     // eslint-disable-next-line no-console
